@@ -26,5 +26,5 @@ runs:
   using: node12
   main: dist/index.js
 branding:
-  color: orange
-  icon: book
+  color: blue
+  icon: tool
