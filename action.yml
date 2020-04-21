@@ -1,0 +1,30 @@
+name: Xcodebuild Action
+description: Runs xcodebuild e.g. to run tests.
+author: ser.soft GmbH
+inputs:
+  workspace:
+    description: The path to the xcworkspace to build. Mutually exclusive with `project`.
+    required: false
+  project:
+    description: The path to the xcodeproj to build. Mutually exclusive with `workspace`.
+    required: false
+  scheme:
+    description: The scheme to build. Required when using a workspace.
+    required: false
+  destination:
+    description: The destination specifier to build.
+    required: false
+  action:
+    description: The action to perform (e.g. build, test, ...).
+    required: true
+    default: test
+  use-xcpretty:
+    description: Whether the output of xcodebuild should be forwarded to xcpretty.
+    required: true
+    default: true
+runs:
+  using: node12
+  main: dist/index.js
+branding:
+  color: orange
+  icon: book

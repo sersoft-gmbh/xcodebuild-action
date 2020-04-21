@@ -1,0 +1,90 @@
+name: Master Deploy
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy-action-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install depenedencies
+        run: sudo npm i -g @zeit/ncc typescript
+      - uses: actions/checkout@v2
+      - name: Generate action code
+        run: npm run deploy
+      - name: Configure repository
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+      - name: Commit changes
+        run: |
+          if ! git diff --exit-code; then
+            git add .
+            git commit -m "[AUTO] Update generated code"
+            git push
+          fi
+
+  test-project:
+    needs: deploy-action-code
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        destination:
+          - platform=macOS
+          - platform=iOS Simulator,OS=latest,name=iPhone 11
+          - platform=iOS Simulator,OS=latest,name=iPad Pro (9.7-inch)
+          - platform=tvOS Simulator,OS=latest,name=Apple TV 4K
+        action: [ build, test ]
+        use-xcpretty: [ true, false ]
+        include:
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+            action: build
+            use-xcpretty: true
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+            action: build
+            use-xcpretty: false
+    steps:
+      - run: sudo xcode-select -s /Applications/Xcode_11.4.app/Contents/Developer
+      - uses: actions/checkout@v2
+      - uses: sersoft-gmbh/xcodebuild-action@master
+        with:
+          project: __test__/TestProject/TestProject.xcodeproj
+          scheme: TestProject
+          destination: ${{matrix.destination}}
+          action: ${{matrix.action}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+      - name: Check for derived data
+        run: ls ~/Library/Developer/Xcode/DerivedData/ | grep -q '^TestProject.*'
+
+  test-workspace:
+    needs: deploy-action-code
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        destination:
+          - platform=macOS
+          - platform=iOS Simulator,OS=latest,name=iPhone 11
+          - platform=iOS Simulator,OS=latest,name=iPad Pro (9.7-inch)
+          - platform=tvOS Simulator,OS=latest,name=Apple TV 4K
+        action: [ build, test ]
+        use-xcpretty: [ true, false ]
+        include:
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+            action: build
+            use-xcpretty: true
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+            action: build
+            use-xcpretty: false
+    steps:
+      - run: sudo xcode-select -s /Applications/Xcode_11.4.app/Contents/Developer
+      - uses: actions/checkout@v2
+      - uses: sersoft-gmbh/xcodebuild-action@master
+        with:
+          workspace: __test__/TestProject/TestProject.xcworkspace
+          scheme: TestProject
+          destination: ${{matrix.destination}}
+          action: ${{matrix.action}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+      - name: Check for derived data
+        run: ls ~/Library/Developer/Xcode/DerivedData/ | grep -q '^TestProject.*'

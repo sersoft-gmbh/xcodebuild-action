@@ -1,0 +1,8 @@
+.DS_Store
+
+.idea/
+
+node_modules/
+
+# Lib is just temporary - so we ignore it
+lib/

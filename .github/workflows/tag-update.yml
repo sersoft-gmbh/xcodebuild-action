@@ -1,0 +1,15 @@
+name: Update Release Tags
+
+on:
+  release:
+    types:
+      - published
+      - updated
+
+jobs:
+  update-tags:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: sersoft-gmbh/running-release-tags-action@v1
+        if: github.event.release.prerelease == false
