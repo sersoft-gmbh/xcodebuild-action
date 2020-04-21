@@ -27,4 +27,4 @@ runs:
   main: dist/index.js
 branding:
   color: blue
-  icon: tool
+  icon: check-square
