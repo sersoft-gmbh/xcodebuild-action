@@ -34,7 +34,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(29);
+/******/ 		return __webpack_require__(907);
 /******/ 	};
 /******/
 /******/ 	// run startup
@@ -43,141 +43,6 @@ module.exports =
 /************************************************************************/
 /******/ ({
 
-/***/ 29:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(357));
-const child_process_1 = __webpack_require__(129);
-const SIGNAL_NAME_TO_NUMBER_MAP = {
-    'SIGHUP': 1,
-    'SIGINT': 2,
-    'SIGQUIT': 3,
-    'SIGILL': 4,
-    'SIGTRAP': 5,
-    'SIGABRT': 6,
-    'SIGIOT': 6,
-    'SIGBUS': 7,
-    'SIGFPE': 8,
-    'SIGKILL': 9,
-    'SIGUSR1': 10,
-    'SIGSEGV': 11,
-    'SIGUSR2': 12,
-    'SIGPIPE': 13,
-    'SIGALRM': 14,
-    'SIGTERM': 15,
-    'SIGSTKFLT': 16,
-    'SIGCHLD': 17,
-    'SIGCONT': 18,
-    'SIGSTOP': 19,
-    'SIGTSTP': 20,
-    'SIGTTIN': 21,
-    'SIGTTOU': 22,
-    'SIGURG': 23,
-    'SIGXCPU': 24,
-    'SIGXFSZ': 25,
-    'SIGVTALRM': 26,
-    'SIGPROF': 27,
-    'SIGWINCH': 28,
-    'SIGIO': 29,
-    'SIGPOLL': 29,
-    'SIGPWR': 30,
-    'SIGSYS': 31,
-    'SIGUNUSED': 31,
-    // there isn't actually a number here.
-    'SIGBREAK': 97,
-    'SIGINFO': 98,
-    'SIGLOST': 99,
-};
-async function main() {
-    var _a;
-    switch (process.platform) {
-        case "darwin": break;
-        default: throw new Error("This action only supports macOS!");
-    }
-    let xcodebuildArgs = [];
-    core.startGroup('Validating input');
-    const workspace = core.getInput('workspace');
-    const project = core.getInput('project');
-    if ((!workspace && !project) || (workspace && project)) {
-        throw new Error("Either `project` or `workspace` must be set but not both!");
-    }
-    else if (workspace) {
-        xcodebuildArgs.push('-workspace', workspace);
-    }
-    else if (project) {
-        xcodebuildArgs.push('-project', project);
-    }
-    const scheme = core.getInput('scheme', { required: workspace != null });
-    if (scheme) {
-        xcodebuildArgs.push('-scheme', scheme);
-    }
-    const destination = core.getInput('destination');
-    if (destination) {
-        xcodebuildArgs.push('-destination', destination);
-    }
-    const action = core.getInput('action', { required: true });
-    const useXcpretty = core.getInput('use-xcpretty', { required: true }) == 'true';
-    core.endGroup();
-    core.startGroup('Running xcodebuild');
-    const xcodebuildOut = useXcpretty ? 'pipe' : process.stdout;
-    const xcodebuild = child_process_1.spawn('xcodebuild', xcodebuildArgs.concat(action), { stdio: ['inherit', xcodebuildOut, process.stderr] });
-    let finishedPromise = new Promise((resolve, reject) => {
-        xcodebuild.on('error', reject);
-        xcodebuild.on('exit', (exitCode, signal) => {
-            if (exitCode) {
-                resolve(exitCode);
-            }
-            else if (signal) {
-                resolve(SIGNAL_NAME_TO_NUMBER_MAP[signal]);
-            }
-        });
-    });
-    if (useXcpretty) {
-        const xcpretty = child_process_1.spawn('xcpretty', { stdio: ['pipe', process.stdout, process.stderr] });
-        (_a = xcodebuild.stdout) === null || _a === void 0 ? void 0 : _a.pipe(xcpretty.stdin);
-        finishedPromise = finishedPromise.then((xcodeCode) => new Promise((resolve, reject) => {
-            xcpretty.on('error', reject);
-            xcpretty.on('exit', (xcprettyCode, xcprettySignal) => {
-                if (xcodeCode == 0) {
-                    if (xcprettyCode) {
-                        resolve(xcprettyCode);
-                    }
-                    else if (xcprettySignal) {
-                        resolve(SIGNAL_NAME_TO_NUMBER_MAP[xcprettySignal]);
-                    }
-                }
-                else {
-                    resolve(xcodeCode);
-                }
-            });
-        }));
-    }
-    const exitCode = await finishedPromise;
-    if (exitCode != 0) {
-        throw new Error(`Action failed (${exitCode})!`);
-    }
-    core.endGroup();
-}
-try {
-    main().catch(error => core.setFailed(error.message));
-}
-catch (error) {
-    core.setFailed(error.message);
-}
-
-
-/***/ }),
-
 /***/ 87:
 /***/ (function(module) {
 
@@ -185,7 +50,14 @@ module.exports = require("os");
 
 /***/ }),
 
-/***/ 92:
+/***/ 129:
+/***/ (function(module) {
+
+module.exports = require("child_process");
+
+/***/ }),
+
+/***/ 215:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -270,14 +142,14 @@ function escapeProperty(s) {
 
 /***/ }),
 
-/***/ 129:
+/***/ 622:
 /***/ (function(module) {
 
-module.exports = require("child_process");
+module.exports = require("path");
 
 /***/ }),
 
-/***/ 357:
+/***/ 827:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -299,7 +171,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const command_1 = __webpack_require__(92);
+const command_1 = __webpack_require__(215);
 const os = __importStar(__webpack_require__(87));
 const path = __importStar(__webpack_require__(622));
 /**
@@ -493,10 +365,138 @@ exports.getState = getState;
 
 /***/ }),
 
-/***/ 622:
-/***/ (function(module) {
+/***/ 907:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-module.exports = require("path");
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(827));
+const child_process_1 = __webpack_require__(129);
+const SIGNAL_NAME_TO_NUMBER_MAP = {
+    'SIGHUP': 1,
+    'SIGINT': 2,
+    'SIGQUIT': 3,
+    'SIGILL': 4,
+    'SIGTRAP': 5,
+    'SIGABRT': 6,
+    'SIGIOT': 6,
+    'SIGBUS': 7,
+    'SIGFPE': 8,
+    'SIGKILL': 9,
+    'SIGUSR1': 10,
+    'SIGSEGV': 11,
+    'SIGUSR2': 12,
+    'SIGPIPE': 13,
+    'SIGALRM': 14,
+    'SIGTERM': 15,
+    'SIGSTKFLT': 16,
+    'SIGCHLD': 17,
+    'SIGCONT': 18,
+    'SIGSTOP': 19,
+    'SIGTSTP': 20,
+    'SIGTTIN': 21,
+    'SIGTTOU': 22,
+    'SIGURG': 23,
+    'SIGXCPU': 24,
+    'SIGXFSZ': 25,
+    'SIGVTALRM': 26,
+    'SIGPROF': 27,
+    'SIGWINCH': 28,
+    'SIGIO': 29,
+    'SIGPOLL': 29,
+    'SIGPWR': 30,
+    'SIGSYS': 31,
+    'SIGUNUSED': 31,
+    // there isn't actually a number here.
+    'SIGBREAK': 97,
+    'SIGINFO': 98,
+    'SIGLOST': 99,
+};
+async function main() {
+    var _a;
+    switch (process.platform) {
+        case "darwin": break;
+        default: throw new Error("This action only supports macOS!");
+    }
+    let xcodebuildArgs = [];
+    core.startGroup('Validating input');
+    const workspace = core.getInput('workspace');
+    const project = core.getInput('project');
+    if ((!workspace && !project) || (workspace && project)) {
+        throw new Error("Either `project` or `workspace` must be set but not both!");
+    }
+    else if (workspace) {
+        xcodebuildArgs.push('-workspace', workspace);
+    }
+    else if (project) {
+        xcodebuildArgs.push('-project', project);
+    }
+    const scheme = core.getInput('scheme', { required: workspace != null });
+    if (scheme) {
+        xcodebuildArgs.push('-scheme', scheme);
+    }
+    const destination = core.getInput('destination');
+    if (destination) {
+        xcodebuildArgs.push('-destination', destination);
+    }
+    const action = core.getInput('action', { required: true });
+    const useXcpretty = core.getInput('use-xcpretty', { required: true }) == 'true';
+    core.endGroup();
+    core.startGroup('Running xcodebuild');
+    const xcodebuildOut = useXcpretty ? 'pipe' : process.stdout;
+    const xcodebuild = child_process_1.spawn('xcodebuild', xcodebuildArgs.concat(action), { stdio: ['inherit', xcodebuildOut, process.stderr] });
+    let finishedPromise = new Promise((resolve, reject) => {
+        xcodebuild.on('error', reject);
+        xcodebuild.on('exit', (exitCode, signal) => {
+            if (exitCode) {
+                resolve(exitCode);
+            }
+            else if (signal) {
+                resolve(SIGNAL_NAME_TO_NUMBER_MAP[signal]);
+            }
+        });
+    });
+    if (useXcpretty) {
+        const xcpretty = child_process_1.spawn('xcpretty', { stdio: ['pipe', process.stdout, process.stderr] });
+        (_a = xcodebuild.stdout) === null || _a === void 0 ? void 0 : _a.pipe(xcpretty.stdin);
+        finishedPromise = finishedPromise.then((xcodeCode) => new Promise((resolve, reject) => {
+            xcpretty.on('error', reject);
+            xcpretty.on('exit', (xcprettyCode, xcprettySignal) => {
+                if (xcodeCode == 0) {
+                    if (xcprettyCode) {
+                        resolve(xcprettyCode);
+                    }
+                    else if (xcprettySignal) {
+                        resolve(SIGNAL_NAME_TO_NUMBER_MAP[xcprettySignal]);
+                    }
+                }
+                else {
+                    resolve(xcodeCode);
+                }
+            });
+        }));
+    }
+    const exitCode = await finishedPromise;
+    if (exitCode != 0) {
+        throw new Error(`Xcodebuild action failed (${exitCode})!`);
+    }
+    core.endGroup();
+}
+try {
+    main().catch(error => core.setFailed(error.message));
+}
+catch (error) {
+    core.setFailed(error.message);
+}
+
 
 /***/ })
 
