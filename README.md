@@ -2,7 +2,7 @@
 
 ![Master Deploy](https://github.com/sersoft-gmbh/xcodebuild-action/workflows/Master%20Deploy/badge.svg)
 
-This action runs xcodebuild with the given options.
+This action runs `xcodebuild` with the given options.
 
 Note that this action needs to run on macOS. All other platforms will fail!
 
