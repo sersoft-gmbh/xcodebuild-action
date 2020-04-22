@@ -92,7 +92,7 @@ async function main() {
     } else if (project) {
         xcodebuildArgs.push('-project', project);
     }
-    const scheme = core.getInput('scheme', { required: workspace != null });
+    const scheme = core.getInput('scheme', { required: !!workspace });
     if (scheme) {
         xcodebuildArgs.push('-scheme', scheme);
     }
