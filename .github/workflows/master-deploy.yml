@@ -133,9 +133,7 @@ jobs:
             EXPECTED_COMMAND="${EXPECTED_COMMAND} | xcpretty"
           fi
           if [ "${EXPECTED_COMMAND}" != "${{steps.xcodebuild.outputs.executed-command}}" ]; then
-            printf "::error::Executed command did not match expectations!\n"
-            printf "::error::Executed: ${{steps.xcodebuild.outputs.executed-command}}\n"
-            printf "::error::Expected: ${EXPECTED_COMMAND}\n"
+            printf "::error::Executed command did not match expectations!\nExecuted: ${{steps.xcodebuild.outputs.executed-command}}\nExpected: ${EXPECTED_COMMAND}\n"
             exit 1
           fi
 
@@ -179,8 +177,6 @@ jobs:
             EXPECTED_COMMAND="${EXPECTED_COMMAND} | xcpretty"
           fi
           if [ "${EXPECTED_COMMAND}" != "${{steps.xcodebuild.outputs.executed-command}}" ]; then
-            printf "::error::Executed command did not match expectations!\n"
-            printf "::error::Executed: ${{steps.xcodebuild.outputs.executed-command}}\n"
-            printf "::error::Expected: ${EXPECTED_COMMAND}\n"
+            printf "::error::Executed command did not match expectations!\nExecuted: ${{steps.xcodebuild.outputs.executed-command}}\nExpected: ${EXPECTED_COMMAND}\n"
             exit 1
           fi
