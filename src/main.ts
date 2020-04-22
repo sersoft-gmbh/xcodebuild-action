@@ -92,9 +92,6 @@ async function main() {
     } else if (project) {
         xcodebuildArgs.push('-project', project);
     }
-    if (!!workspace) {
-        core.debug("Workspace is set! We require a scheme now!");
-    }
     const scheme = core.getInput('scheme', { required: !!workspace });
     if (scheme) {
         xcodebuildArgs.push('-scheme', scheme);

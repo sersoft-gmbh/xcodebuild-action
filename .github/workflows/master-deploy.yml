@@ -128,7 +128,7 @@ jobs:
         id: xcodebuild
       - name: Check executed command
         run: |
-          EXPECTED_COMMAND="xcodebuild -project ${{matrix.xcodeproj}} -destination ${{matrix.destination}} -configuration ${{matrix.configuration}} -sdk ${{matrix.sdk}} -skip-testing ${{matrix.skip-testing}} ${{matrix.build-settings}} ${{matrix.action}}"
+          EXPECTED_COMMAND="xcodebuild -project ${{matrix.project}} -destination ${{matrix.destination}} -configuration ${{matrix.configuration}} -sdk ${{matrix.sdk}} -skip-testing ${{matrix.skip-testing}} ${{matrix.build-settings}} ${{matrix.action}}"
           if [ "${{matrix.use-xcpretty}}" == "true" ]; then
             EXPECTED_COMMAND="${EXPECTED_COMMAND} | xcpretty"
           fi
