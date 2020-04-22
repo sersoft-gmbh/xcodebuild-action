@@ -121,6 +121,7 @@ jobs:
           configuration: ${{matrix.configuration}}
           sdk: ${{matrix.sdk}}
           skip-testing: ${{matrix.skip-testing}}
+          build-settings: ${{matrix.build-settings}}
           action: ${{matrix.action}}
           use-xcpretty: ${{matrix.use-xcpretty}}
           dry-run: true
@@ -166,6 +167,7 @@ jobs:
           configuration: ${{matrix.configuration}}
           sdk: ${{matrix.sdk}}
           skip-testing: ${{matrix.skip-testing}}
+          build-settings: ${{matrix.build-settings}}
           action: ${{matrix.action}}
           use-xcpretty: ${{matrix.use-xcpretty}}
           dry-run: true
