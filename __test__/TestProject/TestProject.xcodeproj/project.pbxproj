@@ -11,6 +11,7 @@
 		07D9F5F0244ECB2900BE83C7 /* GreeterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D9F5EF244ECB2900BE83C7 /* GreeterTests.swift */; };
 		07D9F5F2244ECB2900BE83C7 /* TestProject.h in Headers */ = {isa = PBXBuildFile; fileRef = 07D9F5E4244ECB2900BE83C7 /* TestProject.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		07D9F5FC244ECC4800BE83C7 /* Greeter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D9F5FB244ECC4800BE83C7 /* Greeter.swift */; };
+		07D9F5FE2450298600BE83C7 /* FailingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D9F5FD2450298600BE83C7 /* FailingTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,7 @@
 		07D9F5EF244ECB2900BE83C7 /* GreeterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreeterTests.swift; sourceTree = "<group>"; };
 		07D9F5F1244ECB2900BE83C7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		07D9F5FB244ECC4800BE83C7 /* Greeter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Greeter.swift; sourceTree = "<group>"; };
+		07D9F5FD2450298600BE83C7 /* FailingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailingTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +85,7 @@
 		07D9F5EE244ECB2900BE83C7 /* TestProjectTests */ = {
 			isa = PBXGroup;
 			children = (
+				07D9F5FD2450298600BE83C7 /* FailingTests.swift */,
 				07D9F5EF244ECB2900BE83C7 /* GreeterTests.swift */,
 				07D9F5F1244ECB2900BE83C7 /* Info.plist */,
 			);
@@ -208,6 +211,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07D9F5FE2450298600BE83C7 /* FailingTests.swift in Sources */,
 				07D9F5F0244ECB2900BE83C7 /* GreeterTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -14,6 +14,18 @@ inputs:
   destination:
     description: The destination specifier to build.
     required: false
+  configuration:
+    description: The configuration to build.
+    required: false
+  sdk:
+    description: The SDK to use for building.
+    required: false
+  skip-testing:
+    description: A list of tests to skip.
+    required: false
+  build-settings:
+    description: Arbitrary, space separated build settings (e.g. PLATFORM_NAME=iphonesimulator).
+    required: false
   action:
     description: The action to perform (e.g. build, test, ...).
     required: true

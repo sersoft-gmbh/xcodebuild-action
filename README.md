@@ -24,6 +24,22 @@ The scheme to build. Required when using a workspace.
 
 The destination specifier to build.
 
+### `configuration`
+
+The configuration to build.
+
+### `sdk`
+
+The SDK to use for building.
+
+### `skip-testing`
+
+A list of tests to skip.
+
+### `build-settings`
+
+Arbitrary, space separated build settings (e.g. `PLATFORM_NAME=iphonesimulator`).
+
 ### `action`
 
 The action to perform (e.g. build, test, ...).<br/>

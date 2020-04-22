@@ -33,15 +33,17 @@ jobs:
         destination:
           - platform=macOS
           - platform=iOS Simulator,OS=latest,name=iPhone 11
-          - platform=iOS Simulator,OS=latest,name=iPad Pro (9.7-inch)
           - platform=tvOS Simulator,OS=latest,name=Apple TV 4K
-        action: [ build, test ]
+        skip-testing: [ 'TestProjectTests/FailingTests' ]
+        action: [ test ]
         use-xcpretty: [ true, false ]
         include:
           - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+            skip-testing: ''
             action: build
             use-xcpretty: true
           - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+            skip-testing: ''
             action: build
             use-xcpretty: false
     steps:
@@ -52,6 +54,7 @@ jobs:
           project: __test__/TestProject/TestProject.xcodeproj
           scheme: TestProject
           destination: ${{matrix.destination}}
+          skip-testing: ${{matrix.skip-testing}}
           action: ${{matrix.action}}
           use-xcpretty: ${{matrix.use-xcpretty}}
       - name: Check for derived data
@@ -65,15 +68,17 @@ jobs:
         destination:
           - platform=macOS
           - platform=iOS Simulator,OS=latest,name=iPhone 11
-          - platform=iOS Simulator,OS=latest,name=iPad Pro (9.7-inch)
           - platform=tvOS Simulator,OS=latest,name=Apple TV 4K
-        action: [ build, test ]
+        skip-testing: [ 'TestProjectTests/FailingTests' ]
+        action: [ test ]
         use-xcpretty: [ true, false ]
         include:
           - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+            skip-testing: ''
             action: build
             use-xcpretty: true
           - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+            skip-testing: ''
             action: build
             use-xcpretty: false
     steps:
@@ -84,7 +89,92 @@ jobs:
           workspace: __test__/TestProject/TestProject.xcworkspace
           scheme: TestProject
           destination: ${{matrix.destination}}
+          skip-testing: ${{matrix.skip-testing}}
           action: ${{matrix.action}}
           use-xcpretty: ${{matrix.use-xcpretty}}
       - name: Check for derived data
         run: ls ~/Library/Developer/Xcode/DerivedData/ | grep -q '^TestProject.*'
+
+  test-dry-run-project:
+    needs: deploy-action-code
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [ TestProject.xcodeproj ]
+        destination:
+          - platform=macOS
+          - platform=iOS Simulator,OS=latest,name=iPhone 11
+          - platform=tvOS Simulator,OS=latest,name=Apple TV 4K
+        configuration: [ Debug, Release ]
+        sdk: [ SDK1, SDK2 ]
+        skip-testing: [ 'Test/Skip' ]
+        build-settings: [ 'ABC=DEF' ]
+        action: [ build, test ]
+        use-xcpretty: [ true, false ]
+    steps:
+      - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
+      - uses: actions/checkout@v2
+      - uses: sersoft-gmbh/xcodebuild-action@master
+        with:
+          project: ${{matrix.project}}
+          destination: ${{matrix.destination}}
+          skip-testing: ${{matrix.skip-testing}}
+          action: ${{matrix.action}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+          dry-run: true
+        id: xcodebuild
+      - name: Check executed command
+        run: |
+          EXPECTED_COMMAND="xcodebuild -project ${{matrix.xcodeproj}} -destination ${{matrix.destination}} -configuration ${{matrix.configuration}} -sdk ${{matrix.sdk}} -skip-testing ${{matrix.skip-testing}} ${{matrix.build-settings}} ${{matrix.action}}"
+          if [ "${{matrix.use-xcpretty}}" == "true" ]; then
+            EXPECTED_COMMAND="${EXPECTED_COMMAND} | xcpretty"
+          fi
+          if [ "${EXPECTED_COMMAND}" != "${{steps.xcodebuild.outputs.executed-command}}" ]; then
+            printf "::error::Executed command did not match expectations!\n"
+            printf "::error::Executed: ${{steps.xcodebuild.outputs.executed-command}}\n"
+            printf "::error::Expected: ${EXPECTED_COMMAND}\n"
+            exit 1
+          fi
+
+  test-dry-run-workspace:
+    needs: deploy-action-code
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [ TestWorkspace.xcworkspace ]
+        scheme: [ TestScheme ]
+        destination:
+          - platform=macOS
+          - platform=iOS Simulator,OS=latest,name=iPhone 11
+          - platform=tvOS Simulator,OS=latest,name=Apple TV 4K
+        configuration: [ Debug, Release ]
+        sdk: [ SDK1, SDK2 ]
+        skip-testing: [ 'Test/Skip' ]
+        build-settings: [ 'ABC=DEF' ]
+        action: [ build, test ]
+        use-xcpretty: [ true, false ]
+    steps:
+      - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
+      - uses: actions/checkout@v2
+      - uses: sersoft-gmbh/xcodebuild-action@master
+        with:
+          workspace: ${{matrix.workspace}}
+          scheme: ${{matrix.scheme}}
+          destination: ${{matrix.destination}}
+          skip-testing: ${{matrix.skip-testing}}
+          action: ${{matrix.action}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+          dry-run: true
+        id: xcodebuild
+      - name: Check executed command
+        run: |
+          EXPECTED_COMMAND="xcodebuild -workspace ${{matrix.workspace}} -scheme ${{matrix.scheme}} -destination ${{matrix.destination}} -configuration ${{matrix.configuration}} -sdk ${{matrix.sdk}} -skip-testing ${{matrix.skip-testing}} ${{matrix.build-settings}} ${{matrix.action}}"
+          if [ "${{matrix.use-xcpretty}}" == "true" ]; then
+            EXPECTED_COMMAND="${EXPECTED_COMMAND} | xcpretty"
+          fi
+          if [ "${EXPECTED_COMMAND}" != "${{steps.xcodebuild.outputs.executed-command}}" ]; then
+            printf "::error::Executed command did not match expectations!\n"
+            printf "::error::Executed: ${{steps.xcodebuild.outputs.executed-command}}\n"
+            printf "::error::Expected: ${EXPECTED_COMMAND}\n"
+            exit 1
+          fi

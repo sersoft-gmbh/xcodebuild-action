@@ -43,38 +43,9 @@ const SIGNAL_NAME_TO_NUMBER_MAP: Record<Signals, number> = {
     'SIGLOST':          99,
 };
 
-async function main() {
-    switch (process.platform) {
-        case "darwin": break;
-        default: throw new Error("This action only supports macOS!");
-    }
-
-    let xcodebuildArgs: string[] = [];
-    core.startGroup('Validating input');
-    const workspace = core.getInput('workspace');
-    const project = core.getInput('project');
-    if ((!workspace && !project) || (workspace && project)) {
-        throw new Error("Either `project` or `workspace` must be set but not both!");
-    } else if (workspace) {
-        xcodebuildArgs.push('-workspace', workspace);
-    } else if (project) {
-        xcodebuildArgs.push('-project', project);
-    }
-    const scheme = core.getInput('scheme', { required: workspace != null });
-    if (scheme) {
-        xcodebuildArgs.push('-scheme', scheme);
-    }
-    const destination = core.getInput('destination');
-    if (destination) {
-        xcodebuildArgs.push('-destination', destination);
-    }
-    const action = core.getInput('action', { required: true });
-    const useXcpretty = core.getInput('use-xcpretty', { required: true }) == 'true';
-    core.endGroup();
-
-    core.startGroup('Running xcodebuild');
+async function runXcodebuild(args: string[], useXcpretty: boolean) {
     const xcodebuildOut: StdioNull | StdioPipe = useXcpretty ? 'pipe' : process.stdout;
-    const xcodebuild = spawn('xcodebuild', xcodebuildArgs.concat(action), { stdio: ['inherit', xcodebuildOut, process.stderr] });
+    const xcodebuild = spawn('xcodebuild', args, { stdio: ['inherit', xcodebuildOut, process.stderr] });
     let finishedPromise = new Promise<number>((resolve, reject) => {
         xcodebuild.on('error', reject);
         xcodebuild.on('exit', (exitCode, signal) => {
@@ -106,6 +77,67 @@ async function main() {
     const exitCode = await finishedPromise;
     if (exitCode != 0) {
         throw new Error(`Xcodebuild action failed (${exitCode})!`);
+    }
+}
+
+async function main() {
+    let xcodebuildArgs: string[] = [];
+    core.startGroup('Validating input');
+    const workspace = core.getInput('workspace');
+    const project = core.getInput('project');
+    if ((!workspace && !project) || (workspace && project)) {
+        throw new Error("Either `project` or `workspace` must be set but not both!");
+    } else if (workspace) {
+        xcodebuildArgs.push('-workspace', workspace);
+    } else if (project) {
+        xcodebuildArgs.push('-project', project);
+    }
+    const scheme = core.getInput('scheme', { required: workspace != null });
+    if (scheme) {
+        xcodebuildArgs.push('-scheme', scheme);
+    }
+    const destination = core.getInput('destination');
+    if (destination) {
+        xcodebuildArgs.push('-destination', destination);
+    }
+    const configuration = core.getInput('configuration');
+    if (configuration) {
+        xcodebuildArgs.push('-configuration', configuration);
+    }
+    const sdk = core.getInput('sdk');
+    if (sdk) {
+        xcodebuildArgs.push('-sdk', sdk);
+    }
+    const skipTesting = core.getInput('skip-testing');
+    if (skipTesting) {
+        xcodebuildArgs.push('-skip-testing', skipTesting);
+    }
+    const buildSettings = core.getInput('build-settings');
+    if (buildSettings) {
+        xcodebuildArgs.push(...buildSettings.split(' '));
+    }
+    const action = core.getInput('action', { required: true });
+    xcodebuildArgs.push(action);
+
+    const useXcpretty = core.getInput('use-xcpretty', { required: true }) == 'true';
+
+    const dryRun = core.isDebug() && core.getInput('dry-run') == 'true';
+
+    // We allow other platforms for dry-runs since this speeds up tests (more parallel builds).
+    if (!dryRun && process.platform != "darwin") {
+        throw new Error("This action only supports macOS!");
+    }
+    core.endGroup();
+
+    core.startGroup('Running xcodebuild');
+    if (!dryRun) {
+        await runXcodebuild(xcodebuildArgs, useXcpretty);
+    } else {
+        let executedCommand = ['xcodebuild'].concat(xcodebuildArgs);
+        if (useXcpretty) {
+            executedCommand.push('|', 'xcpretty');
+        }
+        core.setOutput('executed-command', executedCommand.join(' '));
     }
     core.endGroup();
 }
