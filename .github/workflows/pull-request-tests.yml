@@ -108,6 +108,8 @@ jobs:
         with:
           project: ${{matrix.project}}
           destination: ${{matrix.destination}}
+          configuration: ${{matrix.configuration}}
+          sdk: ${{matrix.sdk}}
           skip-testing: ${{matrix.skip-testing}}
           action: ${{matrix.action}}
           use-xcpretty: ${{matrix.use-xcpretty}}
@@ -155,6 +157,8 @@ jobs:
           workspace: ${{matrix.workspace}}
           scheme: ${{matrix.scheme}}
           destination: ${{matrix.destination}}
+          configuration: ${{matrix.configuration}}
+          sdk: ${{matrix.sdk}}
           skip-testing: ${{matrix.skip-testing}}
           action: ${{matrix.action}}
           use-xcpretty: ${{matrix.use-xcpretty}}
