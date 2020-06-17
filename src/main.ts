@@ -112,6 +112,10 @@ async function main() {
     if (skipTesting) {
         xcodebuildArgs.push('-skip-testing', skipTesting);
     }
+    const derivedDataPath = core.getInput('derived-data-path');
+    if (derivedDataPath) {
+        xcodebuildArgs.push('-derivedDataPath', derivedDataPath);
+    }
     const buildSettings = core.getInput('build-settings');
     if (buildSettings) {
         xcodebuildArgs.push(...buildSettings.split(' '));

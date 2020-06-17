@@ -40,6 +40,10 @@ A list of tests to skip.
 
 Arbitrary, space separated build settings (e.g. `PLATFORM_NAME=iphonesimulator`).
 
+### `derived-data-path`
+
+Override the folder that should be used for derived data
+
 ### `action`
 
 The action to perform (e.g. build, test, ...).<br/>
