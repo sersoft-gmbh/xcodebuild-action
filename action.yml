@@ -23,6 +23,9 @@ inputs:
   skip-testing:
     description: A list of tests to skip.
     required: false
+  derived-data-path:
+    description: Override the folder that should be used for derived data
+    required: false
   build-settings:
     description: Arbitrary, space separated build settings (e.g. PLATFORM_NAME=iphonesimulator).
     required: false
