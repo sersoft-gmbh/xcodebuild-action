@@ -106,15 +106,6 @@ jobs:
           - platform=tvOS Simulator,OS=latest,name=Apple TV 4K
         action: [ test ]
         use-xcpretty: [ true, false ]
-        include:
-          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
-            skip-testing: ''
-            action: build
-            use-xcpretty: true
-          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
-            skip-testing: ''
-            action: build
-            use-xcpretty: false
     steps:
       - run: sudo xcode-select -s /Applications/Xcode_12.app/Contents/Developer
       - uses: actions/checkout@v2
