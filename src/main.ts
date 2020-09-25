@@ -140,27 +140,27 @@ async function main() {
     core.endGroup();
 
     core.startGroup('Running xcodebuild');
-    const cwd = process.cwd();
-    if (spmPackage) {
-        process.chdir(spmPackage);
-    }
-    try {
-        if (!dryRun) {
-            await runXcodebuild(xcodebuildArgs, useXcpretty);
-        } else {
-            let executedCommand = ['xcodebuild'].concat(xcodebuildArgs);
-            if (useXcpretty) {
-                executedCommand.push('|', 'xcpretty');
-            }
-            if (spmPackage) {
-                executedCommand = ['pushd', spmPackage, '&&', ...executedCommand, ';', 'popd']
-            }
-            core.setOutput('executed-command', executedCommand.join(' '));
-        }
-    } finally {
+    if (!dryRun) {
+        const cwd = process.cwd();
         if (spmPackage) {
-            process.chdir(cwd);
+            process.chdir(spmPackage);
         }
+        try {
+            await runXcodebuild(xcodebuildArgs, useXcpretty);
+        } finally {
+            if (spmPackage) {
+                process.chdir(cwd);
+            }
+        }
+    } else {
+        let executedCommand = ['xcodebuild'].concat(xcodebuildArgs);
+        if (useXcpretty) {
+            executedCommand.push('|', 'xcpretty');
+        }
+        if (spmPackage) {
+            executedCommand = ['pushd', spmPackage, '&&', ...executedCommand, ';', 'popd'];
+        }
+        core.setOutput('executed-command', executedCommand.join(' '));
     }
     core.endGroup();
 }
