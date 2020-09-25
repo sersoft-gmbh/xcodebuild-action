@@ -22,7 +22,7 @@ The path to the SPM package (folder containing `Package.swift`) to build. Mutual
 
 ### `scheme`
 
-The scheme to build. Required when using a workspace.
+The scheme to build. Required when using a workspace or SPM package.
 
 ### `destination`
 

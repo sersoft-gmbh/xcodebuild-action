@@ -121,6 +121,7 @@ jobs:
       - uses: sersoft-gmbh/xcodebuild-action@master
         with:
           spm-package: __test__/TestPackage
+          scheme: TestPackage
           destination: ${{matrix.destination}}
           skip-testing: ${{matrix.skip-testing}}
           action: ${{matrix.action}}
@@ -220,6 +221,7 @@ jobs:
     strategy:
       matrix:
         spm-package: [ /path/to/TestPackage ]
+        scheme: [ TestPackage ]
         destination:
           - platform=macOS
           - platform=iOS Simulator,OS=latest,name=iPhone 11
@@ -236,6 +238,7 @@ jobs:
       - uses: sersoft-gmbh/xcodebuild-action@master
         with:
           spm-package: ${{matrix.spm-package}}
+          scheme: ${{matrix.scheme}}
           destination: ${{matrix.destination}}
           configuration: ${{matrix.configuration}}
           sdk: ${{matrix.sdk}}
@@ -247,7 +250,7 @@ jobs:
         id: xcodebuild
       - name: Check executed command
         run: |
-          EXPECTED_COMMAND="pushd ${{matrix.spm-package}} && xcodebuild -destination ${{matrix.destination}} -configuration ${{matrix.configuration}} -sdk ${{matrix.sdk}} -skip-testing ${{matrix.skip-testing}} ${{matrix.build-settings}} ${{matrix.action}}"
+          EXPECTED_COMMAND="pushd ${{matrix.spm-package}} && xcodebuild -scheme ${{matrix.scheme}} -destination ${{matrix.destination}} -configuration ${{matrix.configuration}} -sdk ${{matrix.sdk}} -skip-testing ${{matrix.skip-testing}} ${{matrix.build-settings}} ${{matrix.action}}"
           if [ "${{matrix.use-xcpretty}}" == "true" ]; then
             EXPECTED_COMMAND="${EXPECTED_COMMAND} | xcpretty"
           fi
