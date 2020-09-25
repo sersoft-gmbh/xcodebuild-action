@@ -47,7 +47,7 @@ jobs:
             action: build
             use-xcpretty: false
     steps:
-      - run: sudo xcode-select -s /Applications/Xcode_12.0.app/Contents/Developer
+      - run: sudo xcode-select -s /Applications/Xcode_12.app/Contents/Developer
       - uses: actions/checkout@v2
       - uses: sersoft-gmbh/xcodebuild-action@master
         with:
@@ -82,7 +82,7 @@ jobs:
             action: build
             use-xcpretty: false
     steps:
-      - run: sudo xcode-select -s /Applications/Xcode_12.0.app/Contents/Developer
+      - run: sudo xcode-select -s /Applications/Xcode_12.app/Contents/Developer
       - uses: actions/checkout@v2
       - uses: sersoft-gmbh/xcodebuild-action@master
         with:
@@ -116,7 +116,7 @@ jobs:
             action: build
             use-xcpretty: false
     steps:
-      - run: sudo xcode-select -s /Applications/Xcode_12.0.app/Contents/Developer
+      - run: sudo xcode-select -s /Applications/Xcode_12.app/Contents/Developer
       - uses: actions/checkout@v2
       - uses: sersoft-gmbh/xcodebuild-action@master
         with:
