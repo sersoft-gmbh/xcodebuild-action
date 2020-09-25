@@ -10,11 +10,15 @@ Note that this action needs to run on macOS. All other platforms will fail!
 
 ### `workspace`
 
-The path to the xcworkspace to build. Mutually exclusive with `project`. Either `workspace` or `project` must be set.
+The path to the xcworkspace to build. Mutually exclusive with `project` and `spm-package`.  Either `workspace`, `project` or `spm-package` must be set.
 
 ### `project`
 
-The path to the xcodeproj to build. Mutually exclusive with `workspace`. Either `workspace` or `project` must be set.
+The path to the xcodeproj to build. Mutually exclusive with `workspace` and `spm-package`.  Either `workspace`, `project` or `spm-package` must be set.
+
+### `spm-package`
+
+The path to the SPM package (folder containing `Package.swift`) to build. Mutually exclusive with `project` and `workspace`. Either `workspace`, `project` or `spm-package` must be set.
 
 ### `scheme`
 

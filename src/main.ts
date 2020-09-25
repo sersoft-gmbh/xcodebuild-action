@@ -85,8 +85,14 @@ async function main() {
     core.startGroup('Validating input');
     const workspace = core.getInput('workspace');
     const project = core.getInput('project');
-    if ((!workspace && !project) || (workspace && project)) {
-        throw new Error("Either `project` or `workspace` must be set but not both!");
+    const spmPackage = core.getInput('spm-package');
+
+    if ((!workspace && !project && !spmPackage)
+        || (workspace && project && spmPackage)
+        || (workspace && project)
+        || (workspace && spmPackage)
+        || (project && spmPackage)) {
+        throw new Error("Either `project`, `workspace` or `spm-package-path` must be set, but they are mutually exclusive!");
     } else if (workspace) {
         xcodebuildArgs.push('-workspace', workspace);
     } else if (project) {
@@ -134,14 +140,27 @@ async function main() {
     core.endGroup();
 
     core.startGroup('Running xcodebuild');
-    if (!dryRun) {
-        await runXcodebuild(xcodebuildArgs, useXcpretty);
-    } else {
-        let executedCommand = ['xcodebuild'].concat(xcodebuildArgs);
-        if (useXcpretty) {
-            executedCommand.push('|', 'xcpretty');
+    const cwd = process.cwd();
+    if (spmPackage) {
+        process.chdir(spmPackage);
+    }
+    try {
+        if (!dryRun) {
+            await runXcodebuild(xcodebuildArgs, useXcpretty);
+        } else {
+            let executedCommand = ['xcodebuild'].concat(xcodebuildArgs);
+            if (useXcpretty) {
+                executedCommand.push('|', 'xcpretty');
+            }
+            if (spmPackage) {
+                executedCommand = ['pushd', spmPackage, '&&', ...executedCommand, ';', 'popd']
+            }
+            core.setOutput('executed-command', executedCommand.join(' '));
         }
-        core.setOutput('executed-command', executedCommand.join(' '));
+    } finally {
+        if (spmPackage) {
+            process.chdir(cwd);
+        }
     }
     core.endGroup();
 }

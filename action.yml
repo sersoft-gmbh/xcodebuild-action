@@ -3,10 +3,13 @@ description: Runs xcodebuild e.g. to run tests.
 author: ser.soft GmbH
 inputs:
   workspace:
-    description: The path to the xcworkspace to build. Mutually exclusive with `project`.
+    description: The path to the xcworkspace to build. Mutually exclusive with `project` and `spm-package`.
     required: false
   project:
-    description: The path to the xcodeproj to build. Mutually exclusive with `workspace`.
+    description: The path to the xcodeproj to build. Mutually exclusive with `workspace` and `spm-package`.
+    required: false
+  spm-package:
+    description: The path to the SPM package (folder containing Package.swift) to build. Mutually exclusive with `workspace` and `project`.
     required: false
   scheme:
     description: The scheme to build. Required when using a workspace.
