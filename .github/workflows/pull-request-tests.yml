@@ -111,7 +111,6 @@ jobs:
         run: ls ~/Library/Developer/Xcode/DerivedData/ | grep -q '^TestPackage.*'
 
   test-dry-run-project:
-    needs: deploy-action-code
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -157,7 +156,6 @@ jobs:
           fi
 
   test-dry-run-workspace:
-    needs: deploy-action-code
     runs-on: ubuntu-latest
     strategy:
       matrix:
