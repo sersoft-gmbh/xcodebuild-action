@@ -68,6 +68,12 @@ inputs:
   skip-unavailable-actions:
     description: Whether unavailable actions should be skipped instead of failing the execution. See also `xcodebuild`'s `-skipUnavailableActions`.
     required: false
+  allow-provisioning-updates:
+    description: Whether provisioning updates are allowed. See also `xcodebuild`'s `-allowProvisioningUpdates`.
+    required: false
+  allow-provisioning-device-registration:
+    description: Whether provisioning device registrations are allowed. See also `xcodebuild`'s `-allowProvisioningDeviceRegistration`.
+    required: false
   build-settings:
     description: Arbitrary, space separated build settings (e.g. PLATFORM_NAME=iphonesimulator).
     required: false

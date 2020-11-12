@@ -96,6 +96,14 @@ A list of tests to skip.
 
 Whether unavailable actions should be skipped instead of failing the execution. See also `xcodebuild`'s `-skipUnavailableActions`.
 
+### `allow-provisioning-updates`
+
+Whether provisioning updates are allowed. See also `xcodebuild`'s `-allowProvisioningUpdates`.
+
+### `allow-provisioning-device-registration`
+
+Whether provisioning device registrations are allowed. See also `xcodebuild`'s `-allowProvisioningDeviceRegistration`.
+
 ### `build-settings`
 
 Arbitrary, space separated build settings (e.g. `PLATFORM_NAME=iphonesimulator`).
