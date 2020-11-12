@@ -336,7 +336,6 @@ jobs:
         run: |
           EXPECTED_COMMAND="pusdh ${{matrix.spm-package}} && \
           xcodebuild \
-          -workspace ${{matrix.workspace}} \
           -scheme ${{matrix.scheme}} \
           -target ${{matrix.target}} \
           -destination ${{matrix.destination}} \
