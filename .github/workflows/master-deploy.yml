@@ -204,6 +204,7 @@ jobs:
       matrix:
         workspace: [ TestWorkspace.xcworkspace ]
         scheme: [ TestScheme ]
+        target: [ SomeTarget ]
         destination: [ platform=macOS ]
         configuration: [ Debug ]
         sdk: [ SomeSDK ]
@@ -287,6 +288,7 @@ jobs:
       matrix:
         spm-package: [ /path/to/TestPackage ]
         scheme: [ TestPackage ]
+        target: [ SomeTarget ]
         destination: [ platform=macOS ]
         configuration: [ Debug ]
         sdk: [ SomeSDK ]
