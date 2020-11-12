@@ -160,6 +160,8 @@ jobs:
           derived-data-path: ${{matrix.derived-data-path}}
           skip-testing: ${{matrix.skip-testing}}
           skip-unavailable-actions: true
+          allow-provisioning-updates: true
+          allow-provisioning-device-registration: true
           build-settings: ${{matrix.build-settings}}
           action: ${{matrix.action}}
           use-xcpretty: ${{matrix.use-xcpretty}}
@@ -187,6 +189,8 @@ jobs:
           -derivedDataPath ${{matrix.derived-data-path}} \
           -skip-testing ${{matrix.skip-testing}} \
           -skipUnavailableActions \
+          -allowProvisioningUpdates \
+          -allowProvisioningDeviceRegistration \
           ${{matrix.build-settings}} \
           ${{matrix.action}}"
           if [ "${{matrix.use-xcpretty}}" == "true" ]; then
@@ -242,6 +246,8 @@ jobs:
           derived-data-path: ${{matrix.derived-data-path}}
           skip-testing: ${{matrix.skip-testing}}
           skip-unavailable-actions: true
+          allow-provisioning-updates: true
+          allow-provisioning-device-registration: true
           build-settings: ${{matrix.build-settings}}
           action: ${{matrix.action}}
           use-xcpretty: ${{matrix.use-xcpretty}}
@@ -270,6 +276,8 @@ jobs:
           -derivedDataPath ${{matrix.derived-data-path}} \
           -skip-testing ${{matrix.skip-testing}} \
           -skipUnavailableActions \
+          -allowProvisioningUpdates \
+          -allowProvisioningDeviceRegistration \
           ${{matrix.build-settings}} \
           ${{matrix.action}}"
           if [ "${{matrix.use-xcpretty}}" == "true" ]; then
@@ -325,6 +333,8 @@ jobs:
           derived-data-path: ${{matrix.derived-data-path}}
           skip-testing: ${{matrix.skip-testing}}
           skip-unavailable-actions: true
+          allow-provisioning-updates: true
+          allow-provisioning-device-registration: true
           build-settings: ${{matrix.build-settings}}
           action: ${{matrix.action}}
           use-xcpretty: ${{matrix.use-xcpretty}}
@@ -353,6 +363,8 @@ jobs:
           -derivedDataPath ${{matrix.derived-data-path}} \
           -skip-testing ${{matrix.skip-testing}} \
           -skipUnavailableActions \
+          -allowProvisioningUpdates \
+          -allowProvisioningDeviceRegistration \
           ${{matrix.build-settings}} \
           ${{matrix.action}}"
           if [ "${{matrix.use-xcpretty}}" == "true" ]; then

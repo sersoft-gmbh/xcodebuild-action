@@ -141,6 +141,8 @@ async function main() {
     addInputArg('derived-data-path', 'derivedDataPath');
     addInputArg('skip-testing');
     addFlagArg('skip-unavailable-actions', 'skipUnavailableActions');
+    addFlagArg('allow-provisioning-updates', 'allowProvisioningUpdates');
+    addFlagArg('allow-provisioning-device-registration', 'allowProvisioningDeviceRegistration');
 
     const buildSettings = core.getInput('build-settings');
     if (buildSettings) {
