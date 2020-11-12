@@ -3,37 +3,76 @@ description: Runs xcodebuild e.g. to run tests.
 author: ser.soft GmbH
 inputs:
   workspace:
-    description: The path to the xcworkspace to build. Mutually exclusive with `project` and `spm-package`.
+    description: The path to the xcworkspace to build. Mutually exclusive with `project` and `spm-package`. See also `xcodebuild`'s `-workspace`.
     required: false
   project:
-    description: The path to the xcodeproj to build. Mutually exclusive with `workspace` and `spm-package`.
+    description: The path to the xcodeproj to build. Mutually exclusive with `workspace` and `spm-package`. See also `xcodebuild`'s `-project`.
     required: false
   spm-package:
     description: The path to the SPM package (folder containing Package.swift) to build. Mutually exclusive with `workspace` and `project`.
     required: false
   scheme:
-    description: The scheme to build. Required when using a workspace.
+    description: The scheme to build. Required when using a workspace. See also `xcodebuild`'s `-scheme`.
+    required: false
+  target:
+    description: The target to build. See also `xcodebuild`'s `-target`.
     required: false
   destination:
-    description: The destination specifier to build.
+    description: The destination specifier to build. See also `xcodebuild`'s `-destination`.
     required: false
   configuration:
-    description: The configuration to build.
+    description: The configuration to build. See also `xcodebuild`'s `-configuration`.
     required: false
   sdk:
-    description: The SDK to use for building.
+    description: The SDK to use for building. See also `xcodebuild`'s `-sdk`.
     required: false
-  skip-testing:
-    description: A list of tests to skip.
+  arch:
+    description: The architecture to use for building. See also `xcodebuild`'s `-arch`.
+    required: false
+  xcconfig:
+    description: The path to an xcconfig file with build settings overrides. See also `xcodebuild`'s `-xcconfig`.
+    required: false
+  jobs:
+    description: The number of jobs to use for building. See also `xcodebuild`'s `-jobs`.
+    required: false
+  parallelize-targets:
+    description: If `true`, the targets will be built in parallel. See also `xcodebuild`'s `-parallelizeTargets`.
+    required: false
+  enable-code-coverage:
+    description: If `true`, code coverage is enabled while testing. See also `xcodebuild`'s `-enableCodeCoverage`.
+    required: false
+  parallel-testing-enabled:
+    description: If `true`, tests are executed in parallel. See also `xcodebuild`'s `-parallel-testing-enabled`.
+    required: false
+  enable-address-sanitizer:
+    description: Whether the address sanitizer should be enabled. See also `xcodebuild`'s `-enableAddressSanitizer`.
+    required: false
+  enable-thread-sanitizer:
+    description: Whether the thread sanitizer should be enabled. See also `xcodebuild`'s `-enableThreadSanitizer`.
+    required: false
+  enable-undefined-behavior-sanitizer:
+    description: Whether the undefined behavior sanitizer should be enabled. See also `xcodebuild`'s `-enableUndefinedBehaviorSanitizer`.
+    required: false
+  result-bundle-path:
+    description: The path that should be used for the result bundle. See also `xcodebuild`'s `-resultBundlePath`.
+    required: false
+  result-bundle-version:
+    description: The version that should be used for the result bundle. See also `xcodebuild`'s `-resultBundleVersion`.
     required: false
   derived-data-path:
-    description: Override the folder that should be used for derived data
+    description: Tthe path that should be used for derived data. See also `xcodebuild`'s `-derivedDataPath`.
+    required: false
+  skip-testing:
+    description: A list of tests to skip. See also `xcodebuild`'s `-skip-testing`.
+    required: false
+  skip-unavailable-actions:
+    description: Whether unavailable actions should be skipped instead of failing the execution. See also `xcodebuild`'s `-skipUnavailableActions`.
     required: false
   build-settings:
     description: Arbitrary, space separated build settings (e.g. PLATFORM_NAME=iphonesimulator).
     required: false
   action:
-    description: The action to perform (e.g. build, test, ...).
+    description: The action to perform (e.g. build, test, ...). Can also contain multiple actions.
     required: true
     default: test
   use-xcpretty:

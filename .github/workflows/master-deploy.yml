@@ -33,7 +33,6 @@ jobs:
         destination:
           - platform=macOS
           - platform=iOS Simulator,OS=latest,name=iPhone 11
-          - platform=tvOS Simulator,OS=latest,name=Apple TV 4K
         skip-testing: [ 'TestProjectTests/FailingTests' ]
         action: [ test ]
         use-xcpretty: [ true, false ]
@@ -68,7 +67,6 @@ jobs:
         destination:
           - platform=macOS
           - platform=iOS Simulator,OS=latest,name=iPhone 11
-          - platform=tvOS Simulator,OS=latest,name=Apple TV 4K
         skip-testing: [ 'TestProjectTests/FailingTests' ]
         action: [ test ]
         use-xcpretty: [ true, false ]
@@ -103,7 +101,6 @@ jobs:
         destination:
           - platform=macOS
           - platform=iOS Simulator,OS=latest,name=iPhone 11
-          - platform=tvOS Simulator,OS=latest,name=Apple TV 4K
         action: [ test ]
         use-xcpretty: [ true, false ]
     steps:
@@ -126,26 +123,43 @@ jobs:
     strategy:
       matrix:
         project: [ TestProject.xcodeproj ]
-        destination:
-          - platform=macOS
-          - platform=iOS Simulator,OS=latest,name=iPhone 11
-          - platform=tvOS Simulator,OS=latest,name=Apple TV 4K
-        configuration: [ Debug, Release ]
-        sdk: [ SDK1, SDK2 ]
-        skip-testing: [ 'Test/Skip' ]
-        build-settings: [ 'ABC=DEF' ]
-        action: [ build, test ]
+        target: [ SomeTarget ]
+        destination: [ platform=macOS ]
+        configuration: [ Debug ]
+        sdk: [ SomeSDK ]
+        arch: [ aarm64 ]
+        xcconfig: [ SomeConfig.xcconfig ]
+        jobs: [ 42 ]
+        result-bundle-path: [ here/and/there.bundle ]
+        result-bundle-version: [ 3 ]
+        derived-data-path: [ there/and/here/ ]
+        skip-testing: [ this ]
+        build-settings: [ ABC=DEF ]
+        action: [ action ]
         use-xcpretty: [ true, false ]
     steps:
       - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
-      - uses: actions/checkout@v2
       - uses: sersoft-gmbh/xcodebuild-action@master
         with:
           project: ${{matrix.project}}
+          target: ${{matrix.target}}
           destination: ${{matrix.destination}}
           configuration: ${{matrix.configuration}}
           sdk: ${{matrix.sdk}}
+          arch: ${{matrix.arch}}
+          xcconfig: ${{matrix.xcconfig}}
+          jobs: ${{matrix.jobs}}
+          parallelize-targets: true
+          enable-code-coverage: true
+          parallel-testing-enabled: true
+          enable-address-sanitizer: false
+          enable-thread-sanitizer: false
+          enable-undefined-behavior-sanitizer: false
+          result-bundle-path: ${{matrix.result-bundle-path}}
+          result-bundle-version: ${{matrix.result-bundle-version}}
+          derived-data-path: ${{matrix.derived-data-path}}
           skip-testing: ${{matrix.skip-testing}}
+          skip-unavailable-actions: true
           build-settings: ${{matrix.build-settings}}
           action: ${{matrix.action}}
           use-xcpretty: ${{matrix.use-xcpretty}}
@@ -153,7 +167,28 @@ jobs:
         id: xcodebuild
       - name: Check executed command
         run: |
-          EXPECTED_COMMAND="xcodebuild -project ${{matrix.project}} -destination ${{matrix.destination}} -configuration ${{matrix.configuration}} -sdk ${{matrix.sdk}} -skip-testing ${{matrix.skip-testing}} ${{matrix.build-settings}} ${{matrix.action}}"
+          EXPECTED_COMMAND="xcodebuild \
+          -project ${{matrix.project}} \
+          -target ${{matrix.target}} \
+          -destination ${{matrix.destination}} \
+          -configuration ${{matrix.configuration}} \
+          -sdk ${{matrix.sdk}} \
+          -arch ${{matrix.arch}} \
+          -xcconfig ${{matrix.xcconfig}} \
+          -jobs ${{matrix.jobs}} \
+          -parallelizeTargets \
+          -enableCodeCoverage YES \
+          -parallel-testing-enabled YES \
+          -enableAddressSanitizer NO \
+          -enableThreadSanitizer NO \
+          -enableUndefinedBehaviorSanitizer NO \
+          -resultBundlePath ${{mastrix.result-bundle-path}} \
+          -resultBundleVersion ${{mastrix.result-bundle-version}} \
+          -derivedDataPath ${{mastrix.derived-data-path}} \
+          -skip-testing ${{mastrix.skip-testing}} \
+          -skipUnavailableActions \
+          ${{matrix.build-settings}} \
+          ${{matrix.action}}"
           if [ "${{matrix.use-xcpretty}}" == "true" ]; then
             EXPECTED_COMMAND="${EXPECTED_COMMAND} | xcpretty"
           fi
@@ -169,15 +204,18 @@ jobs:
       matrix:
         workspace: [ TestWorkspace.xcworkspace ]
         scheme: [ TestScheme ]
-        destination:
-          - platform=macOS
-          - platform=iOS Simulator,OS=latest,name=iPhone 11
-          - platform=tvOS Simulator,OS=latest,name=Apple TV 4K
-        configuration: [ Debug, Release ]
-        sdk: [ SDK1, SDK2 ]
-        skip-testing: [ 'Test/Skip' ]
-        build-settings: [ 'ABC=DEF' ]
-        action: [ build, test ]
+        destination: [ platform=macOS ]
+        configuration: [ Debug ]
+        sdk: [ SomeSDK ]
+        arch: [ aarm64 ]
+        xcconfig: [ SomeConfig.xcconfig ]
+        jobs: [ 42 ]
+        result-bundle-path: [ here/and/there.bundle ]
+        result-bundle-version: [ 3 ]
+        derived-data-path: [ there/and/here/ ]
+        skip-testing: [ this ]
+        build-settings: [ ABC=DEF ]
+        action: [ action ]
         use-xcpretty: [ true, false ]
     steps:
       - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
@@ -186,10 +224,24 @@ jobs:
         with:
           workspace: ${{matrix.workspace}}
           scheme: ${{matrix.scheme}}
+          target: ${{matrix.target}}
           destination: ${{matrix.destination}}
           configuration: ${{matrix.configuration}}
           sdk: ${{matrix.sdk}}
+          arch: ${{matrix.arch}}
+          xcconfig: ${{matrix.xcconfig}}
+          jobs: ${{matrix.jobs}}
+          parallelize-targets: true
+          enable-code-coverage: true
+          parallel-testing-enabled: true
+          enable-address-sanitizer: false
+          enable-thread-sanitizer: false
+          enable-undefined-behavior-sanitizer: false
+          result-bundle-path: ${{matrix.result-bundle-path}}
+          result-bundle-version: ${{matrix.result-bundle-version}}
+          derived-data-path: ${{matrix.derived-data-path}}
           skip-testing: ${{matrix.skip-testing}}
+          skip-unavailable-actions: true
           build-settings: ${{matrix.build-settings}}
           action: ${{matrix.action}}
           use-xcpretty: ${{matrix.use-xcpretty}}
@@ -197,7 +249,29 @@ jobs:
         id: xcodebuild
       - name: Check executed command
         run: |
-          EXPECTED_COMMAND="xcodebuild -workspace ${{matrix.workspace}} -scheme ${{matrix.scheme}} -destination ${{matrix.destination}} -configuration ${{matrix.configuration}} -sdk ${{matrix.sdk}} -skip-testing ${{matrix.skip-testing}} ${{matrix.build-settings}} ${{matrix.action}}"
+          EXPECTED_COMMAND="xcodebuild \
+          -workspace ${{matrix.workspace}} \
+          -scheme ${{matrix.scheme}} \
+          -target ${{matrix.target}} \
+          -destination ${{matrix.destination}} \
+          -configuration ${{matrix.configuration}} \
+          -sdk ${{matrix.sdk}} \
+          -arch ${{matrix.arch}} \
+          -xcconfig ${{matrix.xcconfig}} \
+          -jobs ${{matrix.jobs}} \
+          -parallelizeTargets \
+          -enableCodeCoverage YES \
+          -parallel-testing-enabled YES \
+          -enableAddressSanitizer NO \
+          -enableThreadSanitizer NO \
+          -enableUndefinedBehaviorSanitizer NO \
+          -resultBundlePath ${{mastrix.result-bundle-path}} \
+          -resultBundleVersion ${{mastrix.result-bundle-version}} \
+          -derivedDataPath ${{mastrix.derived-data-path}} \
+          -skip-testing ${{mastrix.skip-testing}} \
+          -skipUnavailableActions \
+          ${{matrix.build-settings}} \
+          ${{matrix.action}}"
           if [ "${{matrix.use-xcpretty}}" == "true" ]; then
             EXPECTED_COMMAND="${EXPECTED_COMMAND} | xcpretty"
           fi
@@ -213,15 +287,18 @@ jobs:
       matrix:
         spm-package: [ /path/to/TestPackage ]
         scheme: [ TestPackage ]
-        destination:
-          - platform=macOS
-          - platform=iOS Simulator,OS=latest,name=iPhone 11
-          - platform=tvOS Simulator,OS=latest,name=Apple TV 4K
-        configuration: [ Debug, Release ]
-        sdk: [ SDK1, SDK2 ]
-        skip-testing: [ 'Test/Skip' ]
-        build-settings: [ 'ABC=DEF' ]
-        action: [ build, test ]
+        destination: [ platform=macOS ]
+        configuration: [ Debug ]
+        sdk: [ SomeSDK ]
+        arch: [ aarm64 ]
+        xcconfig: [ SomeConfig.xcconfig ]
+        jobs: [ 42 ]
+        result-bundle-path: [ here/and/there.bundle ]
+        result-bundle-version: [ 3 ]
+        derived-data-path: [ there/and/here/ ]
+        skip-testing: [ this ]
+        build-settings: [ ABC=DEF ]
+        action: [ action ]
         use-xcpretty: [ true, false ]
     steps:
       - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
@@ -230,10 +307,24 @@ jobs:
         with:
           spm-package: ${{matrix.spm-package}}
           scheme: ${{matrix.scheme}}
+          target: ${{matrix.target}}
           destination: ${{matrix.destination}}
           configuration: ${{matrix.configuration}}
           sdk: ${{matrix.sdk}}
+          arch: ${{matrix.arch}}
+          xcconfig: ${{matrix.xcconfig}}
+          jobs: ${{matrix.jobs}}
+          parallelize-targets: true
+          enable-code-coverage: true
+          parallel-testing-enabled: true
+          enable-address-sanitizer: false
+          enable-thread-sanitizer: false
+          enable-undefined-behavior-sanitizer: false
+          result-bundle-path: ${{matrix.result-bundle-path}}
+          result-bundle-version: ${{matrix.result-bundle-version}}
+          derived-data-path: ${{matrix.derived-data-path}}
           skip-testing: ${{matrix.skip-testing}}
+          skip-unavailable-actions: true
           build-settings: ${{matrix.build-settings}}
           action: ${{matrix.action}}
           use-xcpretty: ${{matrix.use-xcpretty}}
@@ -241,7 +332,30 @@ jobs:
         id: xcodebuild
       - name: Check executed command
         run: |
-          EXPECTED_COMMAND="pushd ${{matrix.spm-package}} && xcodebuild -scheme ${{matrix.scheme}} -destination ${{matrix.destination}} -configuration ${{matrix.configuration}} -sdk ${{matrix.sdk}} -skip-testing ${{matrix.skip-testing}} ${{matrix.build-settings}} ${{matrix.action}}"
+          EXPECTED_COMMAND="pusdh ${{matrix.spm-package}} && \
+          xcodebuild \
+          -workspace ${{matrix.workspace}} \
+          -scheme ${{matrix.scheme}} \
+          -target ${{matrix.target}} \
+          -destination ${{matrix.destination}} \
+          -configuration ${{matrix.configuration}} \
+          -sdk ${{matrix.sdk}} \
+          -arch ${{matrix.arch}} \
+          -xcconfig ${{matrix.xcconfig}} \
+          -jobs ${{matrix.jobs}} \
+          -parallelizeTargets \
+          -enableCodeCoverage YES \
+          -parallel-testing-enabled YES \
+          -enableAddressSanitizer NO \
+          -enableThreadSanitizer NO \
+          -enableUndefinedBehaviorSanitizer NO \
+          -resultBundlePath ${{mastrix.result-bundle-path}} \
+          -resultBundleVersion ${{mastrix.result-bundle-version}} \
+          -derivedDataPath ${{mastrix.derived-data-path}} \
+          -skip-testing ${{mastrix.skip-testing}} \
+          -skipUnavailableActions \
+          ${{matrix.build-settings}} \
+          ${{matrix.action}}"
           if [ "${{matrix.use-xcpretty}}" == "true" ]; then
             EXPECTED_COMMAND="${EXPECTED_COMMAND} | xcpretty"
           fi

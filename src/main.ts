@@ -102,32 +102,53 @@ async function main() {
     if (scheme) {
         xcodebuildArgs.push('-scheme', scheme);
     }
-    const destination = core.getInput('destination');
-    if (destination) {
-        xcodebuildArgs.push('-destination', destination);
+
+    function addInputArg(inputName: string, argName?: string) {
+        const value = core.getInput(inputName);
+        if (value) {
+            xcodebuildArgs.push(`-${argName ?? inputName}`, value);
+        }
     }
-    const configuration = core.getInput('configuration');
-    if (configuration) {
-        xcodebuildArgs.push('-configuration', configuration);
+
+    function addBoolArg(inputName: string, argName?: string) {
+        const value = core.getInput(inputName);
+        if (value) {
+            xcodebuildArgs.push(`-${argName ?? inputName}`, value == 'true' ? 'YES' : 'NO');
+        }
     }
-    const sdk = core.getInput('sdk');
-    if (sdk) {
-        xcodebuildArgs.push('-sdk', sdk);
+
+    function addFlagArg(inputName: string, argName?: string) {
+        if (core.getInput(inputName) == 'true') {
+            xcodebuildArgs.push(`-${argName ?? inputName}`);
+        }
     }
-    const skipTesting = core.getInput('skip-testing');
-    if (skipTesting) {
-        xcodebuildArgs.push('-skip-testing', skipTesting);
-    }
-    const derivedDataPath = core.getInput('derived-data-path');
-    if (derivedDataPath) {
-        xcodebuildArgs.push('-derivedDataPath', derivedDataPath);
-    }
+
+    addInputArg('target');
+    addInputArg('destination');
+    addInputArg('configuration');
+    addInputArg('sdk');
+    addInputArg('arch');
+    addInputArg('xcconfig');
+    addInputArg('jobs');
+    addFlagArg('parallelize-targets', 'parallelizeTargets');
+    addBoolArg('enable-code-coverage', 'enableCodeCoverage');
+    addBoolArg('parallel-testing-enabled');
+    addBoolArg('enable-address-sanitizer', 'enableAddressSanitizer');
+    addBoolArg('enable-thread-sanitizer', 'enableThreadSanitizer');
+    addBoolArg('enable-undefined-behavior-sanitizer', 'enableUndefinedBehaviorSanitizer');
+    addInputArg('result-bundle-path', 'resultBundlePath');
+    addInputArg('result-bundle-version', 'resultBundleVersion');
+    addInputArg('derived-data-path', 'derivedDataPath');
+    addInputArg('skip-testing');
+    addFlagArg('skip-unavailable-actions', 'skipUnavailableActions');
+
     const buildSettings = core.getInput('build-settings');
     if (buildSettings) {
         xcodebuildArgs.push(...buildSettings.split(' '));
     }
+
     const action = core.getInput('action', { required: true });
-    xcodebuildArgs.push(action);
+    xcodebuildArgs.push(...action.split(' '));
 
     const useXcpretty = core.getInput('use-xcpretty', { required: true }) == 'true';
 
