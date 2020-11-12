@@ -220,7 +220,6 @@ jobs:
         use-xcpretty: [ true, false ]
     steps:
       - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
-      - uses: actions/checkout@v2
       - uses: sersoft-gmbh/xcodebuild-action@master
         with:
           workspace: ${{matrix.workspace}}
@@ -304,7 +303,6 @@ jobs:
         use-xcpretty: [ true, false ]
     steps:
       - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
-      - uses: actions/checkout@v2
       - uses: sersoft-gmbh/xcodebuild-action@master
         with:
           spm-package: ${{matrix.spm-package}}
