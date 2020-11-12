@@ -278,7 +278,6 @@ jobs:
           fi
 
   test-dry-run-package:
-    needs: deploy-action-code
     runs-on: ubuntu-latest
     strategy:
       matrix:
