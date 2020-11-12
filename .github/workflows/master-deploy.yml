@@ -332,7 +332,7 @@ jobs:
         id: xcodebuild
       - name: Check executed command
         run: |
-          EXPECTED_COMMAND="pusdh ${{matrix.spm-package}} && \
+          EXPECTED_COMMAND="pushd ${{matrix.spm-package}} && \
           xcodebuild \
           -scheme ${{matrix.scheme}} \
           -target ${{matrix.target}} \
