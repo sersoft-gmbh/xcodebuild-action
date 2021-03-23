@@ -627,12 +627,17 @@ async function main() {
     addFlagArg('parallelize-targets', 'parallelizeTargets');
     addBoolArg('enable-code-coverage', 'enableCodeCoverage');
     addBoolArg('parallel-testing-enabled');
+    addFlagArg('quiet');
+    addFlagArg('hide-shell-script-environment', 'hideShellScriptEnvironment');
     addBoolArg('enable-address-sanitizer', 'enableAddressSanitizer');
     addBoolArg('enable-thread-sanitizer', 'enableThreadSanitizer');
     addBoolArg('enable-undefined-behavior-sanitizer', 'enableUndefinedBehaviorSanitizer');
     addInputArg('result-bundle-path', 'resultBundlePath');
     addInputArg('result-bundle-version', 'resultBundleVersion');
     addInputArg('derived-data-path', 'derivedDataPath');
+    addInputArg('xcroot');
+    addInputArg('xctestrun');
+    addInputArg('test-plan', 'testPlan');
     addInputArg('skip-testing');
     addFlagArg('skip-unavailable-actions', 'skipUnavailableActions');
     addFlagArg('allow-provisioning-updates', 'allowProvisioningUpdates');
