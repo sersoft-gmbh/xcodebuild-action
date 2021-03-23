@@ -122,6 +122,9 @@ jobs:
         result-bundle-path: [ here/and/there.bundle ]
         result-bundle-version: [ 3 ]
         derived-data-path: [ there/and/here/ ]
+        xcroot: [ this/and/that.xcroot ]
+        xctestrun: [ this/and/that.xctestrun ]
+        test-plan: [ SomeTestPlan ]
         skip-testing: [ this ]
         build-settings: [ ABC=DEF ]
         action: [ action ]
@@ -144,6 +147,8 @@ jobs:
           xcconfig: ${{matrix.xcconfig}}
           jobs: ${{matrix.jobs}}
           parallelize-targets: true
+          quiet: true
+          hide-shell-script-environment: true
           enable-code-coverage: true
           parallel-testing-enabled: true
           enable-address-sanitizer: false
@@ -152,6 +157,9 @@ jobs:
           result-bundle-path: ${{matrix.result-bundle-path}}
           result-bundle-version: ${{matrix.result-bundle-version}}
           derived-data-path: ${{matrix.derived-data-path}}
+          xcroot: ${{matrix.xcroot}}
+          xctestrun: ${{matrix.xctestrun}}
+          test-plan: ${{matrix.test-plan}}
           skip-testing: ${{matrix.skip-testing}}
           skip-unavailable-actions: true
           allow-provisioning-updates: true
@@ -173,6 +181,8 @@ jobs:
           -xcconfig ${{matrix.xcconfig}} \
           -jobs ${{matrix.jobs}} \
           -parallelizeTargets \
+          -quiet \
+          -hideShellScriptEnvironment \
           -enableCodeCoverage YES \
           -parallel-testing-enabled YES \
           -enableAddressSanitizer NO \
@@ -181,6 +191,9 @@ jobs:
           -resultBundlePath ${{matrix.result-bundle-path}} \
           -resultBundleVersion ${{matrix.result-bundle-version}} \
           -derivedDataPath ${{matrix.derived-data-path}} \
+          -xcroot ${{matrix.xcroot}} \
+          -xctestrun ${{matrix.xctestrun}} \
+          -testPlan ${{matrix.test-plan}} \
           -skip-testing ${{matrix.skip-testing}} \
           -skipUnavailableActions \
           -allowProvisioningUpdates \
@@ -211,6 +224,9 @@ jobs:
         result-bundle-path: [ here/and/there.bundle ]
         result-bundle-version: [ 3 ]
         derived-data-path: [ there/and/here/ ]
+        xcroot: [ this/and/that.xcroot ]
+        xctestrun: [ this/and/that.xctestrun ]
+        test-plan: [ SomeTestPlan ]
         skip-testing: [ this ]
         build-settings: [ ABC=DEF ]
         action: [ action ]
@@ -234,6 +250,8 @@ jobs:
           xcconfig: ${{matrix.xcconfig}}
           jobs: ${{matrix.jobs}}
           parallelize-targets: true
+          quiet: true
+          hide-shell-script-environment: true
           enable-code-coverage: true
           parallel-testing-enabled: true
           enable-address-sanitizer: false
@@ -242,6 +260,9 @@ jobs:
           result-bundle-path: ${{matrix.result-bundle-path}}
           result-bundle-version: ${{matrix.result-bundle-version}}
           derived-data-path: ${{matrix.derived-data-path}}
+          xcroot: ${{matrix.xcroot}}
+          xctestrun: ${{matrix.xctestrun}}
+          test-plan: ${{matrix.test-plan}}
           skip-testing: ${{matrix.skip-testing}}
           skip-unavailable-actions: true
           allow-provisioning-updates: true
@@ -264,6 +285,8 @@ jobs:
           -xcconfig ${{matrix.xcconfig}} \
           -jobs ${{matrix.jobs}} \
           -parallelizeTargets \
+          -quiet \
+          -hideShellScriptEnvironment \
           -enableCodeCoverage YES \
           -parallel-testing-enabled YES \
           -enableAddressSanitizer NO \
@@ -272,6 +295,9 @@ jobs:
           -resultBundlePath ${{matrix.result-bundle-path}} \
           -resultBundleVersion ${{matrix.result-bundle-version}} \
           -derivedDataPath ${{matrix.derived-data-path}} \
+          -xcroot ${{matrix.xcroot}} \
+          -xctestrun ${{matrix.xctestrun}} \
+          -testPlan ${{matrix.test-plan}} \
           -skip-testing ${{matrix.skip-testing}} \
           -skipUnavailableActions \
           -allowProvisioningUpdates \
@@ -302,6 +328,9 @@ jobs:
         result-bundle-path: [ here/and/there.bundle ]
         result-bundle-version: [ 3 ]
         derived-data-path: [ there/and/here/ ]
+        xcroot: [ this/and/that.xcroot ]
+        xctestrun: [ this/and/that.xctestrun ]
+        test-plan: [ SomeTestPlan ]
         skip-testing: [ this ]
         build-settings: [ ABC=DEF ]
         action: [ action ]
@@ -325,6 +354,8 @@ jobs:
           xcconfig: ${{matrix.xcconfig}}
           jobs: ${{matrix.jobs}}
           parallelize-targets: true
+          quiet: true
+          hide-shell-script-environment: true
           enable-code-coverage: true
           parallel-testing-enabled: true
           enable-address-sanitizer: false
@@ -333,6 +364,9 @@ jobs:
           result-bundle-path: ${{matrix.result-bundle-path}}
           result-bundle-version: ${{matrix.result-bundle-version}}
           derived-data-path: ${{matrix.derived-data-path}}
+          xcroot: ${{matrix.xcroot}}
+          xctestrun: ${{matrix.xctestrun}}
+          test-plan: ${{matrix.test-plan}}
           skip-testing: ${{matrix.skip-testing}}
           skip-unavailable-actions: true
           allow-provisioning-updates: true
@@ -355,6 +389,8 @@ jobs:
           -xcconfig ${{matrix.xcconfig}} \
           -jobs ${{matrix.jobs}} \
           -parallelizeTargets \
+          -quiet \
+          -hideShellScriptEnvironment \
           -enableCodeCoverage YES \
           -parallel-testing-enabled YES \
           -enableAddressSanitizer NO \
@@ -363,6 +399,9 @@ jobs:
           -resultBundlePath ${{matrix.result-bundle-path}} \
           -resultBundleVersion ${{matrix.result-bundle-version}} \
           -derivedDataPath ${{matrix.derived-data-path}} \
+          -xcroot ${{matrix.xcroot}} \
+          -xctestrun ${{matrix.xctestrun}} \
+          -testPlan ${{matrix.test-plan}} \
           -skip-testing ${{matrix.skip-testing}} \
           -skipUnavailableActions \
           -allowProvisioningUpdates \
