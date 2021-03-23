@@ -56,6 +56,14 @@ The number of jobs to use for building. See also `xcodebuild`'s `-jobs`.
 
 If `true`, the targets will be built in parallel. See also `xcodebuild`'s `-parallelizeTargets`.
 
+### `quiet`
+
+If `true`, `xcodebuild` won't print anything except warnings and errors. See also `xcodebuild`'s `-quiet`.
+
+### `hide-shell-script-environment`
+
+If `true`, `xcodebuild` won't print the environment for shell build scripts. See also `xcodebuild`'s `-hideShellScriptEnvironment`.
+
 ### `enable-code-coverage`
 
 If `true`, code coverage is enabled while testing. See also `xcodebuild`'s `-enableCodeCoverage`.
@@ -86,7 +94,19 @@ The version that should be used for the result bundle. See also `xcodebuild`'s `
 
 ### `derived-data-path`
 
-Override the folder that should be used for derived data
+The path that should be used for derived data. See also `xcdodebuild`'s `-derivedDataPath`.
+
+### `xcroot`
+
+The path to a .xcroot to use for building and/or testing. See also `xcodebuild`'s `-xcroot`.
+
+### `xctestrun`
+
+The path to a test run specification. See also `xcodebuild`'s `-xctestrun`.
+
+### `test-plan`
+
+The name of the test plan associated with the scheme to use for testing. See also `xcodebuild`'s `-testPlan`.
 
 ### `skip-testing`
 
@@ -117,6 +137,7 @@ Default: `test`
 
 Whether the output of `xcodebuild` should be forwarded to `xcpretty`.<br/>
 Default: `true`
+
 
 ## Example Usage
 

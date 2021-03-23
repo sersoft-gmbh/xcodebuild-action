@@ -44,6 +44,12 @@ inputs:
   parallel-testing-enabled:
     description: If `true`, tests are executed in parallel. See also `xcodebuild`'s `-parallel-testing-enabled`.
     required: false
+  quiet:
+    description: If `true`, xcodebuild won't print anything except warnings and errors. See also `xcodebuild`'s `-quiet`.
+    required: false
+  hide-shell-script-environment:
+    description: If `true`, xcodebuild won't print the environment for shell build scripts. See also `xcodebuild`'s `-hideShellScriptEnvironment`.
+    required: false
   enable-address-sanitizer:
     description: Whether the address sanitizer should be enabled. See also `xcodebuild`'s `-enableAddressSanitizer`.
     required: false
@@ -60,7 +66,16 @@ inputs:
     description: The version that should be used for the result bundle. See also `xcodebuild`'s `-resultBundleVersion`.
     required: false
   derived-data-path:
-    description: Tthe path that should be used for derived data. See also `xcodebuild`'s `-derivedDataPath`.
+    description: The path that should be used for derived data. See also `xcodebuild`'s `-derivedDataPath`.
+    required: false
+  xcroot:
+    description: The path to a .xcroot to use for building and/or testing. See also `xcodebuild`'s `-xcroot`.
+    required: false
+  xctestrun:
+    description: The path to a test run specification. See also `xcodebuild`'s `-xctestrun`.
+    required: false
+  test-plan:
+    description: The name of the test plan associated with the scheme to use for testing. See also `xcodebuild`'s `-testPlan`.
     required: false
   skip-testing:
     description: A list of tests to skip. See also `xcodebuild`'s `-skip-testing`.

@@ -1,6 +1,6 @@
 {
   "name": "xcodebuild-action",
-  "version": "1.0.0",
+  "version": "1.4.0",
   "description": "A GitHub action that runs xcodebuild.",
   "main": "dist/index.js",
   "scripts": {
@@ -13,7 +13,8 @@
     "url": "git+https://github.com/sersoft-gmbh/xcodebuild-action.git"
   },
   "keywords": [
-    "Xcode"
+    "Xcode",
+    "Xcodebuild"
   ],
   "author": "ser.soft GmbH",
   "license": "Apache-2.0",
