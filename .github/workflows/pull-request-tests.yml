@@ -147,10 +147,10 @@ jobs:
           xcconfig: ${{matrix.xcconfig}}
           jobs: ${{matrix.jobs}}
           parallelize-targets: true
-          quiet: true
-          hide-shell-script-environment: true
           enable-code-coverage: true
           parallel-testing-enabled: true
+          quiet: true
+          hide-shell-script-environment: true
           enable-address-sanitizer: false
           enable-thread-sanitizer: false
           enable-undefined-behavior-sanitizer: false
@@ -181,10 +181,10 @@ jobs:
           -xcconfig ${{matrix.xcconfig}} \
           -jobs ${{matrix.jobs}} \
           -parallelizeTargets \
-          -quiet \
-          -hideShellScriptEnvironment \
           -enableCodeCoverage YES \
           -parallel-testing-enabled YES \
+          -quiet \
+          -hideShellScriptEnvironment \
           -enableAddressSanitizer NO \
           -enableThreadSanitizer NO \
           -enableUndefinedBehaviorSanitizer NO \
@@ -250,10 +250,10 @@ jobs:
           xcconfig: ${{matrix.xcconfig}}
           jobs: ${{matrix.jobs}}
           parallelize-targets: true
-          quiet: true
-          hide-shell-script-environment: true
           enable-code-coverage: true
           parallel-testing-enabled: true
+          quiet: true
+          hide-shell-script-environment: true
           enable-address-sanitizer: false
           enable-thread-sanitizer: false
           enable-undefined-behavior-sanitizer: false
@@ -285,10 +285,10 @@ jobs:
           -xcconfig ${{matrix.xcconfig}} \
           -jobs ${{matrix.jobs}} \
           -parallelizeTargets \
-          -quiet \
-          -hideShellScriptEnvironment \
           -enableCodeCoverage YES \
           -parallel-testing-enabled YES \
+          -quiet \
+          -hideShellScriptEnvironment \
           -enableAddressSanitizer NO \
           -enableThreadSanitizer NO \
           -enableUndefinedBehaviorSanitizer NO \
@@ -354,10 +354,10 @@ jobs:
           xcconfig: ${{matrix.xcconfig}}
           jobs: ${{matrix.jobs}}
           parallelize-targets: true
-          quiet: true
-          hide-shell-script-environment: true
           enable-code-coverage: true
           parallel-testing-enabled: true
+          quiet: true
+          hide-shell-script-environment: true
           enable-address-sanitizer: false
           enable-thread-sanitizer: false
           enable-undefined-behavior-sanitizer: false
@@ -389,10 +389,10 @@ jobs:
           -xcconfig ${{matrix.xcconfig}} \
           -jobs ${{matrix.jobs}} \
           -parallelizeTargets \
-          -quiet \
-          -hideShellScriptEnvironment \
           -enableCodeCoverage YES \
           -parallel-testing-enabled YES \
+          -quiet \
+          -hideShellScriptEnvironment \
           -enableAddressSanitizer NO \
           -enableThreadSanitizer NO \
           -enableUndefinedBehaviorSanitizer NO \
