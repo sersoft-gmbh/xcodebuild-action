@@ -130,9 +130,9 @@ jobs:
         action: [ action ]
         use-xcpretty: [ true, false ]
     steps:
-      - run: echo "RUNNER_DEBUG=true" >> $GITHUB_ENV
-        if: env.RUNNER_DEBUG != true
-      - run: test "${{env.RUNNER_DEBUG}}" == "true"
+      - run: echo "RUNNER_DEBUG=1" >> $GITHUB_ENV
+        if: env.RUNNER_DEBUG != 1
+      - run: test "${{env.RUNNER_DEBUG}}" == "1"
       - name: Install dependencies
         run: sudo npm i -g @zeit/ncc typescript
       - uses: actions/checkout@v2.3.4
@@ -234,9 +234,9 @@ jobs:
         action: [ action ]
         use-xcpretty: [ true, false ]
     steps:
-      - run: echo "RUNNER_DEBUG=true" >> $GITHUB_ENV
-        if: env.RUNNER_DEBUG != true
-      - run: test "${{env.RUNNER_DEBUG}}" == "true"
+      - run: echo "RUNNER_DEBUG=1" >> $GITHUB_ENV
+        if: env.RUNNER_DEBUG != 1
+      - run: test "${{env.RUNNER_DEBUG}}" == "1"
       - name: Install dependencies
         run: sudo npm i -g @zeit/ncc typescript
       - uses: actions/checkout@v2.3.4
@@ -340,9 +340,9 @@ jobs:
         action: [ action ]
         use-xcpretty: [ true, false ]
     steps:
-      - run: echo "RUNNER_DEBUG=true" >> $GITHUB_ENV
-        if: env.RUNNER_DEBUG != true
-      - run: test "${{env.RUNNER_DEBUG}}" == "true"
+      - run: echo "RUNNER_DEBUG=1" >> $GITHUB_ENV
+        if: env.RUNNER_DEBUG != 1
+      - run: test "${{env.RUNNER_DEBUG}}" == "1"
       - name: Install dependencies
         run: sudo npm i -g @zeit/ncc typescript
       - uses: actions/checkout@v2.3.4
