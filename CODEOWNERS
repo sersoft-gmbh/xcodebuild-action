@@ -1,0 +1,11 @@
+# Global
+*  @ffried
+
+# Workflow & Deployment related files
+.github/*      @ffried
+action.yml	   @ffried
+
+# Project & Source files
+__test__/*      @ffried
+/*.json         @ffried
+*.ts            @ffried
