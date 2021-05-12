@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
-      - uses: sersoft-gmbh/running-release-tags-action@v1
+      - uses: sersoft-gmbh/running-release-tags-action@v1.1.1
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
         if: github.event.release.prerelease == false
