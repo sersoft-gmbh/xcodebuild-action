@@ -1,0 +1,23 @@
+version: 2
+
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "07:00"
+      timezone: "Europe/Berlin"
+    assignees:
+      - ffried
+    reviewers:
+      - ffried
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "07:00"
+      timezone: "Europe/Berlin"
+    assignees:
+      - ffried
+    reviewers:
+      - ffried
