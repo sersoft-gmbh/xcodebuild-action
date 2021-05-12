@@ -11,15 +11,17 @@ jobs:
       - name: Install depenedencies
         run: sudo npm i -g @zeit/ncc typescript
       - uses: actions/checkout@v2.3.4
+        with:
+          token: ${{secrets.BOT_TOKEN}}
       - name: Generate action code
         run: npm run deploy
       - name: Configure repository
         run: |
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git config user.name "${{secrets.BOT_USERNAME}}"
+          git config user.email "${{secrets.BOT_USERNAME}}@users.noreply.github.com"
       - name: Commit changes
         run: |
-          if ! git diff --exit-code; then
+          if ! git diff --exit-code --quiet; then
             git add .
             git commit -m "[AUTO] Update generated code"
             git push
