@@ -3,6 +3,7 @@ name: Master Deploy
 on:
   push:
     branches: [ master ]
+    paths-ignore: [ 'dist/*.js' ]
 
 jobs:
   deploy-action-code:
