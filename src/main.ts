@@ -167,6 +167,19 @@ async function main() {
     }
     core.endGroup();
 
+    await core.group('Composing command', async () => {
+        let commandParts = ['xcodebuild'].concat(xcodebuildArgs);
+        if (useXcpretty) {
+            commandParts.push('|', 'xcpretty');
+        }
+        if (spmPackage) {
+            commandParts = ['pushd', spmPackage, '&&', ...commandParts, ';', 'popd'];
+        }
+        const executedCommand = commandParts.join(' ');
+        core.setOutput('executed-command', executedCommand);
+        core.info(`Executing: \`${executedCommand}\``);
+    })
+
     core.startGroup('Running xcodebuild');
     if (!dryRun) {
         const cwd = process.cwd();
@@ -180,15 +193,6 @@ async function main() {
                 process.chdir(cwd);
             }
         }
-    } else {
-        let executedCommand = ['xcodebuild'].concat(xcodebuildArgs);
-        if (useXcpretty) {
-            executedCommand.push('|', 'xcpretty');
-        }
-        if (spmPackage) {
-            executedCommand = ['pushd', spmPackage, '&&', ...executedCommand, ';', 'popd'];
-        }
-        core.setOutput('executed-command', executedCommand.join(' '));
     }
     core.endGroup();
 }

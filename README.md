@@ -139,6 +139,13 @@ Whether the output of `xcodebuild` should be forwarded to `xcpretty`.<br/>
 Default: `true`
 
 
+## Outputs
+
+### `executed-command`
+
+The command that was executed by this action. This will also be printed to the action output.
+
+
 ## Example Usage
 
 Use the following snippet when you want to run tests configured with the `MyApp` scheme inside a `MyApp` Xcode project:

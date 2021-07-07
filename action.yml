@@ -99,10 +99,13 @@ inputs:
   use-xcpretty:
     description: Whether the output of xcodebuild should be forwarded to xcpretty.
     required: true
-    default: true
+    default: 'true'
   dry-run:
-    description: '<TEST ONLY> Whether the commands should only be printed but not actually run. Only used in test.'
+    description: '<TEST ONLY> Whether the commands should only be composed and not actually run. Only used in test.'
     required: false
+outputs:
+  executed-command:
+    description: The command that was executed.
 runs:
   using: node12
   main: dist/index.js
