@@ -27,7 +27,7 @@ jobs:
     steps:
       - run: sudo xcode-select -s /Applications/Xcode_12.app/Contents/Developer
       - name: Install dependencies
-        run: sudo npm i -g @zeit/ncc typescript
+        run: sudo npm i -g typescript @vercel/ncc
       - uses: actions/checkout@v2.3.4
       - name: Generate action code
         run: npm run deploy
@@ -64,7 +64,7 @@ jobs:
     steps:
       - run: sudo xcode-select -s /Applications/Xcode_12.app/Contents/Developer
       - name: Install dependencies
-        run: sudo npm i -g @zeit/ncc typescript
+        run: sudo npm i -g typescript @vercel/ncc
       - uses: actions/checkout@v2.3.4
       - name: Generate action code
         run: npm run deploy
@@ -92,7 +92,7 @@ jobs:
     steps:
       - run: sudo xcode-select -s /Applications/Xcode_12.app/Contents/Developer
       - name: Install dependencies
-        run: sudo npm i -g @zeit/ncc typescript
+        run: sudo npm i -g typescript @vercel/ncc
       - uses: actions/checkout@v2.3.4
       - name: Generate action code
         run: npm run deploy
@@ -238,7 +238,7 @@ jobs:
         if: env.RUNNER_DEBUG != 1
       - run: test "${{env.RUNNER_DEBUG}}" == "1"
       - name: Install dependencies
-        run: sudo npm i -g @zeit/ncc typescript
+        run: sudo npm i -g typescript @vercel/ncc
       - uses: actions/checkout@v2.3.4
       - name: Generate action code
         run: npm run deploy
@@ -344,7 +344,7 @@ jobs:
         if: env.RUNNER_DEBUG != 1
       - run: test "${{env.RUNNER_DEBUG}}" == "1"
       - name: Install dependencies
-        run: sudo npm i -g @zeit/ncc typescript
+        run: sudo npm i -g typescript @vercel/ncc
       - uses: actions/checkout@v2.3.4
       - name: Generate action code
         run: npm run deploy

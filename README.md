@@ -1,6 +1,6 @@
 # Xcodebuild Action
 
-![Master Deploy](https://github.com/sersoft-gmbh/xcodebuild-action/workflows/Master%20Deploy/badge.svg)
+[![Deploy](https://github.com/sersoft-gmbh/xcodebuild-action/actions/workflows/main-deploy.yml/badge.svg)](https://github.com/sersoft-gmbh/xcodebuild-action/actions/workflows/main-deploy.yml)
 
 This action runs `xcodebuild` with the given options.
 

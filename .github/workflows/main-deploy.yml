@@ -1,4 +1,4 @@
-name: Master Deploy
+name: Deploy
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install depenedencies
-        run: sudo npm i -g @zeit/ncc typescript
+        run: sudo npm i -g typescript @vercel/ncc
       - uses: actions/checkout@v2.3.4
         with:
           token: ${{secrets.BOT_TOKEN}}
