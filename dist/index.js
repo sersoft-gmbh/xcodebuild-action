@@ -1,67 +1,11 @@
-module.exports =
-/******/ (function(modules, runtime) { // webpackBootstrap
+/******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		var threw = true;
-/******/ 		try {
-/******/ 			modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/ 			threw = false;
-/******/ 		} finally {
-/******/ 			if(threw) delete installedModules[moduleId];
-/******/ 		}
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	__webpack_require__.ab = __dirname + "/";
-/******/
-/******/ 	// the startup function
-/******/ 	function startup() {
-/******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(907);
-/******/ 	};
-/******/
-/******/ 	// run startup
-/******/ 	return startup();
-/******/ })
-/************************************************************************/
-/******/ ({
+/******/ 	var __webpack_modules__ = ({
 
-/***/ 87:
-/***/ (function(module) {
+/***/ 739:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-module.exports = require("os");
 
-/***/ }),
-
-/***/ 124:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-// For internal use, subject to change.
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -77,72 +21,213 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.issueCommand = void 0;
-// We use any as a valid input type
-/* eslint-disable @typescript-eslint/no-explicit-any */
-const fs = __importStar(__webpack_require__(747));
-const os = __importStar(__webpack_require__(87));
-const utils_1 = __webpack_require__(127);
-function issueCommand(command, message) {
-    const filePath = process.env[`GITHUB_${command}`];
-    if (!filePath) {
-        throw new Error(`Unable to find environment variable for file command ${command}`);
-    }
-    if (!fs.existsSync(filePath)) {
-        throw new Error(`Missing file at path: ${filePath}`);
-    }
-    fs.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
-        encoding: 'utf8'
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(24));
+const child_process_1 = __nccwpck_require__(129);
+const SIGNAL_NAME_TO_NUMBER_MAP = {
+    'SIGHUP': 1,
+    'SIGINT': 2,
+    'SIGQUIT': 3,
+    'SIGILL': 4,
+    'SIGTRAP': 5,
+    'SIGABRT': 6,
+    'SIGIOT': 6,
+    'SIGBUS': 7,
+    'SIGFPE': 8,
+    'SIGKILL': 9,
+    'SIGUSR1': 10,
+    'SIGSEGV': 11,
+    'SIGUSR2': 12,
+    'SIGPIPE': 13,
+    'SIGALRM': 14,
+    'SIGTERM': 15,
+    'SIGSTKFLT': 16,
+    'SIGCHLD': 17,
+    'SIGCONT': 18,
+    'SIGSTOP': 19,
+    'SIGTSTP': 20,
+    'SIGTTIN': 21,
+    'SIGTTOU': 22,
+    'SIGURG': 23,
+    'SIGXCPU': 24,
+    'SIGXFSZ': 25,
+    'SIGVTALRM': 26,
+    'SIGPROF': 27,
+    'SIGWINCH': 28,
+    'SIGIO': 29,
+    'SIGPOLL': 29,
+    'SIGPWR': 30,
+    'SIGSYS': 31,
+    'SIGUNUSED': 31,
+    // there isn't actually a number here.
+    'SIGBREAK': 97,
+    'SIGINFO': 98,
+    'SIGLOST': 99,
+};
+async function runXcodebuild(args, useXcpretty) {
+    var _a;
+    const xcodebuildOut = useXcpretty ? 'pipe' : process.stdout;
+    const xcodebuild = child_process_1.spawn('xcodebuild', args, { stdio: ['inherit', xcodebuildOut, process.stderr] });
+    let finishedPromise = new Promise((resolve, reject) => {
+        xcodebuild.on('error', reject);
+        xcodebuild.on('exit', (exitCode, signal) => {
+            if (exitCode) {
+                resolve(exitCode);
+            }
+            else if (signal) {
+                resolve(SIGNAL_NAME_TO_NUMBER_MAP[signal]);
+            }
+        });
     });
-}
-exports.issueCommand = issueCommand;
-//# sourceMappingURL=file-command.js.map
-
-/***/ }),
-
-/***/ 127:
-/***/ (function(__unusedmodule, exports) {
-
-"use strict";
-
-// We use any as a valid input type
-/* eslint-disable @typescript-eslint/no-explicit-any */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.toCommandValue = void 0;
-/**
- * Sanitizes an input into a string so it can be passed into issueCommand safely
- * @param input input to sanitize into a string
- */
-function toCommandValue(input) {
-    if (input === null || input === undefined) {
-        return '';
+    if (useXcpretty) {
+        const xcpretty = child_process_1.spawn('xcpretty', { stdio: ['pipe', process.stdout, process.stderr] });
+        (_a = xcodebuild.stdout) === null || _a === void 0 ? void 0 : _a.pipe(xcpretty.stdin);
+        finishedPromise = finishedPromise.then((xcodeCode) => new Promise((resolve, reject) => {
+            xcpretty.on('error', reject);
+            xcpretty.on('exit', (xcprettyCode, xcprettySignal) => {
+                if (xcodeCode == 0) {
+                    if (xcprettyCode) {
+                        resolve(xcprettyCode);
+                    }
+                    else if (xcprettySignal) {
+                        resolve(SIGNAL_NAME_TO_NUMBER_MAP[xcprettySignal]);
+                    }
+                }
+                else {
+                    resolve(xcodeCode);
+                }
+            });
+        }));
     }
-    else if (typeof input === 'string' || input instanceof String) {
-        return input;
+    const exitCode = await finishedPromise;
+    if (exitCode != 0) {
+        throw new Error(`Xcodebuild action failed (${exitCode})!`);
     }
-    return JSON.stringify(input);
 }
-exports.toCommandValue = toCommandValue;
-//# sourceMappingURL=utils.js.map
+async function main() {
+    let xcodebuildArgs = [];
+    core.startGroup('Validating input');
+    const workspace = core.getInput('workspace');
+    const project = core.getInput('project');
+    const spmPackage = core.getInput('spm-package');
+    if ((!workspace && !project && !spmPackage)
+        || (workspace && project && spmPackage)
+        || (workspace && project)
+        || (workspace && spmPackage)
+        || (project && spmPackage)) {
+        throw new Error("Either `project`, `workspace` or `spm-package-path` must be set, but they are mutually exclusive!");
+    }
+    else if (workspace) {
+        xcodebuildArgs.push('-workspace', workspace);
+    }
+    else if (project) {
+        xcodebuildArgs.push('-project', project);
+    }
+    const scheme = core.getInput('scheme', { required: !!workspace || !!spmPackage });
+    if (scheme) {
+        xcodebuildArgs.push('-scheme', scheme);
+    }
+    function addInputArg(inputName, argName) {
+        const value = core.getInput(inputName);
+        if (value) {
+            xcodebuildArgs.push(`-${argName !== null && argName !== void 0 ? argName : inputName}`, value);
+        }
+    }
+    function addBoolArg(inputName, argName) {
+        const value = core.getInput(inputName);
+        if (value) {
+            xcodebuildArgs.push(`-${argName !== null && argName !== void 0 ? argName : inputName}`, value == 'true' ? 'YES' : 'NO');
+        }
+    }
+    function addFlagArg(inputName, argName) {
+        if (core.getInput(inputName) == 'true') {
+            xcodebuildArgs.push(`-${argName !== null && argName !== void 0 ? argName : inputName}`);
+        }
+    }
+    addInputArg('target');
+    addInputArg('destination');
+    addInputArg('configuration');
+    addInputArg('sdk');
+    addInputArg('arch');
+    addInputArg('xcconfig');
+    addInputArg('jobs');
+    addFlagArg('parallelize-targets', 'parallelizeTargets');
+    addBoolArg('enable-code-coverage', 'enableCodeCoverage');
+    addBoolArg('parallel-testing-enabled');
+    addFlagArg('quiet');
+    addFlagArg('hide-shell-script-environment', 'hideShellScriptEnvironment');
+    addBoolArg('enable-address-sanitizer', 'enableAddressSanitizer');
+    addBoolArg('enable-thread-sanitizer', 'enableThreadSanitizer');
+    addBoolArg('enable-undefined-behavior-sanitizer', 'enableUndefinedBehaviorSanitizer');
+    addInputArg('result-bundle-path', 'resultBundlePath');
+    addInputArg('result-bundle-version', 'resultBundleVersion');
+    addInputArg('derived-data-path', 'derivedDataPath');
+    addInputArg('xcroot');
+    addInputArg('xctestrun');
+    addInputArg('test-plan', 'testPlan');
+    addInputArg('skip-testing');
+    addFlagArg('skip-unavailable-actions', 'skipUnavailableActions');
+    addFlagArg('allow-provisioning-updates', 'allowProvisioningUpdates');
+    addFlagArg('allow-provisioning-device-registration', 'allowProvisioningDeviceRegistration');
+    const buildSettings = core.getInput('build-settings');
+    if (buildSettings) {
+        xcodebuildArgs.push(...buildSettings.split(' '));
+    }
+    const action = core.getInput('action', { required: true });
+    xcodebuildArgs.push(...action.split(' '));
+    const useXcpretty = core.getInput('use-xcpretty', { required: true }) == 'true';
+    const dryRun = core.isDebug() && core.getInput('dry-run') == 'true';
+    // We allow other platforms for dry-runs since this speeds up tests (more parallel builds).
+    if (!dryRun && process.platform != "darwin") {
+        throw new Error("This action only supports macOS!");
+    }
+    core.endGroup();
+    await core.group('Composing command', async () => {
+        let commandParts = ['xcodebuild'].concat(xcodebuildArgs);
+        if (useXcpretty) {
+            commandParts.push('|', 'xcpretty');
+        }
+        if (spmPackage) {
+            commandParts = ['pushd', spmPackage, '&&', ...commandParts, ';', 'popd'];
+        }
+        const executedCommand = commandParts.join(' ');
+        core.setOutput('executed-command', executedCommand);
+        core.info(`Executing: \`${executedCommand}\``);
+    });
+    core.startGroup('Running xcodebuild');
+    if (!dryRun) {
+        const cwd = process.cwd();
+        if (spmPackage) {
+            process.chdir(spmPackage);
+        }
+        try {
+            await runXcodebuild(xcodebuildArgs, useXcpretty);
+        }
+        finally {
+            if (spmPackage) {
+                process.chdir(cwd);
+            }
+        }
+    }
+    core.endGroup();
+}
+try {
+    main().catch(error => core.setFailed(error.message));
+}
+catch (error) {
+    core.setFailed(error.message);
+}
+
 
 /***/ }),
 
-/***/ 129:
-/***/ (function(module) {
+/***/ 350:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-module.exports = require("child_process");
-
-/***/ }),
-
-/***/ 215:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -163,10 +248,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.issue = exports.issueCommand = void 0;
-const os = __importStar(__webpack_require__(87));
-const utils_1 = __webpack_require__(127);
+const os = __importStar(__nccwpck_require__(87));
+const utils_1 = __nccwpck_require__(369);
 /**
  * Commands
  *
@@ -238,24 +323,9 @@ function escapeProperty(s) {
 
 /***/ }),
 
-/***/ 622:
-/***/ (function(module) {
+/***/ 24:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-module.exports = require("path");
-
-/***/ }),
-
-/***/ 747:
-/***/ (function(module) {
-
-module.exports = require("fs");
-
-/***/ }),
-
-/***/ 827:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -285,13 +355,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
-const command_1 = __webpack_require__(215);
-const file_command_1 = __webpack_require__(124);
-const utils_1 = __webpack_require__(127);
-const os = __importStar(__webpack_require__(87));
-const path = __importStar(__webpack_require__(622));
+const command_1 = __nccwpck_require__(350);
+const file_command_1 = __nccwpck_require__(466);
+const utils_1 = __nccwpck_require__(369);
+const os = __importStar(__nccwpck_require__(87));
+const path = __importStar(__nccwpck_require__(622));
 /**
  * The code to exit an action
  */
@@ -553,11 +623,11 @@ exports.getState = getState;
 
 /***/ }),
 
-/***/ 907:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
+/***/ 466:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
+// For internal use, subject to change.
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -573,208 +643,132 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(827));
-const child_process_1 = __webpack_require__(129);
-const SIGNAL_NAME_TO_NUMBER_MAP = {
-    'SIGHUP': 1,
-    'SIGINT': 2,
-    'SIGQUIT': 3,
-    'SIGILL': 4,
-    'SIGTRAP': 5,
-    'SIGABRT': 6,
-    'SIGIOT': 6,
-    'SIGBUS': 7,
-    'SIGFPE': 8,
-    'SIGKILL': 9,
-    'SIGUSR1': 10,
-    'SIGSEGV': 11,
-    'SIGUSR2': 12,
-    'SIGPIPE': 13,
-    'SIGALRM': 14,
-    'SIGTERM': 15,
-    'SIGSTKFLT': 16,
-    'SIGCHLD': 17,
-    'SIGCONT': 18,
-    'SIGSTOP': 19,
-    'SIGTSTP': 20,
-    'SIGTTIN': 21,
-    'SIGTTOU': 22,
-    'SIGURG': 23,
-    'SIGXCPU': 24,
-    'SIGXFSZ': 25,
-    'SIGVTALRM': 26,
-    'SIGPROF': 27,
-    'SIGWINCH': 28,
-    'SIGIO': 29,
-    'SIGPOLL': 29,
-    'SIGPWR': 30,
-    'SIGSYS': 31,
-    'SIGUNUSED': 31,
-    // there isn't actually a number here.
-    'SIGBREAK': 97,
-    'SIGINFO': 98,
-    'SIGLOST': 99,
-};
-async function runXcodebuild(args, useXcpretty) {
-    var _a;
-    const xcodebuildOut = useXcpretty ? 'pipe' : process.stdout;
-    const xcodebuild = child_process_1.spawn('xcodebuild', args, { stdio: ['inherit', xcodebuildOut, process.stderr] });
-    let finishedPromise = new Promise((resolve, reject) => {
-        xcodebuild.on('error', reject);
-        xcodebuild.on('exit', (exitCode, signal) => {
-            if (exitCode) {
-                resolve(exitCode);
-            }
-            else if (signal) {
-                resolve(SIGNAL_NAME_TO_NUMBER_MAP[signal]);
-            }
-        });
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.issueCommand = void 0;
+// We use any as a valid input type
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const fs = __importStar(__nccwpck_require__(747));
+const os = __importStar(__nccwpck_require__(87));
+const utils_1 = __nccwpck_require__(369);
+function issueCommand(command, message) {
+    const filePath = process.env[`GITHUB_${command}`];
+    if (!filePath) {
+        throw new Error(`Unable to find environment variable for file command ${command}`);
+    }
+    if (!fs.existsSync(filePath)) {
+        throw new Error(`Missing file at path: ${filePath}`);
+    }
+    fs.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
+        encoding: 'utf8'
     });
-    if (useXcpretty) {
-        const xcpretty = child_process_1.spawn('xcpretty', { stdio: ['pipe', process.stdout, process.stderr] });
-        (_a = xcodebuild.stdout) === null || _a === void 0 ? void 0 : _a.pipe(xcpretty.stdin);
-        finishedPromise = finishedPromise.then((xcodeCode) => new Promise((resolve, reject) => {
-            xcpretty.on('error', reject);
-            xcpretty.on('exit', (xcprettyCode, xcprettySignal) => {
-                if (xcodeCode == 0) {
-                    if (xcprettyCode) {
-                        resolve(xcprettyCode);
-                    }
-                    else if (xcprettySignal) {
-                        resolve(SIGNAL_NAME_TO_NUMBER_MAP[xcprettySignal]);
-                    }
-                }
-                else {
-                    resolve(xcodeCode);
-                }
-            });
-        }));
-    }
-    const exitCode = await finishedPromise;
-    if (exitCode != 0) {
-        throw new Error(`Xcodebuild action failed (${exitCode})!`);
-    }
 }
-async function main() {
-    let xcodebuildArgs = [];
-    core.startGroup('Validating input');
-    const workspace = core.getInput('workspace');
-    const project = core.getInput('project');
-    const spmPackage = core.getInput('spm-package');
-    if ((!workspace && !project && !spmPackage)
-        || (workspace && project && spmPackage)
-        || (workspace && project)
-        || (workspace && spmPackage)
-        || (project && spmPackage)) {
-        throw new Error("Either `project`, `workspace` or `spm-package-path` must be set, but they are mutually exclusive!");
-    }
-    else if (workspace) {
-        xcodebuildArgs.push('-workspace', workspace);
-    }
-    else if (project) {
-        xcodebuildArgs.push('-project', project);
-    }
-    const scheme = core.getInput('scheme', { required: !!workspace || !!spmPackage });
-    if (scheme) {
-        xcodebuildArgs.push('-scheme', scheme);
-    }
-    function addInputArg(inputName, argName) {
-        const value = core.getInput(inputName);
-        if (value) {
-            xcodebuildArgs.push(`-${argName !== null && argName !== void 0 ? argName : inputName}`, value);
-        }
-    }
-    function addBoolArg(inputName, argName) {
-        const value = core.getInput(inputName);
-        if (value) {
-            xcodebuildArgs.push(`-${argName !== null && argName !== void 0 ? argName : inputName}`, value == 'true' ? 'YES' : 'NO');
-        }
-    }
-    function addFlagArg(inputName, argName) {
-        if (core.getInput(inputName) == 'true') {
-            xcodebuildArgs.push(`-${argName !== null && argName !== void 0 ? argName : inputName}`);
-        }
-    }
-    addInputArg('target');
-    addInputArg('destination');
-    addInputArg('configuration');
-    addInputArg('sdk');
-    addInputArg('arch');
-    addInputArg('xcconfig');
-    addInputArg('jobs');
-    addFlagArg('parallelize-targets', 'parallelizeTargets');
-    addBoolArg('enable-code-coverage', 'enableCodeCoverage');
-    addBoolArg('parallel-testing-enabled');
-    addFlagArg('quiet');
-    addFlagArg('hide-shell-script-environment', 'hideShellScriptEnvironment');
-    addBoolArg('enable-address-sanitizer', 'enableAddressSanitizer');
-    addBoolArg('enable-thread-sanitizer', 'enableThreadSanitizer');
-    addBoolArg('enable-undefined-behavior-sanitizer', 'enableUndefinedBehaviorSanitizer');
-    addInputArg('result-bundle-path', 'resultBundlePath');
-    addInputArg('result-bundle-version', 'resultBundleVersion');
-    addInputArg('derived-data-path', 'derivedDataPath');
-    addInputArg('xcroot');
-    addInputArg('xctestrun');
-    addInputArg('test-plan', 'testPlan');
-    addInputArg('skip-testing');
-    addFlagArg('skip-unavailable-actions', 'skipUnavailableActions');
-    addFlagArg('allow-provisioning-updates', 'allowProvisioningUpdates');
-    addFlagArg('allow-provisioning-device-registration', 'allowProvisioningDeviceRegistration');
-    const buildSettings = core.getInput('build-settings');
-    if (buildSettings) {
-        xcodebuildArgs.push(...buildSettings.split(' '));
-    }
-    const action = core.getInput('action', { required: true });
-    xcodebuildArgs.push(...action.split(' '));
-    const useXcpretty = core.getInput('use-xcpretty', { required: true }) == 'true';
-    const dryRun = core.isDebug() && core.getInput('dry-run') == 'true';
-    // We allow other platforms for dry-runs since this speeds up tests (more parallel builds).
-    if (!dryRun && process.platform != "darwin") {
-        throw new Error("This action only supports macOS!");
-    }
-    core.endGroup();
-    await core.group('Composing command', async () => {
-        let commandParts = ['xcodebuild'].concat(xcodebuildArgs);
-        if (useXcpretty) {
-            commandParts.push('|', 'xcpretty');
-        }
-        if (spmPackage) {
-            commandParts = ['pushd', spmPackage, '&&', ...commandParts, ';', 'popd'];
-        }
-        const executedCommand = commandParts.join(' ');
-        core.setOutput('executed-command', executedCommand);
-        core.info(`Executing: \`${executedCommand}\``);
-    });
-    core.startGroup('Running xcodebuild');
-    if (!dryRun) {
-        const cwd = process.cwd();
-        if (spmPackage) {
-            process.chdir(spmPackage);
-        }
-        try {
-            await runXcodebuild(xcodebuildArgs, useXcpretty);
-        }
-        finally {
-            if (spmPackage) {
-                process.chdir(cwd);
-            }
-        }
-    }
-    core.endGroup();
-}
-try {
-    main().catch(error => core.setFailed(error.message));
-}
-catch (error) {
-    core.setFailed(error.message);
-}
+exports.issueCommand = issueCommand;
+//# sourceMappingURL=file-command.js.map
 
+/***/ }),
+
+/***/ 369:
+/***/ ((__unused_webpack_module, exports) => {
+
+
+// We use any as a valid input type
+/* eslint-disable @typescript-eslint/no-explicit-any */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.toCommandValue = void 0;
+/**
+ * Sanitizes an input into a string so it can be passed into issueCommand safely
+ * @param input input to sanitize into a string
+ */
+function toCommandValue(input) {
+    if (input === null || input === undefined) {
+        return '';
+    }
+    else if (typeof input === 'string' || input instanceof String) {
+        return input;
+    }
+    return JSON.stringify(input);
+}
+exports.toCommandValue = toCommandValue;
+//# sourceMappingURL=utils.js.map
+
+/***/ }),
+
+/***/ 129:
+/***/ ((module) => {
+
+module.exports = require("child_process");
+
+/***/ }),
+
+/***/ 747:
+/***/ ((module) => {
+
+module.exports = require("fs");
+
+/***/ }),
+
+/***/ 87:
+/***/ ((module) => {
+
+module.exports = require("os");
+
+/***/ }),
+
+/***/ 622:
+/***/ ((module) => {
+
+module.exports = require("path");
 
 /***/ })
 
-/******/ });
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nccwpck_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		var threw = true;
+/******/ 		try {
+/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
+/******/ 			threw = false;
+/******/ 		} finally {
+/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 		}
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat */
+/******/ 	
+/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(739);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
+/******/ })()
+;
