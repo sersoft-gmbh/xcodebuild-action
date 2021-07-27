@@ -65,6 +65,9 @@ inputs:
   result-bundle-version:
     description: The version that should be used for the result bundle. See also `xcodebuild`'s `-resultBundleVersion`.
     required: false
+  cloned-source-packages-path:
+    description: The path that should be used for the cloning of remote packages. See also `xcodebuild`'s `-clonedSourcePackagesDirPath`.
+    required: false
   derived-data-path:
     description: The path that should be used for derived data. See also `xcodebuild`'s `-derivedDataPath`.
     required: false
