@@ -27,6 +27,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(24));
+const path = __importStar(__nccwpck_require__(622));
 const child_process_1 = __nccwpck_require__(129);
 const SIGNAL_NAME_TO_NUMBER_MAP = {
     'SIGHUP': 1,
@@ -131,21 +132,36 @@ async function main() {
     if (scheme) {
         xcodebuildArgs.push('-scheme', scheme);
     }
-    function addInputArg(inputName, argName) {
-        const value = core.getInput(inputName);
+    function _pushArgs(inputName, argName, value) {
+        xcodebuildArgs.push(`-${argName !== null && argName !== void 0 ? argName : inputName}`);
         if (value) {
-            xcodebuildArgs.push(`-${argName !== null && argName !== void 0 ? argName : inputName}`, value);
+            xcodebuildArgs.push(value);
         }
+    }
+    function _addInputArg(inputName, opts) {
+        let value = core.getInput(inputName);
+        if (value) {
+            if (opts === null || opts === void 0 ? void 0 : opts.isPath) {
+                value = path.resolve(value);
+            }
+            _pushArgs(inputName, opts === null || opts === void 0 ? void 0 : opts.argName, value);
+        }
+    }
+    function addInputArg(inputName, argName) {
+        _addInputArg(inputName, { argName: argName });
+    }
+    function addPathArg(inputName, argName) {
+        _addInputArg(inputName, { argName: argName, isPath: true });
     }
     function addBoolArg(inputName, argName) {
         const value = core.getInput(inputName);
         if (value) {
-            xcodebuildArgs.push(`-${argName !== null && argName !== void 0 ? argName : inputName}`, value == 'true' ? 'YES' : 'NO');
+            _pushArgs(inputName, argName, value == 'true' ? 'YES' : 'NO');
         }
     }
     function addFlagArg(inputName, argName) {
         if (core.getInput(inputName) == 'true') {
-            xcodebuildArgs.push(`-${argName !== null && argName !== void 0 ? argName : inputName}`);
+            _pushArgs(inputName, argName);
         }
     }
     addInputArg('target');
@@ -153,7 +169,7 @@ async function main() {
     addInputArg('configuration');
     addInputArg('sdk');
     addInputArg('arch');
-    addInputArg('xcconfig');
+    addPathArg('xcconfig');
     addInputArg('jobs');
     addFlagArg('parallelize-targets', 'parallelizeTargets');
     addBoolArg('enable-code-coverage', 'enableCodeCoverage');
@@ -163,11 +179,12 @@ async function main() {
     addBoolArg('enable-address-sanitizer', 'enableAddressSanitizer');
     addBoolArg('enable-thread-sanitizer', 'enableThreadSanitizer');
     addBoolArg('enable-undefined-behavior-sanitizer', 'enableUndefinedBehaviorSanitizer');
-    addInputArg('result-bundle-path', 'resultBundlePath');
+    addPathArg('result-bundle-path', 'resultBundlePath');
     addInputArg('result-bundle-version', 'resultBundleVersion');
-    addInputArg('derived-data-path', 'derivedDataPath');
-    addInputArg('xcroot');
-    addInputArg('xctestrun');
+    addPathArg('cloned-source-packages-path', 'clonedSourcePackagesDirPath');
+    addPathArg('derived-data-path', 'derivedDataPath');
+    addPathArg('xcroot');
+    addPathArg('xctestrun');
     addInputArg('test-plan', 'testPlan');
     addInputArg('skip-testing');
     addFlagArg('skip-unavailable-actions', 'skipUnavailableActions');
