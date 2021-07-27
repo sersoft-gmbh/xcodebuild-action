@@ -9,6 +9,7 @@ on:
 
 jobs:
   deploy-action-code:
+    if: github.event_name == 'push'
     name: Deploy Action Code
     runs-on: ubuntu-latest
     steps:
