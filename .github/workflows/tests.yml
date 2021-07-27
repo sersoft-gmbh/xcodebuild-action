@@ -1,0 +1,629 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore: [ 'dist/*.js' ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  deploy-action-code:
+    name: Deploy Action Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install depenedencies
+        run: sudo npm i -g typescript @vercel/ncc
+      - uses: actions/checkout@v2.3.4
+        with:
+          token: ${{secrets.BOT_TOKEN}}
+      - name: Generate action code
+        run: npm run deploy
+      - name: Configure repository
+        run: |
+          git config user.name "${{secrets.BOT_USERNAME}}"
+          git config user.email "${{secrets.BOT_USERNAME}}@users.noreply.github.com"
+      - name: Commit changes
+        run: |
+          if ! git diff --exit-code --quiet; then
+            git add .
+            git commit -m "[AUTO] Update generated code"
+            git push
+          fi
+
+  test-project:
+    needs: deploy-action-code
+    if: always() && !failure() && !cancelled()
+    name: Test Project Build
+    runs-on: macos-11
+    strategy:
+      matrix:
+        destination:
+          - platform=macOS
+          - platform=iOS Simulator,OS=latest,name=iPhone 11
+        skip-testing: [ 'TestProjectTests/FailingTests' ]
+        action: [ test ]
+        use-xcpretty: [ true, false ]
+        include:
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+            skip-testing: ''
+            action: build
+            use-xcpretty: true
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+            skip-testing: ''
+            action: build
+            use-xcpretty: false
+    env:
+      INPUT_PROJECT: __test__/TestProject/TestProject.xcodeproj
+      INPUT_SCHEME: TestProject
+    steps:
+      - uses: maxim-lobanov/setup-xcode@v1.3.0
+        with:
+          xcode-version: ^12.4
+      - name: Install dependencies
+        if: github.event_name == 'pull_request'
+        run: sudo npm i -g typescript @vercel/ncc
+      - uses: actions/checkout@v2
+      - name: Generate action code
+        if: github.event_name == 'pull_request'
+        run: npm run deploy
+      - uses: sersoft-gmbh/xcodebuild-action@master
+        if: github.event_name == 'push'
+        with:
+          project: ${{env.INPUT_PROJECT}}
+          scheme: ${{env.INPUT_SCHEME}}
+          destination: ${{matrix.destination}}
+          skip-testing: ${{matrix.skip-testing}}
+          action: ${{matrix.action}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+      - uses: './'
+        if: github.event_name == 'pull_request'
+        with:
+          project: ${{env.INPUT_PROJECT}}
+          scheme: ${{env.INPUT_SCHEME}}
+          destination: ${{matrix.destination}}
+          skip-testing: ${{matrix.skip-testing}}
+          action: ${{matrix.action}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+      - name: Check for derived data
+        run: ls ~/Library/Developer/Xcode/DerivedData/ | grep -q '^TestProject.*'
+
+  test-workspace:
+    needs: deploy-action-code
+    if: always() && !failure() && !cancelled()
+    name: Test Workspace Build
+    runs-on: macos-11
+    strategy:
+      matrix:
+        destination:
+          - platform=macOS
+          - platform=iOS Simulator,OS=latest,name=iPhone 11
+        skip-testing: [ 'TestProjectTests/FailingTests' ]
+        action: [ test ]
+        use-xcpretty: [ true, false ]
+        include:
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+            skip-testing: ''
+            action: build
+            use-xcpretty: true
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+            skip-testing: ''
+            action: build
+            use-xcpretty: false
+    env:
+      INPUT_WORKSPACE: __test__/TestProject/TestProject.xcworkspace
+      INPUT_SCHEME: TestProject
+    steps:
+      - uses: maxim-lobanov/setup-xcode@v1.3.0
+        with:
+          xcode-version: ^12.4
+      - name: Install dependencies
+        if: github.event_name == 'pull_request'
+        run: sudo npm i -g typescript @vercel/ncc
+      - uses: actions/checkout@v2
+      - name: Generate action code
+        if: github.event_name == 'pull_request'
+        run: npm run deploy
+      - uses: sersoft-gmbh/xcodebuild-action@master
+        if: github.event_name == 'push'
+        with:
+          workspace: ${{env.INPUT_WORKSPACE}}
+          scheme: ${{env.INPUT_SCHEME}}
+          destination: ${{matrix.destination}}
+          skip-testing: ${{matrix.skip-testing}}
+          action: ${{matrix.action}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+      - uses: './'
+        if: github.event_name == 'pull_request'
+        with:
+          workspace: ${{env.INPUT_WORKSPACE}}
+          scheme: ${{env.INPUT_SCHEME}}
+          destination: ${{matrix.destination}}
+          skip-testing: ${{matrix.skip-testing}}
+          action: ${{matrix.action}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+      - name: Check for derived data
+        run: ls ~/Library/Developer/Xcode/DerivedData/ | grep -q '^TestProject.*'
+
+  test-package:
+    needs: deploy-action-code
+    if: always() && !failure() && !cancelled()
+    name: Test SPM Package Build
+    runs-on: macos-11
+    strategy:
+      matrix:
+        destination:
+          - platform=macOS
+          - platform=iOS Simulator,OS=latest,name=iPhone 11
+        use-xcpretty: [ true, false ]
+    env:
+      INPUT_SPM_PACKAGE: __test__/TestPackage
+      INPUT_SCHEME: TestPackage
+      INPUT_ACTION: test
+    steps:
+      - uses: maxim-lobanov/setup-xcode@v1.3.0
+        with:
+          xcode-version: ^12.4
+      - name: Install dependencies
+        if: github.event_name == 'pull_request'
+        run: sudo npm i -g typescript @vercel/ncc
+      - uses: actions/checkout@v2
+      - name: Generate action code
+        if: github.event_name == 'pull_request'
+        run: npm run deploy
+      - uses: sersoft-gmbh/xcodebuild-action@master
+        if: github.event_name == 'push'
+        with:
+          spm-package: ${{env.INPUT_SPM_PACKAGE}}
+          scheme: ${{env.INPUT_SCHEME}}
+          destination: ${{matrix.destination}}
+          action: ${{env.INPUT_ACTION}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+      - uses: sersoft-gmbh/xcodebuild-action@master
+        if: github.event_name == 'pull_request'
+        with:
+          spm-package: ${{env.INPUT_SPM_PACKAGE}}
+          scheme: ${{env.INPUT_SCHEME}}
+          destination: ${{matrix.destination}}
+          action: ${{env.INPUT_ACTION}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+      - name: Check for derived data
+        run: ls ~/Library/Developer/Xcode/DerivedData/ | grep -q '^TestPackage.*'
+
+  test-dry-run-project:
+    needs: deploy-action-code
+    if: always() && !failure() && !cancelled()
+    name: Dry Run Project Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        use-xcpretty: [ true, false ]
+    env:
+      INPUT_PROJECT: TestProject.xcodeproj
+      INPUT_TARGET: SomeTarget
+      INPUT_DESTINATION: platform=macOS
+      INPUT_CONFIGURATION: Debug
+      INPUT_SDK: SomeSDK
+      INPUT_ARCH: aarm64
+      INPUT_XCCONFIG: /SomeConfig.xcconfig
+      INPUT_JOBS: 42
+      INPUT_RESULT_BUNDLE_PATH: /here/and/there.bundle
+      INPUT_RESULT_BUNDLE_VERSION: 3
+      INPUT_DERIVED_DATA_PATH: /there/and/here
+      INPUT_XCROOT: /this/and/that.xcroot
+      INPUT_XCTESTRUN: /this/and/that.xctestrun
+      INPUT_TEST_PLAN: SomeTestPlan
+      INPUT_SKIP_TESTING: this
+      INPUT_BUILD_SETTINGS: ABC=DEF
+      INPUT_ACTION: action
+    steps:
+      - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
+      - uses: sersoft-gmbh/xcodebuild-action@master
+        if: github.event_name == 'push'
+        id: xcodebuild-master
+        with:
+          project: ${{env.INPUT_PROJECT}}
+          target: ${{env.INPUT_TARGET}}
+          destination: ${{env.INPUT_DESTINATION}}
+          configuration: ${{env.INPUT_CONFIGURATION}}
+          sdk: ${{env.INPUT_SDK}}
+          arch: ${{env.INPUT_ARCH}}
+          xcconfig: ${{env.INPUT_XCCONFIG}}
+          jobs: ${{env.INPUT_JOBS}}
+          parallelize-targets: true
+          enable-code-coverage: true
+          parallel-testing-enabled: true
+          quiet: true
+          hide-shell-script-environment: true
+          enable-address-sanitizer: false
+          enable-thread-sanitizer: false
+          enable-undefined-behavior-sanitizer: false
+          result-bundle-path: ${{env.INPUT_RESULT_BUNDLE_PATH}}
+          result-bundle-version: ${{env.INPUT_RESULT_BUNDLE_VERSION}}
+          derived-data-path: ${{env.INPUT_DERIVED_DATA_PATH}}
+          xcroot: ${{env.INPUT_XCROOT}}
+          xctestrun: ${{env.INPUT_XCTESTRUN}}
+          test-plan: ${{env.INPUT_TEST_PLAN}}
+          skip-testing: ${{env.INPUT_SKIP_TESTING}}
+          skip-unavailable-actions: true
+          allow-provisioning-updates: true
+          allow-provisioning-device-registration: true
+          build-settings: ${{env.INPUT_BUILD_SETTINGS}}
+          action: ${{env.INPUT_ACTION}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+          dry-run: true
+      - uses: './'
+        if: github.event_name == 'pull_request'
+        id: xcodebuild-local
+        with:
+          project: ${{env.INPUT_PROJECT}}
+          target: ${{env.INPUT_TARGET}}
+          destination: ${{env.INPUT_DESTINATION}}
+          configuration: ${{env.INPUT_CONFIGURATION}}
+          sdk: ${{env.INPUT_SDK}}
+          arch: ${{env.INPUT_ARCH}}
+          xcconfig: ${{env.INPUT_XCCONFIG}}
+          jobs: ${{env.INPUT_JOBS}}
+          parallelize-targets: true
+          enable-code-coverage: true
+          parallel-testing-enabled: true
+          quiet: true
+          hide-shell-script-environment: true
+          enable-address-sanitizer: false
+          enable-thread-sanitizer: false
+          enable-undefined-behavior-sanitizer: false
+          result-bundle-path: ${{env.INPUT_RESULT_BUNDLE_PATH}}
+          result-bundle-version: ${{env.INPUT_RESULT_BUNDLE_VERSION}}
+          derived-data-path: ${{env.INPUT_DERIVED_DATA_PATH}}
+          xcroot: ${{env.INPUT_XCROOT}}
+          xctestrun: ${{env.INPUT_XCTESTRUN}}
+          test-plan: ${{env.INPUT_TEST_PLAN}}
+          skip-testing: ${{env.INPUT_SKIP_TESTING}}
+          skip-unavailable-actions: true
+          allow-provisioning-updates: true
+          allow-provisioning-device-registration: true
+          build-settings: ${{env.INPUT_BUILD_SETTINGS}}
+          action: ${{env.INPUT_ACTION}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+          dry-run: true
+      - id: xcodebuild
+        run: |
+          if [ '${{github.event_name}}' == 'push' ]; then
+            echo "::set-output name=executed-command::${{steps.xcodebuild-master.outputs.executed-command}}"
+          else
+            echo "::set-output name=executed-command::${{steps.xcodebuild-local.outputs.executed-command}}"
+          fi
+      - name: Check executed command
+        run: |
+          EXPECTED_COMMAND="xcodebuild \
+          -project ${{env.INPUT_PROJECT}} \
+          -target ${{env.INPUT_TARGET}} \
+          -destination ${{env.INPUT_DESTINATION}} \
+          -configuration ${{env.INPUT_CONFIGURATION}} \
+          -sdk ${{env.INPUT_SDK}} \
+          -arch ${{env.INPUT_ARCH}} \
+          -xcconfig ${{env.INPUT_XCCONFIG}} \
+          -jobs ${{env.INPUT_JOBS}} \
+          -parallelizeTargets \
+          -enableCodeCoverage YES \
+          -parallel-testing-enabled YES \
+          -quiet \
+          -hideShellScriptEnvironment \
+          -enableAddressSanitizer NO \
+          -enableThreadSanitizer NO \
+          -enableUndefinedBehaviorSanitizer NO \
+          -resultBundlePath ${{env.INPUT_RESULT_BUNDLE_PATH}} \
+          -resultBundleVersion ${{env.INPUT_RESULT_BUNDLE_VERSION}} \
+          -derivedDataPath ${{env.INPUT_DERIVED_DATA_PATH}} \
+          -xcroot ${{env.INPUT_XCROOT}} \
+          -xctestrun ${{env.INPUT_XCTESTRUN}} \
+          -testPlan ${{env.INPUT_TEST_PLAN}} \
+          -skip-testing ${{env.INPUT_SKIP_TESTING}} \
+          -skipUnavailableActions \
+          -allowProvisioningUpdates \
+          -allowProvisioningDeviceRegistration \
+          ${{env.INPUT_BUILD_SETTINGS}} \
+          ${{env.INPUT_ACTION}}"
+          if [ "${{matrix.use-xcpretty}}" == "true" ]; then
+            EXPECTED_COMMAND="${EXPECTED_COMMAND} | xcpretty"
+          fi
+          ACTUAL_COMMAND="${{steps.xcodebuild.outputs.executed-command}}"
+          if [ "${EXPECTED_COMMAND}" != "${ACTUAL_COMMAND}" ]; then
+            printf "::error::Executed command did not match expectations!\nExecuted: ${ACTUAL_COMMAND}\nExpected: ${EXPECTED_COMMAND}\n"
+            exit 1
+          fi
+
+  test-dry-run-workspace:
+    needs: deploy-action-code
+    if: always() && !failure() && !cancelled()
+    name: Dry Run Workspace Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        use-xcpretty: [ true, false ]
+    env:
+      INPUT_WORKSPACE: TestWorkspace.xcworkspace
+      INPUT_SCHEME: TestScheme
+      INPUT_TARGET: SomeTarget
+      INPUT_DESTINATION: platform=macOS
+      INPUT_CONFIGURATION: Debug
+      INPUT_SDK: SomeSDK
+      INPUT_ARCH: aarm64
+      INPUT_XCCONFIG: /SomeConfig.xcconfig
+      INPUT_JOBS: 42
+      INPUT_RESULT_BUNDLE_PATH: /here/and/there.bundle
+      INPUT_RESULT_BUNDLE_VERSION: 3
+      INPUT_DERIVED_DATA_PATH: /there/and/here
+      INPUT_XCROOT: /this/and/that.xcroot
+      INPUT_XCTESTRUN: /this/and/that.xctestrun
+      INPUT_TEST_PLAN: SomeTestPlan
+      INPUT_SKIP_TESTING: this
+      INPUT_BUILD_SETTINGS: ABC=DEF
+      INPUT_ACTION: action
+    steps:
+      - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
+      - uses: sersoft-gmbh/xcodebuild-action@master
+        if: github.event_name == 'push'
+        id: xcodebuild-master
+        with:
+          workspace: ${{env.INPUT_WORKSPACE}}
+          scheme: ${{env.INPUT_SCHEME}}
+          target: ${{env.INPUT_TARGET}}
+          destination: ${{env.INPUT_DESTINATION}}
+          configuration: ${{env.INPUT_CONFIGURATION}}
+          sdk: ${{env.INPUT_SDK}}
+          arch: ${{env.INPUT_ARCH}}
+          xcconfig: ${{env.INPUT_XCCONFIG}}
+          jobs: ${{env.INPUT_JOBS}}
+          parallelize-targets: true
+          enable-code-coverage: true
+          parallel-testing-enabled: true
+          quiet: true
+          hide-shell-script-environment: true
+          enable-address-sanitizer: false
+          enable-thread-sanitizer: false
+          enable-undefined-behavior-sanitizer: false
+          result-bundle-path: ${{env.INPUT_RESULT_BUNDLE_PATH}}
+          result-bundle-version: ${{env.INPUT_RESULT_BUNDLE_VERSION}}
+          derived-data-path: ${{env.INPUT_DERIVED_DATA_PATH}}
+          xcroot: ${{env.INPUT_XCROOT}}
+          xctestrun: ${{env.INPUT_XCTESTRUN}}
+          test-plan: ${{env.INPUT_TEST_PLAN}}
+          skip-testing: ${{env.INPUT_SKIP_TESTING}}
+          skip-unavailable-actions: true
+          allow-provisioning-updates: true
+          allow-provisioning-device-registration: true
+          build-settings: ${{env.INPUT_BUILD_SETTINGS}}
+          action: ${{env.INPUT_ACTION}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+          dry-run: true
+      - uses: './'
+        if: github.event_name == 'pull_request'
+        id: xcodebuild-local
+        with:
+          workspace: ${{env.INPUT_WORKSPACE}}
+          scheme: ${{env.INPUT_SCHEME}}
+          target: ${{env.INPUT_TARGET}}
+          destination: ${{env.INPUT_DESTINATION}}
+          configuration: ${{env.INPUT_CONFIGURATION}}
+          sdk: ${{env.INPUT_SDK}}
+          arch: ${{env.INPUT_ARCH}}
+          xcconfig: ${{env.INPUT_XCCONFIG}}
+          jobs: ${{env.INPUT_JOBS}}
+          parallelize-targets: true
+          enable-code-coverage: true
+          parallel-testing-enabled: true
+          quiet: true
+          hide-shell-script-environment: true
+          enable-address-sanitizer: false
+          enable-thread-sanitizer: false
+          enable-undefined-behavior-sanitizer: false
+          result-bundle-path: ${{env.INPUT_RESULT_BUNDLE_PATH}}
+          result-bundle-version: ${{env.INPUT_RESULT_BUNDLE_VERSION}}
+          derived-data-path: ${{env.INPUT_DERIVED_DATA_PATH}}
+          xcroot: ${{env.INPUT_XCROOT}}
+          xctestrun: ${{env.INPUT_XCTESTRUN}}
+          test-plan: ${{env.INPUT_TEST_PLAN}}
+          skip-testing: ${{env.INPUT_SKIP_TESTING}}
+          skip-unavailable-actions: true
+          allow-provisioning-updates: true
+          allow-provisioning-device-registration: true
+          build-settings: ${{env.INPUT_BUILD_SETTINGS}}
+          action: ${{env.INPUT_ACTION}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+          dry-run: true
+      - id: xcodebuild
+        run: |
+          if [ '${{github.event_name}}' == 'push' ]; then
+            echo "::set-output name=executed-command::${{steps.xcodebuild-master.outputs.executed-command}}"
+          else
+            echo "::set-output name=executed-command::${{steps.xcodebuild-local.outputs.executed-command}}"
+          fi
+      - name: Check executed command
+        run: |
+          EXPECTED_COMMAND="xcodebuild \
+          -workspace ${{env.INPUT_WORKSPACE}} \
+          -scheme ${{env.INPUT_SCHEME}} \
+          -target ${{env.INPUT_TARGET}} \
+          -destination ${{env.INPUT_DESTINATION}} \
+          -configuration ${{env.INPUT_CONFIGURATION}} \
+          -sdk ${{env.INPUT_SDK}} \
+          -arch ${{env.INPUT_ARCH}} \
+          -xcconfig ${{env.INPUT_XCCONFIG}} \
+          -jobs ${{env.INPUT_JOBS}} \
+          -parallelizeTargets \
+          -enableCodeCoverage YES \
+          -parallel-testing-enabled YES \
+          -quiet \
+          -hideShellScriptEnvironment \
+          -enableAddressSanitizer NO \
+          -enableThreadSanitizer NO \
+          -enableUndefinedBehaviorSanitizer NO \
+          -resultBundlePath ${{env.INPUT_RESULT_BUNDLE_PATH}} \
+          -resultBundleVersion ${{env.INPUT_RESULT_BUNDLE_VERSION}} \
+          -derivedDataPath ${{env.INPUT_DERIVED_DATA_PATH}} \
+          -xcroot ${{env.INPUT_XCROOT}} \
+          -xctestrun ${{env.INPUT_XCTESTRUN}} \
+          -testPlan ${{env.INPUT_TEST_PLAN}} \
+          -skip-testing ${{env.INPUT_SKIP_TESTING}} \
+          -skipUnavailableActions \
+          -allowProvisioningUpdates \
+          -allowProvisioningDeviceRegistration \
+          ${{env.INPUT_BUILD_SETTINGS}} \
+          ${{env.INPUT_ACTION}}"
+          if [ "${{matrix.use-xcpretty}}" == "true" ]; then
+            EXPECTED_COMMAND="${EXPECTED_COMMAND} | xcpretty"
+          fi
+          ACTUAL_COMMAND="${{steps.xcodebuild.outputs.executed-command}}"
+          if [ "${EXPECTED_COMMAND}" != "${ACTUAL_COMMAND}" ]; then
+            printf "::error::Executed command did not match expectations!\nExecuted: ${ACTUAL_COMMAND}\nExpected: ${EXPECTED_COMMAND}\n"
+            exit 1
+          fi
+
+  test-dry-run-package:
+    needs: deploy-action-code
+    if: always() && !failure() && !cancelled()
+    name: Dry Run SPM Package Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        use-xcpretty: [ true, false ]
+    env:
+      INPUT_SPM_PACKAGE: /path/to/TestPackage
+      INPUT_SCHEME: TestScheme
+      INPUT_TARGET: SomeTarget
+      INPUT_DESTINATION: platform=macOS
+      INPUT_CONFIGURATION: Debug
+      INPUT_SDK: SomeSDK
+      INPUT_ARCH: aarm64
+      INPUT_XCCONFIG: /SomeConfig.xcconfig
+      INPUT_JOBS: 42
+      INPUT_RESULT_BUNDLE_PATH: /here/and/there.bundle
+      INPUT_RESULT_BUNDLE_VERSION: 3
+      INPUT_DERIVED_DATA_PATH: /there/and/here
+      INPUT_XCROOT: /this/and/that.xcroot
+      INPUT_XCTESTRUN: /this/and/that.xctestrun
+      INPUT_TEST_PLAN: SomeTestPlan
+      INPUT_SKIP_TESTING: this
+      INPUT_BUILD_SETTINGS: ABC=DEF
+      INPUT_ACTION: action
+    steps:
+      - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
+      - uses: sersoft-gmbh/xcodebuild-action@master
+        if: github.event_name == 'push'
+        id: xcodebuild-master
+        with:
+          spm-package: ${{env.INPUT_SPM_PACKAGE}}
+          scheme: ${{env.INPUT_SCHEME}}
+          target: ${{env.INPUT_TARGET}}
+          destination: ${{env.INPUT_DESTINATION}}
+          configuration: ${{env.INPUT_CONFIGURATION}}
+          sdk: ${{env.INPUT_SDK}}
+          arch: ${{env.INPUT_ARCH}}
+          xcconfig: ${{env.INPUT_XCCONFIG}}
+          jobs: ${{env.INPUT_JOBS}}
+          parallelize-targets: true
+          enable-code-coverage: true
+          parallel-testing-enabled: true
+          quiet: true
+          hide-shell-script-environment: true
+          enable-address-sanitizer: false
+          enable-thread-sanitizer: false
+          enable-undefined-behavior-sanitizer: false
+          result-bundle-path: ${{env.INPUT_RESULT_BUNDLE_PATH}}
+          result-bundle-version: ${{env.INPUT_RESULT_BUNDLE_VERSION}}
+          derived-data-path: ${{env.INPUT_DERIVED_DATA_PATH}}
+          xcroot: ${{env.INPUT_XCROOT}}
+          xctestrun: ${{env.INPUT_XCTESTRUN}}
+          test-plan: ${{env.INPUT_TEST_PLAN}}
+          skip-testing: ${{env.INPUT_SKIP_TESTING}}
+          skip-unavailable-actions: true
+          allow-provisioning-updates: true
+          allow-provisioning-device-registration: true
+          build-settings: ${{env.INPUT_BUILD_SETTINGS}}
+          action: ${{env.INPUT_ACTION}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+          dry-run: true
+      - uses: './'
+        if: github.event_name == 'pull_request'
+        id: xcodebuild-local
+        with:
+          spm-package: ${{env.INPUT_SPM_PACKAGE}}
+          scheme: ${{env.INPUT_SCHEME}}
+          target: ${{env.INPUT_TARGET}}
+          destination: ${{env.INPUT_DESTINATION}}
+          configuration: ${{env.INPUT_CONFIGURATION}}
+          sdk: ${{env.INPUT_SDK}}
+          arch: ${{env.INPUT_ARCH}}
+          xcconfig: ${{env.INPUT_XCCONFIG}}
+          jobs: ${{env.INPUT_JOBS}}
+          parallelize-targets: true
+          enable-code-coverage: true
+          parallel-testing-enabled: true
+          quiet: true
+          hide-shell-script-environment: true
+          enable-address-sanitizer: false
+          enable-thread-sanitizer: false
+          enable-undefined-behavior-sanitizer: false
+          result-bundle-path: ${{env.INPUT_RESULT_BUNDLE_PATH}}
+          result-bundle-version: ${{env.INPUT_RESULT_BUNDLE_VERSION}}
+          derived-data-path: ${{env.INPUT_DERIVED_DATA_PATH}}
+          xcroot: ${{env.INPUT_XCROOT}}
+          xctestrun: ${{env.INPUT_XCTESTRUN}}
+          test-plan: ${{env.INPUT_TEST_PLAN}}
+          skip-testing: ${{env.INPUT_SKIP_TESTING}}
+          skip-unavailable-actions: true
+          allow-provisioning-updates: true
+          allow-provisioning-device-registration: true
+          build-settings: ${{env.INPUT_BUILD_SETTINGS}}
+          action: ${{env.INPUT_ACTION}}
+          use-xcpretty: ${{matrix.use-xcpretty}}
+          dry-run: true
+      - id: xcodebuild
+        run: |
+          if [ '${{github.event_name}}' == 'push' ]; then
+            echo "::set-output name=executed-command::${{steps.xcodebuild-master.outputs.executed-command}}"
+          else
+            echo "::set-output name=executed-command::${{steps.xcodebuild-local.outputs.executed-command}}"
+          fi
+      - name: Check executed command
+        run: |
+          EXPECTED_COMMAND="pushd ${{env.INPUT_SPM_PACKAGE}} && \
+          xcodebuild \
+          -scheme ${{env.INPUT_SCHEME}} \
+          -target ${{env.INPUT_TARGET}} \
+          -destination ${{env.INPUT_DESTINATION}} \
+          -configuration ${{env.INPUT_CONFIGURATION}} \
+          -sdk ${{env.INPUT_SDK}} \
+          -arch ${{env.INPUT_ARCH}} \
+          -xcconfig ${{env.INPUT_XCCONFIG}} \
+          -jobs ${{env.INPUT_JOBS}} \
+          -parallelizeTargets \
+          -enableCodeCoverage YES \
+          -parallel-testing-enabled YES \
+          -quiet \
+          -hideShellScriptEnvironment \
+          -enableAddressSanitizer NO \
+          -enableThreadSanitizer NO \
+          -enableUndefinedBehaviorSanitizer NO \
+          -resultBundlePath ${{env.INPUT_RESULT_BUNDLE_PATH}} \
+          -resultBundleVersion ${{env.INPUT_RESULT_BUNDLE_VERSION}} \
+          -derivedDataPath ${{env.INPUT_DERIVED_DATA_PATH}} \
+          -xcroot ${{env.INPUT_XCROOT}} \
+          -xctestrun ${{env.INPUT_XCTESTRUN}} \
+          -testPlan ${{env.INPUT_TEST_PLAN}} \
+          -skip-testing ${{env.INPUT_SKIP_TESTING}} \
+          -skipUnavailableActions \
+          -allowProvisioningUpdates \
+          -allowProvisioningDeviceRegistration \
+          ${{env.INPUT_BUILD_SETTINGS}} \
+          ${{env.INPUT_ACTION}}"
+          if [ "${{matrix.use-xcpretty}}" == "true" ]; then
+            EXPECTED_COMMAND="${EXPECTED_COMMAND} | xcpretty"
+          fi
+          EXPECTED_COMMAND="${EXPECTED_COMMAND} ; popd"
+          ACTUAL_COMMAND="${{steps.xcodebuild.outputs.executed-command}}"
+          if [ "${EXPECTED_COMMAND}" != "${ACTUAL_COMMAND}" ]; then
+            printf "::error::Executed command did not match expectations!\nExecuted: ${ACTUAL_COMMAND}\nExpected: ${EXPECTED_COMMAND}\n"
+            exit 1
+          fi

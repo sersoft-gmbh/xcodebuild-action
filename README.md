@@ -1,6 +1,6 @@
 # Xcodebuild Action
 
-[![Deploy](https://github.com/sersoft-gmbh/xcodebuild-action/actions/workflows/main-deploy.yml/badge.svg)](https://github.com/sersoft-gmbh/xcodebuild-action/actions/workflows/main-deploy.yml)
+[![Tests](https://github.com/sersoft-gmbh/xcodebuild-action/actions/workflows/tests.yml/badge.svg)](https://github.com/sersoft-gmbh/xcodebuild-action/actions/workflows/tests.yml)
 
 This action runs `xcodebuild` with the given options.
 
@@ -91,6 +91,10 @@ The path that should be used for the result bundle. See also `xcodebuild`'s `-re
 ### `result-bundle-version`
 
 The version that should be used for the result bundle. See also `xcodebuild`'s `-resultBundleVersion`.
+
+### `cloned-source-packages-path`
+
+The path that should be used for the cloning of remote packages. See also `xcodebuild`'s `-clonedSourcePackagesDirPath`.
 
 ### `derived-data-path`
 
