@@ -219,6 +219,13 @@ jobs:
       INPUT_ACTION: action
     steps:
       - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
+      - name: Install dependencies
+        if: github.event_name == 'pull_request'
+        run: sudo npm i -g typescript @vercel/ncc
+      - uses: actions/checkout@v2
+      - name: Generate action code
+        if: github.event_name == 'pull_request'
+        run: npm run deploy
       - uses: sersoft-gmbh/xcodebuild-action@master
         if: github.event_name == 'push'
         id: xcodebuild-master
@@ -363,6 +370,13 @@ jobs:
       INPUT_ACTION: action
     steps:
       - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
+      - name: Install dependencies
+        if: github.event_name == 'pull_request'
+        run: sudo npm i -g typescript @vercel/ncc
+      - uses: actions/checkout@v2
+      - name: Generate action code
+        if: github.event_name == 'pull_request'
+        run: npm run deploy
       - uses: sersoft-gmbh/xcodebuild-action@master
         if: github.event_name == 'push'
         id: xcodebuild-master
@@ -510,6 +524,13 @@ jobs:
       INPUT_ACTION: action
     steps:
       - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
+      - name: Install dependencies
+        if: github.event_name == 'pull_request'
+        run: sudo npm i -g typescript @vercel/ncc
+      - uses: actions/checkout@v2
+      - name: Generate action code
+        if: github.event_name == 'pull_request'
+        run: npm run deploy
       - uses: sersoft-gmbh/xcodebuild-action@master
         if: github.event_name == 'push'
         id: xcodebuild-master
