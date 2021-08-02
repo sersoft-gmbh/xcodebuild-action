@@ -218,7 +218,12 @@ jobs:
       INPUT_BUILD_SETTINGS: ABC=DEF
       INPUT_ACTION: action
     steps:
-      - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
+      - run: echo "RUNNER_DEBUG=1" >> $GITHUB_ENV
+        if: github.event_name == 'pull_request' && env.RUNNER_DEBUG != 1
+      - run: test "${{env.RUNNER_DEBUG}}" == "1"
+        if: github.event_name == 'pull_request'
+      - run: test '${{secrets.ACTIONS_STEP_DEBUG}}' == 'true'
+        if: github.event_name == 'push'
       - name: Install dependencies
         if: github.event_name == 'pull_request'
         run: sudo npm i -g typescript @vercel/ncc
@@ -369,7 +374,12 @@ jobs:
       INPUT_BUILD_SETTINGS: ABC=DEF
       INPUT_ACTION: action
     steps:
-      - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
+      - run: echo "RUNNER_DEBUG=1" >> $GITHUB_ENV
+        if: github.event_name == 'pull_request' && env.RUNNER_DEBUG != 1
+      - run: test "${{env.RUNNER_DEBUG}}" == "1"
+        if: github.event_name == 'pull_request'
+      - run: test '${{secrets.ACTIONS_STEP_DEBUG}}' == 'true'
+        if: github.event_name == 'push'
       - name: Install dependencies
         if: github.event_name == 'pull_request'
         run: sudo npm i -g typescript @vercel/ncc
@@ -523,7 +533,12 @@ jobs:
       INPUT_BUILD_SETTINGS: ABC=DEF
       INPUT_ACTION: action
     steps:
-      - run: test "${{secrets.ACTIONS_STEP_DEBUG}}" == "true"
+      - run: echo "RUNNER_DEBUG=1" >> $GITHUB_ENV
+        if: github.event_name == 'pull_request' && env.RUNNER_DEBUG != 1
+      - run: test "${{env.RUNNER_DEBUG}}" == "1"
+        if: github.event_name == 'pull_request'
+      - run: test '${{secrets.ACTIONS_STEP_DEBUG}}' == 'true'
+        if: github.event_name == 'push'
       - name: Install dependencies
         if: github.event_name == 'pull_request'
         run: sudo npm i -g typescript @vercel/ncc
