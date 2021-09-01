@@ -72,7 +72,7 @@ const SIGNAL_NAME_TO_NUMBER_MAP = {
 async function runXcodebuild(args, useXcpretty) {
     var _a;
     const xcodebuildOut = useXcpretty ? 'pipe' : process.stdout;
-    const xcodebuild = child_process_1.spawn('xcodebuild', args, { stdio: ['inherit', xcodebuildOut, process.stderr] });
+    const xcodebuild = (0, child_process_1.spawn)('xcodebuild', args, { stdio: ['inherit', xcodebuildOut, process.stderr] });
     let finishedPromise = new Promise((resolve, reject) => {
         xcodebuild.on('error', reject);
         xcodebuild.on('exit', (exitCode, signal) => {
@@ -85,7 +85,7 @@ async function runXcodebuild(args, useXcpretty) {
         });
     });
     if (useXcpretty) {
-        const xcpretty = child_process_1.spawn('xcpretty', { stdio: ['pipe', process.stdout, process.stderr] });
+        const xcpretty = (0, child_process_1.spawn)('xcpretty', { stdio: ['pipe', process.stdout, process.stderr] });
         (_a = xcodebuild.stdout) === null || _a === void 0 ? void 0 : _a.pipe(xcpretty.stdin);
         finishedPromise = finishedPromise.then((xcodeCode) => new Promise((resolve, reject) => {
             xcpretty.on('error', reject);
