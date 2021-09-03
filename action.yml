@@ -103,6 +103,10 @@ inputs:
     description: Whether the output of xcodebuild should be forwarded to xcpretty.
     required: true
     default: 'true'
+  xcpretty-colored-output:
+    description: Whether xcpretty should use colored output (e.g. xcpretty --color).
+    required: true
+    default: 'true'
   dry-run:
     description: '<TEST ONLY> Whether the commands should only be composed and not actually run. Only used in test.'
     required: false
