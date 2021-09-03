@@ -69,7 +69,7 @@ const SIGNAL_NAME_TO_NUMBER_MAP = {
     'SIGINFO': 98,
     'SIGLOST': 99,
 };
-async function runXcodebuild(args, useXcpretty) {
+async function runXcodebuild(args, useXcpretty, xcprettyArgs) {
     var _a;
     const xcodebuildOut = useXcpretty ? 'pipe' : process.stdout;
     const xcodebuild = (0, child_process_1.spawn)('xcodebuild', args, { stdio: ['inherit', xcodebuildOut, process.stderr] });
@@ -85,7 +85,7 @@ async function runXcodebuild(args, useXcpretty) {
         });
     });
     if (useXcpretty) {
-        const xcpretty = (0, child_process_1.spawn)('xcpretty', { stdio: ['pipe', process.stdout, process.stderr] });
+        const xcpretty = (0, child_process_1.spawn)('xcpretty', xcprettyArgs, { stdio: ['pipe', process.stdout, process.stderr] });
         (_a = xcodebuild.stdout) === null || _a === void 0 ? void 0 : _a.pipe(xcpretty.stdin);
         finishedPromise = finishedPromise.then((xcodeCode) => new Promise((resolve, reject) => {
             xcpretty.on('error', reject);
@@ -196,7 +196,8 @@ async function main() {
     }
     const action = core.getInput('action', { required: true });
     xcodebuildArgs.push(...action.split(' '));
-    const useXcpretty = core.getInput('use-xcpretty', { required: true }) == 'true';
+    const useXcpretty = core.getBooleanInput('use-xcpretty', { required: true });
+    const useColoredXCPrettyOutput = core.getBooleanInput('xcpretty-colored-output', { required: true });
     const dryRun = core.isDebug() && core.getInput('dry-run') == 'true';
     // We allow other platforms for dry-runs since this speeds up tests (more parallel builds).
     if (!dryRun && process.platform != "darwin") {
@@ -207,6 +208,9 @@ async function main() {
         let commandParts = ['xcodebuild'].concat(xcodebuildArgs);
         if (useXcpretty) {
             commandParts.push('|', 'xcpretty');
+            if (useColoredXCPrettyOutput) {
+                commandParts.push('--color');
+            }
         }
         if (spmPackage) {
             commandParts = ['pushd', spmPackage, '&&', ...commandParts, ';', 'popd'];
@@ -222,7 +226,7 @@ async function main() {
             process.chdir(spmPackage);
         }
         try {
-            await runXcodebuild(xcodebuildArgs, useXcpretty);
+            await runXcodebuild(xcodebuildArgs, useXcpretty, useColoredXCPrettyOutput ? ['--color'] : []);
         }
         finally {
             if (spmPackage) {
