@@ -180,7 +180,7 @@ jobs:
           destination: ${{matrix.destination}}
           action: ${{env.INPUT_ACTION}}
           use-xcpretty: ${{matrix.use-xcpretty}}
-      - uses: sersoft-gmbh/xcodebuild-action@master
+      - uses: './'
         if: github.event_name == 'pull_request'
         with:
           spm-package: ${{env.INPUT_SPM_PACKAGE}}
