@@ -142,6 +142,11 @@ Default: `test`
 Whether the output of `xcodebuild` should be forwarded to `xcpretty`.<br/>
 Default: `true`
 
+### `xcpretty-colored-output`
+
+Whether `xcpretty` should use colored output (e.g. `xcpretty --color`).<br/>
+Default: `true`
+
 
 ## Outputs
 
