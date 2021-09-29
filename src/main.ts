@@ -111,13 +111,24 @@ async function main() {
         }
     }
 
-    function _addInputArg(inputName: string, opts?: { argName?: string, isPath?: boolean }) {
-        let value = core.getInput(inputName);
-        if (value) {
-            if (opts?.isPath) {
-                value = path.resolve(value);
+    function _addInputArg(inputName: string, opts?: { argName?: string, isPath?: boolean, isList?: boolean }) {
+        function _processValue(value: string, skipEmptyValues: boolean) {
+            let processedValue = value;
+            if (skipEmptyValues) {
+                processedValue = processedValue.trim();
+                if (processedValue.length <= 0) return;
             }
-            _pushArgs(inputName, opts?.argName, value);
+            if (opts?.isPath) {
+                processedValue = path.resolve(processedValue);
+            }
+            _pushArgs(inputName, opts?.argName, processedValue);
+        }
+        if (opts?.isList) {
+            let values = core.getMultilineInput(inputName);
+            if (values) values.forEach(value => _processValue(value, true));
+        } else {
+            let value = core.getInput(inputName);
+            if (value) _processValue(value, false);
         }
     }
 
@@ -127,6 +138,10 @@ async function main() {
 
     function addPathArg(inputName: string, argName?: string) {
         _addInputArg(inputName, { argName: argName, isPath: true });
+    }
+
+    function addListArg(inputName: string, argName?: string) {
+        _addInputArg(inputName, { argName: argName, isList: true });
     }
 
     function addBoolArg(inputName: string, argName?: string) {
@@ -152,6 +167,8 @@ async function main() {
     addFlagArg('parallelize-targets', 'parallelizeTargets');
     addBoolArg('enable-code-coverage', 'enableCodeCoverage');
     addBoolArg('parallel-testing-enabled');
+    addInputArg('maximum-concurrent-test-device-destinations');
+    addInputArg('maximum-concurrent-test-simulator-destinations');
     addFlagArg('quiet');
     addFlagArg('hide-shell-script-environment', 'hideShellScriptEnvironment');
     addBoolArg('enable-address-sanitizer', 'enableAddressSanitizer');
@@ -164,7 +181,8 @@ async function main() {
     addPathArg('xcroot');
     addPathArg('xctestrun');
     addInputArg('test-plan', 'testPlan');
-    addInputArg('skip-testing');
+    addListArg('only-testing');
+    addListArg('skip-testing');
     addFlagArg('skip-unavailable-actions', 'skipUnavailableActions');
     addFlagArg('allow-provisioning-updates', 'allowProvisioningUpdates');
     addFlagArg('allow-provisioning-device-registration', 'allowProvisioningDeviceRegistration');
