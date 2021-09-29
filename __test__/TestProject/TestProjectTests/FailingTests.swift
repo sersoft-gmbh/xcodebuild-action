@@ -20,7 +20,11 @@ final class FailingTests: XCTestCase {
         try super.tearDownWithError()
     }
 
-    func testFailing() throws {
-        XCTFail("This tests always fails!")
+    func testFailing1() throws {
+        XCTFail("This tests (1) always fails!")
+    }
+
+    func testFailing2() throws {
+        XCTFail("This tests (2) always fails!")
     }
 }
