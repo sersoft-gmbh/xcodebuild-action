@@ -72,6 +72,14 @@ If `true`, code coverage is enabled while testing. See also `xcodebuild`'s `-ena
 
 If `true`, tests are executed in parallel. See also `xcodebuild`'s `-parallel-testing-enabled`.
 
+### `maximum-concurrent-test-device-destinations`
+
+The maximum number of device destinations to run in parallel. See also `xcodebuild`'s `-maximum-concurrent-test-device-destinations`.
+
+### `maximum-concurrent-test-simulator-destinations`
+
+The maximum number of simulator destinations to run in parallel. See also `xcodebuild`'s `-maximum-concurrent-test-simulator-destinations`.
+
 ### `enable-address-sanitizer`
 
 Whether the address sanitizer should be enabled. See also `xcodebuild`'s `-enableAddressSanitizer`.
@@ -112,9 +120,13 @@ The path to a test run specification. See also `xcodebuild`'s `-xctestrun`.
 
 The name of the test plan associated with the scheme to use for testing. See also `xcodebuild`'s `-testPlan`.
 
+### `only-testing`
+
+A list of tests to run. This can be multiline list of test identifiers. See also `xcodebuild`'s `-only-testing`.
+
 ### `skip-testing`
 
-A list of tests to skip.
+A list of tests to skip. This can be multiline list of test identifiers. See also `xcodebuild`'s `-only-testing`.
 
 ### `skip-unavailable-actions`
 

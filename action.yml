@@ -44,6 +44,12 @@ inputs:
   parallel-testing-enabled:
     description: If `true`, tests are executed in parallel. See also `xcodebuild`'s `-parallel-testing-enabled`.
     required: false
+  maximum-concurrent-test-device-destinations:
+    description: The maximum number of device destinations to run in parallel. See also `xcodebuild`'s `-maximum-concurrent-test-device-destinations`.
+    required: false
+  maximum-concurrent-test-simulator-destinations:
+    description: The maximum number of simulator destinations to run in parallel. See also `xcodebuild`'s `-maximum-concurrent-test-simulator-destinations`.
+    required: false
   quiet:
     description: If `true`, xcodebuild won't print anything except warnings and errors. See also `xcodebuild`'s `-quiet`.
     required: false
@@ -80,8 +86,11 @@ inputs:
   test-plan:
     description: The name of the test plan associated with the scheme to use for testing. See also `xcodebuild`'s `-testPlan`.
     required: false
+  only-testing:
+    description: A (line-separated) list of tests to run. See also `xcodebuild`'s `-only-testing`.
+    required: false
   skip-testing:
-    description: A list of tests to skip. See also `xcodebuild`'s `-skip-testing`.
+    description: A (line-separated) list of tests to skip. See also `xcodebuild`'s `-skip-testing`.
     required: false
   skip-unavailable-actions:
     description: Whether unavailable actions should be skipped instead of failing the execution. See also `xcodebuild`'s `-skipUnavailableActions`.

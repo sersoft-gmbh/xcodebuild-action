@@ -214,7 +214,8 @@ jobs:
       INPUT_XCROOT: /this/and/that.xcroot
       INPUT_XCTESTRUN: /this/and/that.xctestrun
       INPUT_TEST_PLAN: SomeTestPlan
-      INPUT_SKIP_TESTING: this
+      INPUT_SKIP_TESTING_0: this
+      INPUT_SKIP_TESTING_1: that
       INPUT_BUILD_SETTINGS: ABC=DEF
       INPUT_ACTION: action
       INPUT_XCPRETTY_COLORED_OUTPUT: 'true'
@@ -258,7 +259,9 @@ jobs:
           xcroot: ${{env.INPUT_XCROOT}}
           xctestrun: ${{env.INPUT_XCTESTRUN}}
           test-plan: ${{env.INPUT_TEST_PLAN}}
-          skip-testing: ${{env.INPUT_SKIP_TESTING}}
+          skip-testing: |
+            ${{env.INPUT_SKIP_TESTING_0}}
+            ${{env.INPUT_SKIP_TESTING_1}}
           skip-unavailable-actions: true
           allow-provisioning-updates: true
           allow-provisioning-device-registration: true
@@ -293,7 +296,9 @@ jobs:
           xcroot: ${{env.INPUT_XCROOT}}
           xctestrun: ${{env.INPUT_XCTESTRUN}}
           test-plan: ${{env.INPUT_TEST_PLAN}}
-          skip-testing: ${{env.INPUT_SKIP_TESTING}}
+          skip-testing: |
+            ${{env.INPUT_SKIP_TESTING_0}}
+            ${{env.INPUT_SKIP_TESTING_1}}
           skip-unavailable-actions: true
           allow-provisioning-updates: true
           allow-provisioning-device-registration: true
@@ -334,7 +339,8 @@ jobs:
           -xcroot ${{env.INPUT_XCROOT}} \
           -xctestrun ${{env.INPUT_XCTESTRUN}} \
           -testPlan ${{env.INPUT_TEST_PLAN}} \
-          -skip-testing ${{env.INPUT_SKIP_TESTING}} \
+          -skip-testing ${{env.INPUT_SKIP_TESTING_0}} \
+          -skip-testing ${{env.INPUT_SKIP_TESTING_1}} \
           -skipUnavailableActions \
           -allowProvisioningUpdates \
           -allowProvisioningDeviceRegistration \
@@ -376,7 +382,8 @@ jobs:
       INPUT_XCROOT: /this/and/that.xcroot
       INPUT_XCTESTRUN: /this/and/that.xctestrun
       INPUT_TEST_PLAN: SomeTestPlan
-      INPUT_SKIP_TESTING: this
+      INPUT_SKIP_TESTING_0: this
+      INPUT_SKIP_TESTING_1: that
       INPUT_BUILD_SETTINGS: ABC=DEF
       INPUT_ACTION: action
       INPUT_XCPRETTY_COLORED_OUTPUT: 'true'
@@ -421,7 +428,9 @@ jobs:
           xcroot: ${{env.INPUT_XCROOT}}
           xctestrun: ${{env.INPUT_XCTESTRUN}}
           test-plan: ${{env.INPUT_TEST_PLAN}}
-          skip-testing: ${{env.INPUT_SKIP_TESTING}}
+          skip-testing: |
+            ${{env.INPUT_SKIP_TESTING_0}}
+            ${{env.INPUT_SKIP_TESTING_1}}
           skip-unavailable-actions: true
           allow-provisioning-updates: true
           allow-provisioning-device-registration: true
@@ -457,7 +466,9 @@ jobs:
           xcroot: ${{env.INPUT_XCROOT}}
           xctestrun: ${{env.INPUT_XCTESTRUN}}
           test-plan: ${{env.INPUT_TEST_PLAN}}
-          skip-testing: ${{env.INPUT_SKIP_TESTING}}
+          skip-testing: |
+            ${{env.INPUT_SKIP_TESTING_0}}
+            ${{env.INPUT_SKIP_TESTING_1}}
           skip-unavailable-actions: true
           allow-provisioning-updates: true
           allow-provisioning-device-registration: true
@@ -499,7 +510,8 @@ jobs:
           -xcroot ${{env.INPUT_XCROOT}} \
           -xctestrun ${{env.INPUT_XCTESTRUN}} \
           -testPlan ${{env.INPUT_TEST_PLAN}} \
-          -skip-testing ${{env.INPUT_SKIP_TESTING}} \
+          -skip-testing ${{env.INPUT_SKIP_TESTING_0}} \
+          -skip-testing ${{env.INPUT_SKIP_TESTING_1}} \
           -skipUnavailableActions \
           -allowProvisioningUpdates \
           -allowProvisioningDeviceRegistration \
@@ -541,7 +553,8 @@ jobs:
       INPUT_XCROOT: /this/and/that.xcroot
       INPUT_XCTESTRUN: /this/and/that.xctestrun
       INPUT_TEST_PLAN: SomeTestPlan
-      INPUT_SKIP_TESTING: this
+      INPUT_SKIP_TESTING_0: this
+      INPUT_SKIP_TESTING_1: that
       INPUT_BUILD_SETTINGS: ABC=DEF
       INPUT_ACTION: action
       INPUT_XCPRETTY_COLORED_OUTPUT: 'true'
@@ -586,7 +599,9 @@ jobs:
           xcroot: ${{env.INPUT_XCROOT}}
           xctestrun: ${{env.INPUT_XCTESTRUN}}
           test-plan: ${{env.INPUT_TEST_PLAN}}
-          skip-testing: ${{env.INPUT_SKIP_TESTING}}
+          skip-testing: |
+            ${{env.INPUT_SKIP_TESTING_0}}
+            ${{env.INPUT_SKIP_TESTING_1}}
           skip-unavailable-actions: true
           allow-provisioning-updates: true
           allow-provisioning-device-registration: true
@@ -622,7 +637,9 @@ jobs:
           xcroot: ${{env.INPUT_XCROOT}}
           xctestrun: ${{env.INPUT_XCTESTRUN}}
           test-plan: ${{env.INPUT_TEST_PLAN}}
-          skip-testing: ${{env.INPUT_SKIP_TESTING}}
+          skip-testing: |
+            ${{env.INPUT_SKIP_TESTING_0}}
+            ${{env.INPUT_SKIP_TESTING_1}}
           skip-unavailable-actions: true
           allow-provisioning-updates: true
           allow-provisioning-device-registration: true
@@ -664,7 +681,8 @@ jobs:
           -xcroot ${{env.INPUT_XCROOT}} \
           -xctestrun ${{env.INPUT_XCTESTRUN}} \
           -testPlan ${{env.INPUT_TEST_PLAN}} \
-          -skip-testing ${{env.INPUT_SKIP_TESTING}} \
+          -skip-testing ${{env.INPUT_SKIP_TESTING_0}} \
+          -skip-testing ${{env.INPUT_SKIP_TESTING_1}} \
           -skipUnavailableActions \
           -allowProvisioningUpdates \
           -allowProvisioningDeviceRegistration \
