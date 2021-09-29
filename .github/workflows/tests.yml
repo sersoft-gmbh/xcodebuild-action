@@ -49,11 +49,11 @@ jobs:
         action: [ test ]
         use-xcpretty: [ true, false ]
         include:
-          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 7 - 44mm
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 7 - 45mm
             skip-testing: ''
             action: build
             use-xcpretty: true
-          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 7 - 44mm
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 7 - 45mm
             skip-testing: ''
             action: build
             use-xcpretty: false
@@ -109,11 +109,11 @@ jobs:
         action: [ test ]
         use-xcpretty: [ true, false ]
         include:
-          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 7 - 44mm
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 7 - 45mm
             skip-testing: ''
             action: build
             use-xcpretty: true
-          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 7 - 44mm
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 7 - 45mm
             skip-testing: ''
             action: build
             use-xcpretty: false
