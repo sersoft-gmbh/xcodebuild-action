@@ -42,7 +42,10 @@ jobs:
         destination:
           - platform=macOS
           - platform=iOS Simulator,OS=latest,name=iPhone 11
-        skip-testing: [ 'TestProjectTests/FailingTests' ]
+        skip-testing:
+            - |
+                TestProjectTests/FailingTests/testFailing1
+                TestProjectTests/FailingTests/testFailing2
         action: [ test ]
         use-xcpretty: [ true, false ]
         include:
@@ -99,7 +102,10 @@ jobs:
         destination:
           - platform=macOS
           - platform=iOS Simulator,OS=latest,name=iPhone 11
-        skip-testing: [ 'TestProjectTests/FailingTests' ]
+        skip-testing:
+            - |
+              TestProjectTests/FailingTests/testFailing1
+              TestProjectTests/FailingTests/testFailing2
         action: [ test ]
         use-xcpretty: [ true, false ]
         include:
