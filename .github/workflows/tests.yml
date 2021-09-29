@@ -41,19 +41,19 @@ jobs:
       matrix:
         destination:
           - platform=macOS
-          - platform=iOS Simulator,OS=latest,name=iPhone 11
+          - platform=iOS Simulator,OS=latest,name=iPhone 13
         skip-testing:
             - |
-                TestProjectTests/FailingTests/testFailing1
-                TestProjectTests/FailingTests/testFailing2
+                TestProjectTests/FailingTests/testFailing1()
+                TestProjectTests/FailingTests/testFailing2()
         action: [ test ]
         use-xcpretty: [ true, false ]
         include:
-          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 7 - 44mm
             skip-testing: ''
             action: build
             use-xcpretty: true
-          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 7 - 44mm
             skip-testing: ''
             action: build
             use-xcpretty: false
@@ -63,7 +63,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1.3.0
         with:
-          xcode-version: ^12.4
+          xcode-version: ^13.0
       - name: Install dependencies
         if: github.event_name == 'pull_request'
         run: sudo npm i -g typescript @vercel/ncc
@@ -101,19 +101,19 @@ jobs:
       matrix:
         destination:
           - platform=macOS
-          - platform=iOS Simulator,OS=latest,name=iPhone 11
+          - platform=iOS Simulator,OS=latest,name=iPhone 13
         skip-testing:
             - |
-              TestProjectTests/FailingTests/testFailing1
-              TestProjectTests/FailingTests/testFailing2
+              TestProjectTests/FailingTests/testFailing1()
+              TestProjectTests/FailingTests/testFailing2()
         action: [ test ]
         use-xcpretty: [ true, false ]
         include:
-          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 7 - 44mm
             skip-testing: ''
             action: build
             use-xcpretty: true
-          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 5 - 44mm
+          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 7 - 44mm
             skip-testing: ''
             action: build
             use-xcpretty: false
@@ -123,7 +123,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1.3.0
         with:
-          xcode-version: ^12.4
+          xcode-version: ^13.0
       - name: Install dependencies
         if: github.event_name == 'pull_request'
         run: sudo npm i -g typescript @vercel/ncc
@@ -161,7 +161,7 @@ jobs:
       matrix:
         destination:
           - platform=macOS
-          - platform=iOS Simulator,OS=latest,name=iPhone 11
+          - platform=iOS Simulator,OS=latest,name=iPhone 13
         use-xcpretty: [ true, false ]
     env:
       INPUT_SPM_PACKAGE: __test__/TestPackage
@@ -170,7 +170,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1.3.0
         with:
-          xcode-version: ^12.4
+          xcode-version: ^13.0
       - name: Install dependencies
         if: github.event_name == 'pull_request'
         run: sudo npm i -g typescript @vercel/ncc
