@@ -123,7 +123,7 @@ outputs:
   executed-command:
     description: The command that was executed.
 runs:
-  using: node12
+  using: node16
   main: dist/index.js
 branding:
   color: blue
