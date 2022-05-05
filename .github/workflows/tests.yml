@@ -13,7 +13,7 @@ jobs:
     name: Deploy Action Code
     runs-on: ubuntu-latest
     steps:
-      - name: Install depenedencies
+      - name: Install dependencies
         run: sudo npm i -g typescript @vercel/ncc
       - uses: actions/checkout@v3.0.2
         with:

@@ -44,9 +44,49 @@ const SIGNAL_NAME_TO_NUMBER_MAP: Record<Signals, number> = {
     'SIGLOST':          99,
 };
 
-async function runXcodebuild(args: string[], useXcpretty: boolean, xcprettyArgs: string[]) {
-    const xcodebuildOut: StdioNull | StdioPipe = useXcpretty ? 'pipe' : process.stdout;
-    const xcodebuild = spawn('xcodebuild', args, { stdio: ['inherit', xcodebuildOut, process.stderr] });
+interface ICommandArgumentValue {
+    originalValue: string;
+    resolvedValue: string;
+}
+
+interface ICommandArgument {
+    name: string;
+    value?: ICommandArgumentValue;
+}
+
+
+
+function argumentValueString(value: ICommandArgumentValue,
+                             useResolvedValue: boolean = true,
+                             escapeValue: boolean = false): string {
+    function _cmdEscape(str: string): string {
+        return str.replace(/((?!\\).|^)( )/g, `$1\\ `);
+    }
+    let strValue = useResolvedValue ? value.resolvedValue : value.originalValue
+    return escapeValue ? _cmdEscape(strValue) : strValue;
+}
+
+function argumentStrings(argument: ICommandArgument,
+                         useResolvedValue: boolean = true,
+                         escapeValue: boolean = false): string[] {
+    let plain = [argument.name];
+    if (argument.value)  plain.push(argumentValueString(argument.value, useResolvedValue, escapeValue));
+    return plain;
+}
+
+function allArgumentStrings(args: ICommandArgument[],
+                            useResolvedValue: boolean = true,
+                            escapeValue: boolean = false): string[] {
+    return args.flatMap(a => argumentStrings(a, useResolvedValue, escapeValue));
+}
+
+interface IXcPrettyInvocation {
+    args: ICommandArgument[];
+}
+
+async function runXcodebuild(args: ICommandArgument[], xcprettyInv?: IXcPrettyInvocation | null) {
+    const xcodebuildOut: StdioNull | StdioPipe = xcprettyInv ? 'pipe' : process.stdout;
+    const xcodebuild = spawn('xcodebuild', allArgumentStrings(args), { stdio: ['inherit', xcodebuildOut, process.stderr] });
     let finishedPromise = new Promise<number>((resolve, reject) => {
         xcodebuild.on('error', reject);
         xcodebuild.on('exit', (exitCode, signal) => {
@@ -57,8 +97,8 @@ async function runXcodebuild(args: string[], useXcpretty: boolean, xcprettyArgs:
             }
         });
     });
-    if (useXcpretty) {
-        const xcpretty = spawn('xcpretty', xcprettyArgs, { stdio: ['pipe', process.stdout, process.stderr] });
+    if (xcprettyInv) {
+        const xcpretty = spawn('xcpretty', allArgumentStrings(xcprettyInv.args), { stdio: ['pipe', process.stdout, process.stderr] });
         xcodebuild.stdout?.pipe(xcpretty.stdin);
         finishedPromise = finishedPromise.then((xcodeCode) => new Promise<number>((resolve, reject) => {
             xcpretty.on('error', reject);
@@ -82,7 +122,7 @@ async function runXcodebuild(args: string[], useXcpretty: boolean, xcprettyArgs:
 }
 
 async function main() {
-    let xcodebuildArgs: string[] = [];
+    let xcodebuildArgs: ICommandArgument[] = [];
     core.startGroup('Validating input');
     const workspace = core.getInput('workspace');
     const project = core.getInput('project');
@@ -94,68 +134,72 @@ async function main() {
         || (workspace && spmPackage)
         || (project && spmPackage)) {
         throw new Error("Either `project`, `workspace` or `spm-package-path` must be set, but they are mutually exclusive!");
-    } else if (workspace) {
-        xcodebuildArgs.push('-workspace', workspace);
-    } else if (project) {
-        xcodebuildArgs.push('-project', project);
     }
     const scheme = core.getInput('scheme', { required: !!workspace || !!spmPackage });
-    if (scheme) {
-        xcodebuildArgs.push('-scheme', scheme);
+
+    function _pushArg(name: string, value?: ICommandArgumentValue) {
+        xcodebuildArgs.push({ name: `-${name}`, value: value });
     }
 
-    function _pushArgs(inputName: string, argName?: string, value?: string) {
-        xcodebuildArgs.push(`-${argName ?? inputName}`);
-        if (value) {
-            xcodebuildArgs.push(value);
+    function _pushArgWithValue(name: string,
+                               value: string,
+                               opts?: { isPath?: boolean, skipEmptyValues?: boolean }) {
+        let processedValue = value;
+        if (opts?.skipEmptyValues) {
+            processedValue = processedValue.trim();
+            if (processedValue.length <= 0) return;
         }
+        if (opts?.isPath)  processedValue = path.resolve(processedValue);
+        _pushArg(name, { originalValue: value, resolvedValue: processedValue });
     }
 
-    function _addInputArg(inputName: string, opts?: { argName?: string, isPath?: boolean, isList?: boolean }) {
-        function _processValue(value: string, skipEmptyValues: boolean) {
-            let processedValue = value;
-            if (skipEmptyValues) {
-                processedValue = processedValue.trim();
-                if (processedValue.length <= 0) return;
-            }
-            if (opts?.isPath) {
-                processedValue = path.resolve(processedValue);
-            }
-            _pushArgs(inputName, opts?.argName, processedValue);
-        }
+    function _addInputArg(inputName: string, argName?: string, opts?: { isPath?: boolean, isList?: boolean }) {
         if (opts?.isList) {
             let values = core.getMultilineInput(inputName);
-            if (values) values.forEach(value => _processValue(value, true));
+            if (values)
+                values.forEach(value => _pushArgWithValue(argName ?? inputName, value, {
+                    isPath: opts?.isPath,
+                    skipEmptyValues: true
+                }));
         } else {
             let value = core.getInput(inputName);
-            if (value) _processValue(value, false);
+            if (value)
+                _pushArgWithValue(argName ?? inputName, value, {
+                    isPath: opts?.isPath,
+                    skipEmptyValues: false
+                })
         }
     }
 
     function addInputArg(inputName: string, argName?: string) {
-        _addInputArg(inputName, { argName: argName });
+        _addInputArg(inputName, argName);
     }
 
     function addPathArg(inputName: string, argName?: string) {
-        _addInputArg(inputName, { argName: argName, isPath: true });
+        _addInputArg(inputName, argName, { isPath: true });
     }
 
     function addListArg(inputName: string, argName?: string) {
-        _addInputArg(inputName, { argName: argName, isList: true });
+        _addInputArg(inputName, argName, { isList: true });
     }
 
     function addBoolArg(inputName: string, argName?: string) {
         const value = core.getInput(inputName);
-        if (value) {
-            _pushArgs(inputName, argName, value == 'true' ? 'YES' : 'NO');
-        }
+        if (value?.length)
+            _pushArgWithValue(argName ?? inputName, core.getBooleanInput(inputName) ? 'YES' : 'NO')
     }
 
     function addFlagArg(inputName: string, argName?: string) {
-        if (core.getInput(inputName) == 'true') {
-            _pushArgs(inputName, argName);
-        }
+        if (core.getInput(inputName).length && core.getBooleanInput(inputName))
+            _pushArg(argName ?? inputName);
     }
+
+    if (workspace) {
+        _pushArgWithValue('workspace', workspace, { isPath: true })
+    } else if (project) {
+        _pushArgWithValue('project', project, { isPath: true })
+    }
+    if (scheme) _pushArgWithValue('scheme', scheme);
 
     addInputArg('target');
     addInputArg('destination');
@@ -188,55 +232,74 @@ async function main() {
     addFlagArg('allow-provisioning-device-registration', 'allowProvisioningDeviceRegistration');
 
     const buildSettings = core.getInput('build-settings');
-    if (buildSettings) {
-        xcodebuildArgs.push(...buildSettings.split(' '));
-    }
+    if (buildSettings)
+        xcodebuildArgs.push(...buildSettings.split(' ').map(v => { return { name: v }; }));
 
     const action = core.getInput('action', { required: true });
-    xcodebuildArgs.push(...action.split(' '));
+    xcodebuildArgs.push(...action.split(' ').map(v => { return { name: v }; }));
 
     const useXcpretty = core.getBooleanInput('use-xcpretty', { required: true });
-    const useColoredXCPrettyOutput = core.getBooleanInput('xcpretty-colored-output', { required: true }) ;
+    const useColoredXCPrettyOutput = core.getBooleanInput('xcpretty-colored-output', { required: useXcpretty }) ;
 
     const dryRun = core.isDebug() && core.getInput('dry-run') == 'true';
 
     // We allow other platforms for dry-runs since this speeds up tests (more parallel builds).
-    if (!dryRun && process.platform != "darwin") {
-        throw new Error("This action only supports macOS!");
+    if (!dryRun && process.platform !== 'darwin')
+        throw new Error('This action only supports macOS!');
+
+    let xcPrettyInv: IXcPrettyInvocation | null
+    if (useXcpretty) {
+        xcPrettyInv = { args: useColoredXCPrettyOutput ? [{ name: '--color' }] : [] };
+    } else {
+        xcPrettyInv = null;
     }
     core.endGroup();
 
     await core.group('Composing command', async () => {
-        let commandParts = ['xcodebuild'].concat(xcodebuildArgs);
-        if (useXcpretty) {
-            commandParts.push('|', 'xcpretty');
-            if (useColoredXCPrettyOutput) {
-                commandParts.push('--color');
-            }
+        // We "abuse" ICommandArgument here a bit to make it easier to compose both output variants.
+        let allCommands: ICommandArgument[] = [{ name: 'xcodebuild' }].concat(xcodebuildArgs);
+        if (xcPrettyInv) {
+            allCommands.push({ name: '|' }, { name: 'xcpretty' });
+            allCommands.push(...xcPrettyInv.args);
         }
+        let unprocessedInvocation = allArgumentStrings(allCommands, false, true);
+        let processedInvocation = allArgumentStrings(allCommands, true, true);
         if (spmPackage) {
-            commandParts = ['pushd', spmPackage, '&&', ...commandParts, ';', 'popd'];
+            const spmPackageValue: ICommandArgumentValue = {
+                originalValue: spmPackage,
+                resolvedValue: path.resolve(spmPackage),
+            };
+            function _combinedInv(inv: string[], useResolved: boolean): string[] {
+                return [
+                    'pushd',  argumentValueString(spmPackageValue, useResolved, true),
+                    '&&',
+                    ...inv,
+                    ';',
+                    'popd',
+                ]
+            }
+            unprocessedInvocation = _combinedInv(unprocessedInvocation, false);
+            processedInvocation = _combinedInv(processedInvocation, true);
         }
-        const executedCommand = commandParts.join(' ');
+        const unprocessedCommand = unprocessedInvocation.join(' ');
+        const executedCommand = processedInvocation.join(' ');
+        core.setOutput('unprocessed-command', unprocessedCommand);
         core.setOutput('executed-command', executedCommand);
+        core.info(`Resolving paths for execution in: \`${unprocessedCommand}\``);
         core.info(`Executing: \`${executedCommand}\``);
     });
 
-    core.startGroup('Running xcodebuild');
     if (!dryRun) {
+        core.startGroup('Running xcodebuild');
         const cwd = process.cwd();
-        if (spmPackage) {
-            process.chdir(spmPackage);
-        }
+        if (spmPackage) process.chdir(spmPackage);
         try {
-            await runXcodebuild(xcodebuildArgs, useXcpretty, useColoredXCPrettyOutput ? ['--color'] : []);
+            await runXcodebuild(xcodebuildArgs, xcPrettyInv);
         } finally {
-            if (spmPackage) {
-                process.chdir(cwd);
-            }
+            if (spmPackage) process.chdir(cwd);
         }
+        core.endGroup();
     }
-    core.endGroup();
 }
 
 try {
