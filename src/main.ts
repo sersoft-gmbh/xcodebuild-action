@@ -271,7 +271,7 @@ async function main() {
             };
             function _combinedInv(inv: string[], useResolved: boolean): string[] {
                 return [
-                    'pushd',  argumentValueString(spmPackageValue, useResolved, true),
+                    'pushd', argumentValueString(spmPackageValue, useResolved, true),
                     '&&',
                     ...inv,
                     ';',
