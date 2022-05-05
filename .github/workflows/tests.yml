@@ -316,8 +316,10 @@ jobs:
       - id: xcodebuild
         run: |
           if [ '${{github.event_name}}' == 'push' ]; then
+            echo "::set-output name=unprocessed-command::${{steps.xcodebuild-master.outputs.unprocessed-command}}"
             echo "::set-output name=executed-command::${{steps.xcodebuild-master.outputs.executed-command}}"
           else
+            echo "::set-output name=unprocessed-command::${{steps.xcodebuild-local.outputs.unprocessed-command}}"
             echo "::set-output name=executed-command::${{steps.xcodebuild-local.outputs.executed-command}}"
           fi
       - name: Check executed command
@@ -358,7 +360,7 @@ jobs:
               EXPECTED_COMMAND="${EXPECTED_COMMAND} --color"
             fi
           fi
-          ACTUAL_COMMAND="${{steps.xcodebuild.outputs.executed-command}}"
+          ACTUAL_COMMAND="${{steps.xcodebuild.outputs.unprocessed-command}}"
           if [ "${EXPECTED_COMMAND}" != "${ACTUAL_COMMAND}" ]; then
             printf "::error::Executed command did not match expectations!\nExecuted: ${ACTUAL_COMMAND}\nExpected: ${EXPECTED_COMMAND}\n"
             exit 1
@@ -486,8 +488,10 @@ jobs:
       - id: xcodebuild
         run: |
           if [ '${{github.event_name}}' == 'push' ]; then
+            echo "::set-output name=unprocessed-command::${{steps.xcodebuild-master.outputs.unprocessed-command}}"
             echo "::set-output name=executed-command::${{steps.xcodebuild-master.outputs.executed-command}}"
           else
+            echo "::set-output name=unprocessed-command::${{steps.xcodebuild-local.outputs.unprocessed-command}}"
             echo "::set-output name=executed-command::${{steps.xcodebuild-local.outputs.executed-command}}"
           fi
       - name: Check executed command
@@ -529,7 +533,7 @@ jobs:
               EXPECTED_COMMAND="${EXPECTED_COMMAND} --color"
             fi
           fi
-          ACTUAL_COMMAND="${{steps.xcodebuild.outputs.executed-command}}"
+          ACTUAL_COMMAND="${{steps.xcodebuild.outputs.unprocessed-command}}"
           if [ "${EXPECTED_COMMAND}" != "${ACTUAL_COMMAND}" ]; then
             printf "::error::Executed command did not match expectations!\nExecuted: ${ACTUAL_COMMAND}\nExpected: ${EXPECTED_COMMAND}\n"
             exit 1
@@ -657,8 +661,10 @@ jobs:
       - id: xcodebuild
         run: |
           if [ '${{github.event_name}}' == 'push' ]; then
+            echo "::set-output name=unprocessed-command::${{steps.xcodebuild-master.outputs.unprocessed-command}}"
             echo "::set-output name=executed-command::${{steps.xcodebuild-master.outputs.executed-command}}"
           else
+            echo "::set-output name=unprocessed-command::${{steps.xcodebuild-local.outputs.unprocessed-command}}"
             echo "::set-output name=executed-command::${{steps.xcodebuild-local.outputs.executed-command}}"
           fi
       - name: Check executed command
@@ -701,7 +707,7 @@ jobs:
             fi
           fi
           EXPECTED_COMMAND="${EXPECTED_COMMAND} ; popd"
-          ACTUAL_COMMAND="${{steps.xcodebuild.outputs.executed-command}}"
+          ACTUAL_COMMAND="${{steps.xcodebuild.outputs.unprocessed-command}}"
           if [ "${EXPECTED_COMMAND}" != "${ACTUAL_COMMAND}" ]; then
             printf "::error::Executed command did not match expectations!\nExecuted: ${ACTUAL_COMMAND}\nExpected: ${EXPECTED_COMMAND}\n"
             exit 1
