@@ -149,7 +149,7 @@ async function main() {
             processedValue = processedValue.trim();
             if (processedValue.length <= 0) return;
         }
-        if (opts?.isPath)  processedValue = path.resolve(processedValue);
+        if (opts?.isPath) processedValue = path.resolve(processedValue);
         _pushArg(name, { originalValue: value, resolvedValue: processedValue });
     }
 
