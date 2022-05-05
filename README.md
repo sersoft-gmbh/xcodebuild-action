@@ -162,6 +162,10 @@ Default: `true`
 
 ## Outputs
 
+### `unprocessed-command`
+
+The unprocessed command from which the executed command was resolved. E.g. paths are not resolved in this one.
+
 ### `executed-command`
 
 The command that was executed by this action. This will also be printed to the action output.

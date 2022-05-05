@@ -113,13 +113,15 @@ inputs:
     required: true
     default: 'true'
   xcpretty-colored-output:
-    description: Whether xcpretty should use colored output (e.g. xcpretty --color).
+    description: Whether xcpretty should use colored output (e.g. `xcpretty --color`).
     required: true
     default: 'true'
   dry-run:
     description: '<TEST ONLY> Whether the commands should only be composed and not actually run. Only used in test.'
     required: false
 outputs:
+  unprocessed-command:
+    description: The unprocessed command from which the executed command was resolved. E.g. paths are not resolved in this one.
   executed-command:
     description: The command that was executed.
 runs:
