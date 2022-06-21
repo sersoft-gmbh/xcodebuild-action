@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.0.2
-      - uses: sersoft-gmbh/running-release-tags-action@v1.2.1
+      - uses: sersoft-gmbh/running-release-tags-action@v2.0.0
         with:
           update-full-release: true
           github-token: ${{secrets.GITHUB_TOKEN}}

@@ -1,11 +1,3 @@
-//
-//  TestProject.h
-//  TestProject
-//
-//  Created by Florian Friedrich on 21.04.20.
-//  Copyright © 2020 ser.soft GmbH. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 
 //! Project version number for TestProject.

@@ -54,8 +54,6 @@ interface ICommandArgument {
     value?: ICommandArgumentValue;
 }
 
-
-
 function argumentValueString(value: ICommandArgumentValue,
                              useResolvedValue: boolean = true,
                              escapeValue: boolean = false): string {
