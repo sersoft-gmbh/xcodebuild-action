@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/sersoft-gmbh/xcodebuild-action#readme",
   "dependencies": {
-    "@actions/core": "^1.9.0"
+    "@actions/core": "^1.9.1"
   },
   "devDependencies": {
     "@types/node": "^16.11.47"
