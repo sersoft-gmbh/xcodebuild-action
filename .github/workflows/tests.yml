@@ -316,11 +316,11 @@ jobs:
       - id: xcodebuild
         run: |
           if [ '${{github.event_name}}' == 'push' ]; then
-            echo "::set-output name=unprocessed-command::${{steps.xcodebuild-master.outputs.unprocessed-command}}"
-            echo "::set-output name=executed-command::${{steps.xcodebuild-master.outputs.executed-command}}"
+            echo 'unprocessed-command=${{steps.xcodebuild-master.outputs.unprocessed-command}}' >> "${GITHUB_OUTPUT}"
+            echo 'executed-command=${{steps.xcodebuild-master.outputs.executed-command}}' >> "${GITHUB_OUTPUT}"
           else
-            echo "::set-output name=unprocessed-command::${{steps.xcodebuild-local.outputs.unprocessed-command}}"
-            echo "::set-output name=executed-command::${{steps.xcodebuild-local.outputs.executed-command}}"
+            echo 'unprocessed-command=${{steps.xcodebuild-local.outputs.unprocessed-command}}' >> "${GITHUB_OUTPUT}"
+            echo 'executed-command=${{steps.xcodebuild-local.outputs.executed-command}}' >> "${GITHUB_OUTPUT}"
           fi
       - name: Check executed command
         run: |
@@ -488,11 +488,11 @@ jobs:
       - id: xcodebuild
         run: |
           if [ '${{github.event_name}}' == 'push' ]; then
-            echo "::set-output name=unprocessed-command::${{steps.xcodebuild-master.outputs.unprocessed-command}}"
-            echo "::set-output name=executed-command::${{steps.xcodebuild-master.outputs.executed-command}}"
+            echo 'unprocessed-command=${{steps.xcodebuild-master.outputs.unprocessed-command}}' >> "${GITHUB_OUTPUT}"
+            echo 'executed-command=${{steps.xcodebuild-master.outputs.executed-command}}' >> "${GITHUB_OUTPUT}"
           else
-            echo "::set-output name=unprocessed-command::${{steps.xcodebuild-local.outputs.unprocessed-command}}"
-            echo "::set-output name=executed-command::${{steps.xcodebuild-local.outputs.executed-command}}"
+            echo 'unprocessed-command=${{steps.xcodebuild-local.outputs.unprocessed-command}}' >> "${GITHUB_OUTPUT}"
+            echo 'executed-command=${{steps.xcodebuild-local.outputs.executed-command}}' >> "${GITHUB_OUTPUT}"
           fi
       - name: Check executed command
         run: |
@@ -661,11 +661,11 @@ jobs:
       - id: xcodebuild
         run: |
           if [ '${{github.event_name}}' == 'push' ]; then
-            echo "::set-output name=unprocessed-command::${{steps.xcodebuild-master.outputs.unprocessed-command}}"
-            echo "::set-output name=executed-command::${{steps.xcodebuild-master.outputs.executed-command}}"
+            echo 'unprocessed-command=${{steps.xcodebuild-master.outputs.unprocessed-command}}' >> "${GITHUB_OUTPUT}"
+            echo 'executed-command=${{steps.xcodebuild-master.outputs.executed-command}}' >> "${GITHUB_OUTPUT}"
           else
-            echo "::set-output name=unprocessed-command::${{steps.xcodebuild-local.outputs.unprocessed-command}}"
-            echo "::set-output name=executed-command::${{steps.xcodebuild-local.outputs.executed-command}}"
+            echo 'unprocessed-command=${{steps.xcodebuild-local.outputs.unprocessed-command}}' >> "${GITHUB_OUTPUT}"
+            echo 'executed-command=${{steps.xcodebuild-local.outputs.executed-command}}' >> "${GITHUB_OUTPUT}"
           fi
       - name: Check executed command
         run: |
