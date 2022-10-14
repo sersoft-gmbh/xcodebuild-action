@@ -744,6 +744,7 @@ jobs:
               EXPECTED_COMMAND="${EXPECTED_COMMAND} --color"
             fi
           fi
+          EXPECTED_COMMAND="${EXPECTED_COMMAND} ; popd"
           ACTUAL_COMMAND="${UNPROCESSED_COMMAND}"
           if [ "${EXPECTED_COMMAND}" != "${ACTUAL_COMMAND}" ]; then
             printf "::error::Executed command did not match expectations!\nExecuted: ${ACTUAL_COMMAND}\nExpected: ${EXPECTED_COMMAND}\n"
