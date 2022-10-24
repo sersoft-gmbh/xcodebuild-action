@@ -3,40 +3,14 @@ name: Tests
 on:
   push:
     branches: [ master ]
-    paths-ignore: [ 'dist/*.js' ]
+    paths: 
+      - 'dist/*.js'
+      - '.github/workflows/tests.yml'
   pull_request:
     branches: [ master ]
 
 jobs:
-  deploy-action-code:
-    if: ${{ github.event_name == 'push' }}
-    name: Deploy Action Code
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install dependencies
-        run: sudo npm i -g typescript @vercel/ncc
-      - uses: actions/checkout@v3.1.0
-        with:
-          token: ${{ secrets.BOT_TOKEN }}
-      - name: Generate action code
-        run: npm run deploy
-      - name: Configure repository
-        env:
-          BOT_USERNAME: ${{ secrets.BOT_USERNAME }}
-        run: |
-          git config user.name "${BOT_USERNAME}"
-          git config user.email "${BOT_USERNAME}@users.noreply.github.com"
-      - name: Commit changes
-        run: |
-          if ! git diff --exit-code --quiet; then
-            git add .
-            git commit -m '[AUTO] Update generated code'
-            git push
-          fi
-
   test-project:
-    needs: deploy-action-code
-    if: ${{ always() && !failure() && !cancelled() }}
     name: Test Project Build
     runs-on: macos-12
     strategy:
@@ -95,8 +69,6 @@ jobs:
         run: ls ~/Library/Developer/Xcode/DerivedData/ | grep -q '^TestProject.*'
 
   test-workspace:
-    needs: deploy-action-code
-    if: ${{ always() && !failure() && !cancelled() }}
     name: Test Workspace Build
     runs-on: macos-12
     strategy:
@@ -155,8 +127,6 @@ jobs:
         run: ls ~/Library/Developer/Xcode/DerivedData/ | grep -q '^TestProject.*'
 
   test-package:
-    needs: deploy-action-code
-    if: ${{ always() && !failure() && !cancelled() }}
     name: Test SPM Package Build
     runs-on: macos-12
     strategy:
@@ -200,8 +170,6 @@ jobs:
         run: ls ~/Library/Developer/Xcode/DerivedData/ | grep -q '^TestPackage.*'
 
   test-dry-run-project:
-    needs: deploy-action-code
-    if: ${{ always() && !failure() && !cancelled() }}
     name: Dry Run Project Build
     runs-on: ubuntu-latest
     strategy:
@@ -381,8 +349,6 @@ jobs:
           fi
 
   test-dry-run-workspace:
-    needs: deploy-action-code
-    if: ${{ always() && !failure() && !cancelled() }}
     name: Dry Run Workspace Build
     runs-on: ubuntu-latest
     strategy:
@@ -566,8 +532,6 @@ jobs:
           fi
 
   test-dry-run-package:
-    needs: deploy-action-code
-    if: ${{ always() && !failure() && !cancelled() }}
     name: Dry Run SPM Package Build
     runs-on: ubuntu-latest
     strategy:
