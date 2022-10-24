@@ -92,7 +92,9 @@ function allArgumentStrings(args, useResolvedValue = true, escapeValue = false) 
 async function runXcodebuild(args, xcprettyInv) {
     var _a;
     const xcodebuildOut = xcprettyInv ? 'pipe' : process.stdout;
-    const xcodebuild = (0, child_process_1.spawn)('xcodebuild', allArgumentStrings(args), { stdio: ['inherit', xcodebuildOut, process.stderr] });
+    const xcodebuild = (0, child_process_1.spawn)('xcodebuild', allArgumentStrings(args), {
+        stdio: ['inherit', xcodebuildOut, process.stderr],
+    });
     let finishedPromise = new Promise((resolve, reject) => {
         xcodebuild.on('error', reject);
         xcodebuild.on('exit', (exitCode, signal) => {
@@ -105,7 +107,9 @@ async function runXcodebuild(args, xcprettyInv) {
         });
     });
     if (xcprettyInv) {
-        const xcpretty = (0, child_process_1.spawn)('xcpretty', allArgumentStrings(xcprettyInv.args), { stdio: ['pipe', process.stdout, process.stderr] });
+        const xcpretty = (0, child_process_1.spawn)('xcpretty', allArgumentStrings(xcprettyInv.args), {
+            stdio: ['pipe', process.stdout, process.stderr],
+        });
         (_a = xcodebuild.stdout) === null || _a === void 0 ? void 0 : _a.pipe(xcpretty.stdin);
         finishedPromise = finishedPromise.then((xcodeCode) => new Promise((resolve, reject) => {
             xcpretty.on('error', reject);
@@ -140,7 +144,7 @@ async function main() {
         || (workspace && project)
         || (workspace && spmPackage)
         || (project && spmPackage)) {
-        throw new Error("Either `project`, `workspace` or `spm-package-path` must be set, but they are mutually exclusive!");
+        throw new Error('Either `project`, `workspace` or `spm-package-path` must be set, but they are mutually exclusive!');
     }
     const scheme = core.getInput('scheme', { required: !!workspace || !!spmPackage });
     function _pushArg(name, value) {
@@ -163,7 +167,7 @@ async function main() {
             if (values)
                 values.forEach(value => _pushArgWithValue(argName !== null && argName !== void 0 ? argName : inputName, value, {
                     isPath: opts === null || opts === void 0 ? void 0 : opts.isPath,
-                    skipEmptyValues: true
+                    skipEmptyValues: true,
                 }));
         }
         else {
@@ -171,7 +175,7 @@ async function main() {
             if (value)
                 _pushArgWithValue(argName !== null && argName !== void 0 ? argName : inputName, value, {
                     isPath: opts === null || opts === void 0 ? void 0 : opts.isPath,
-                    skipEmptyValues: false
+                    skipEmptyValues: false,
                 });
         }
     }
