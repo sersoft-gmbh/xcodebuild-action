@@ -68,7 +68,7 @@ function argumentStrings(argument: ICommandArgument,
                          useResolvedValue: boolean = true,
                          escapeValue: boolean = false): string[] {
     let plain = [argument.name];
-    if (argument.value)  plain.push(argumentValueString(argument.value, useResolvedValue, escapeValue));
+    if (argument.value) plain.push(argumentValueString(argument.value, useResolvedValue, escapeValue));
     return plain;
 }
 
@@ -84,7 +84,9 @@ interface IXcPrettyInvocation {
 
 async function runXcodebuild(args: ICommandArgument[], xcprettyInv?: IXcPrettyInvocation | null) {
     const xcodebuildOut: StdioNull | StdioPipe = xcprettyInv ? 'pipe' : process.stdout;
-    const xcodebuild = spawn('xcodebuild', allArgumentStrings(args), { stdio: ['inherit', xcodebuildOut, process.stderr] });
+    const xcodebuild = spawn('xcodebuild', allArgumentStrings(args), {
+        stdio: ['inherit', xcodebuildOut, process.stderr],
+    });
     let finishedPromise = new Promise<number>((resolve, reject) => {
         xcodebuild.on('error', reject);
         xcodebuild.on('exit', (exitCode, signal) => {
@@ -96,7 +98,9 @@ async function runXcodebuild(args: ICommandArgument[], xcprettyInv?: IXcPrettyIn
         });
     });
     if (xcprettyInv) {
-        const xcpretty = spawn('xcpretty', allArgumentStrings(xcprettyInv.args), { stdio: ['pipe', process.stdout, process.stderr] });
+        const xcpretty = spawn('xcpretty', allArgumentStrings(xcprettyInv.args), {
+            stdio: ['pipe', process.stdout, process.stderr],
+        });
         xcodebuild.stdout?.pipe(xcpretty.stdin);
         finishedPromise = finishedPromise.then((xcodeCode) => new Promise<number>((resolve, reject) => {
             xcpretty.on('error', reject);
@@ -131,7 +135,7 @@ async function main() {
         || (workspace && project)
         || (workspace && spmPackage)
         || (project && spmPackage)) {
-        throw new Error("Either `project`, `workspace` or `spm-package-path` must be set, but they are mutually exclusive!");
+        throw new Error('Either `project`, `workspace` or `spm-package-path` must be set, but they are mutually exclusive!');
     }
     const scheme = core.getInput('scheme', { required: !!workspace || !!spmPackage });
 
@@ -157,14 +161,14 @@ async function main() {
             if (values)
                 values.forEach(value => _pushArgWithValue(argName ?? inputName, value, {
                     isPath: opts?.isPath,
-                    skipEmptyValues: true
+                    skipEmptyValues: true,
                 }));
         } else {
             let value = core.getInput(inputName);
             if (value)
                 _pushArgWithValue(argName ?? inputName, value, {
                     isPath: opts?.isPath,
-                    skipEmptyValues: false
+                    skipEmptyValues: false,
                 })
         }
     }
