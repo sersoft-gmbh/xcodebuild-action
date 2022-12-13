@@ -43,7 +43,7 @@ jobs:
       - name: Install dependencies
         if: ${{ github.event_name == 'pull_request' }}
         run: sudo npm i -g typescript @vercel/ncc
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.2.0
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         run: npm run deploy
@@ -101,7 +101,7 @@ jobs:
       - name: Install dependencies
         if: ${{ github.event_name == 'pull_request' }}
         run: sudo npm i -g typescript @vercel/ncc
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.2.0
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         run: npm run deploy
@@ -146,7 +146,7 @@ jobs:
       - name: Install dependencies
         if: ${{ github.event_name == 'pull_request' }}
         run: sudo npm i -g typescript @vercel/ncc
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.2.0
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         run: npm run deploy
@@ -207,7 +207,7 @@ jobs:
       - name: Install dependencies
         if: github.event_name == 'pull_request'
         run: sudo npm i -g typescript @vercel/ncc
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.2.0
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         run: npm run deploy
@@ -387,7 +387,7 @@ jobs:
       - name: Install dependencies
         if: ${{ github.event_name == 'pull_request' }}
         run: sudo npm i -g typescript @vercel/ncc
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.2.0
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         run: npm run deploy
@@ -570,7 +570,7 @@ jobs:
       - name: Install dependencies
         if: ${{ github.event_name == 'pull_request' }}
         run: sudo npm i -g typescript @vercel/ncc
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.2.0
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         run: npm run deploy
