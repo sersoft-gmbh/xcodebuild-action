@@ -37,13 +37,25 @@ jobs:
       INPUT_PROJECT: __test__/TestProject/TestProject.xcodeproj
       INPUT_SCHEME: TestProject
     steps:
-      - uses: maxim-lobanov/setup-xcode@v1.5.1
+      - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ^14.0
+      - uses: actions/setup-node@v3
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          node-version: 'lts/*'
+          check-latest: true
+          cache: 'npm'
+      - name: Fix npm permissions
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          if [ -d "${HOME}/.npm" ]; then
+            sudo chown -R "${USER}:$(id -gn ${USER})" "${HOME}/.npm"
+          fi
       - name: Install dependencies
         if: ${{ github.event_name == 'pull_request' }}
         run: sudo npm i -g typescript @vercel/ncc
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v3
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         run: npm run deploy
@@ -95,13 +107,25 @@ jobs:
       INPUT_WORKSPACE: __test__/TestProject/TestProject.xcworkspace
       INPUT_SCHEME: TestProject
     steps:
-      - uses: maxim-lobanov/setup-xcode@v1.5.1
+      - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ^14.0
+      - uses: actions/setup-node@v3
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          node-version: 'lts/*'
+          check-latest: true
+          cache: 'npm'
+      - name: Fix npm permissions
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          if [ -d "${HOME}/.npm" ]; then
+            sudo chown -R "${USER}:$(id -gn ${USER})" "${HOME}/.npm"
+          fi
       - name: Install dependencies
         if: ${{ github.event_name == 'pull_request' }}
         run: sudo npm i -g typescript @vercel/ncc
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v3
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         run: npm run deploy
@@ -140,13 +164,25 @@ jobs:
       INPUT_SCHEME: TestPackage
       INPUT_ACTION: test
     steps:
-      - uses: maxim-lobanov/setup-xcode@v1.5.1
+      - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ^14.0
+      - uses: actions/setup-node@v3
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          node-version: 'lts/*'
+          check-latest: true
+          cache: 'npm'
+      - name: Fix npm permissions
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          if [ -d "${HOME}/.npm" ]; then
+            sudo chown -R "${USER}:$(id -gn ${USER})" "${HOME}/.npm"
+          fi
       - name: Install dependencies
         if: ${{ github.event_name == 'pull_request' }}
         run: sudo npm i -g typescript @vercel/ncc
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v3
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         run: npm run deploy
@@ -204,10 +240,22 @@ jobs:
         env:
           DEBUG_ENABLED: ${{ secrets.ACTIONS_STEP_DEBUG }}
         run: test "${DEBUG_ENABLED}" == 'true'
+      - uses: actions/setup-node@v3
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          node-version: 'lts/*'
+          check-latest: true
+          cache: 'npm'
+      - name: Fix npm permissions
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          if [ -d "${HOME}/.npm" ]; then
+            sudo chown -R "${USER}:$(id -gn ${USER})" "${HOME}/.npm"
+          fi
       - name: Install dependencies
-        if: github.event_name == 'pull_request'
+        if: ${{ github.event_name == 'pull_request' }}
         run: sudo npm i -g typescript @vercel/ncc
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v3
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         run: npm run deploy
@@ -384,10 +432,22 @@ jobs:
         env:
           DEBUG_ENABLED: ${{ secrets.ACTIONS_STEP_DEBUG }}
         run: test "${DEBUG_ENABLED}" == 'true'
+      - uses: actions/setup-node@v3
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          node-version: 'lts/*'
+          check-latest: true
+          cache: 'npm'
+      - name: Fix npm permissions
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          if [ -d "${HOME}/.npm" ]; then
+            sudo chown -R "${USER}:$(id -gn ${USER})" "${HOME}/.npm"
+          fi
       - name: Install dependencies
         if: ${{ github.event_name == 'pull_request' }}
         run: sudo npm i -g typescript @vercel/ncc
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v3
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         run: npm run deploy
@@ -567,10 +627,22 @@ jobs:
         env:
           DEBUG_ENABLED: ${{ secrets.ACTIONS_STEP_DEBUG }}
         run: test "${DEBUG_ENABLED}" == 'true'
+      - uses: actions/setup-node@v3
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          node-version: 'lts/*'
+          check-latest: true
+          cache: 'npm'
+      - name: Fix npm permissions
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          if [ -d "${HOME}/.npm" ]; then
+            sudo chown -R "${USER}:$(id -gn ${USER})" "${HOME}/.npm"
+          fi
       - name: Install dependencies
         if: ${{ github.event_name == 'pull_request' }}
         run: sudo npm i -g typescript @vercel/ncc
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v3
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         run: npm run deploy

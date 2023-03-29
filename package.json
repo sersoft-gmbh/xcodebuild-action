@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "deploy": "rm -rf node_modules dist && npm install && npm run build && ncc build lib/main.js -o dist"
+    "deploy": "rm -rf node_modules dist && npm clean-install && npm run build && ncc build lib/main.js -o dist"
   },
   "repository": {
     "type": "git",
