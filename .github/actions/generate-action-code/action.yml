@@ -19,8 +19,13 @@ runs:
       if: ${{ inputs.fix-permissions == 'true' }}
       shell: bash
       run: |
-        if [ -d "${HOME}/.npm" ]; then
-          sudo chown -R "${USER}:$(id -gn ${USER})" "${HOME}/.npm"
+        CACHE_DIR="$(npm config get cache)"
+        if [ -d "${CACHE_DIR}" ]; then
+          GROUP="$(id -gn "${USER}")"
+          echo "Fixing permissions for npm cache at ${CACHE_DIR}"
+          echo "Changing owner to ${USER}"
+          echo "Changing group to ${GROUP}"
+          sudo chown -R "${USER}:${GROUP}" "${CACHE_DIR}"
         fi
     - name: Install dependencies
       shell: bash
