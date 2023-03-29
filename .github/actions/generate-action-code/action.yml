@@ -6,7 +6,7 @@ runs:
   steps:
     - uses: actions/setup-node@v3
       with:
-        node-version: 'lts/*'
+        node-version: 16
         check-latest: true
         cache: 'npm'
     - name: Generate action code
