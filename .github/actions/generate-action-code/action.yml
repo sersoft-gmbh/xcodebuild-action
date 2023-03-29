@@ -1,0 +1,30 @@
+name: Generate Action Code
+description: Generates the action code
+
+inputs:
+  fix-permissions: 
+    description: Fix permissions for npm cache
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 'lts/*'
+        check-latest: true
+        cache: 'npm'
+    - name: Fix npm permissions
+      if: ${{ inputs.fix-permissions == 'true' }}
+      shell: bash
+      run: |
+        if [ -d "${HOME}/.npm" ]; then
+          sudo chown -R "${USER}:$(id -gn ${USER})" "${HOME}/.npm"
+        fi
+    - name: Install dependencies
+      shell: bash
+      run: sudo npm i -g typescript @vercel/ncc
+    - name: Generate action code
+      shell: bash
+      run: npm run deploy
