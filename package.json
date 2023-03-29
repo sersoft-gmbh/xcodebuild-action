@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "deploy": "rm -rf node_modules dist && npm clean-install && npm run build && ncc build lib/main.js -o dist"
+    "pack": "rm -rf dist && ncc build lib/main.js -o dist"
   },
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
   },
   "keywords": [
     "Xcode",
-    "Xcodebuild"
+    "xcodebuild"
   ],
   "author": "ser.soft GmbH",
   "license": "Apache-2.0",
@@ -26,6 +26,8 @@
     "@actions/core": "^1.10.0"
   },
   "devDependencies": {
-    "@types/node": "^16.18.21"
+    "@types/node": "^16.18.21",
+    "@vercel/ncc": "^0.36.1",
+    "typescript": "^5.0.2"
   }
 }

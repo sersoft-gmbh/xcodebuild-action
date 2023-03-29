@@ -1,12 +1,6 @@
 name: Generate Action Code
 description: Generates the action code
 
-inputs:
-  fix-permissions: 
-    description: Fix permissions for npm cache
-    required: false
-    default: 'false'
-
 runs:
   using: composite
   steps:
@@ -15,21 +9,9 @@ runs:
         node-version: 'lts/*'
         check-latest: true
         cache: 'npm'
-    - name: Fix npm permissions
-      if: ${{ inputs.fix-permissions == 'true' }}
-      shell: bash
-      run: |
-        CACHE_DIR="$(npm config get cache)"
-        if [ -d "${CACHE_DIR}" ]; then
-          GROUP="$(id -gn "${USER}")"
-          echo "Fixing permissions for npm cache at ${CACHE_DIR}"
-          echo "Changing owner to ${USER}"
-          echo "Changing group to ${GROUP}"
-          sudo chown -R "${USER}:${GROUP}" "${CACHE_DIR}"
-        fi
-    - name: Install dependencies
-      shell: bash
-      run: sudo npm i -g typescript @vercel/ncc
     - name: Generate action code
       shell: bash
-      run: npm run deploy
+      run: |
+        npm clean-install
+        npm run build
+        npm run pack
