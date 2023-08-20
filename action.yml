@@ -115,12 +115,10 @@ inputs:
   use-xcpretty:
     description: Whether the output of xcodebuild should be forwarded to xcpretty.
     required: false
-    default: 'true'
     deprecationMessage: 'Use `output-formatter` instead.'
   xcpretty-colored-output:
     description: Whether xcpretty should use colored output (e.g. `xcpretty --color`).
     required: false
-    default: 'true'
     deprecationMessage: 'Use `output-formatter` instead.'
   dry-run:
     description: '<TEST ONLY> Whether the commands should only be composed and not actually run. Only used in test.'
