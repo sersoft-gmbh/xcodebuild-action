@@ -149,15 +149,10 @@ Arbitrary, space separated build settings (e.g. `PLATFORM_NAME=iphonesimulator`)
 The action to perform (e.g. build, test, ...). Can also contain multiple actions.<br/>
 Default: `test`
 
-### `use-xcpretty`
+### `output-formatter`
 
-Whether the output of `xcodebuild` should be forwarded to `xcpretty`.<br/>
-Default: `true`
-
-### `xcpretty-colored-output`
-
-Whether `xcpretty` should use colored output (e.g. `xcpretty --color`).<br/>
-Default: `true`
+A CLI invocation to forward the output to (e.g. `xcpretty`, `xcbeautify`, ...). Note that it cannot contain any pipes.<br/>
+Default: `xcpretty --color`
 
 
 ## Outputs
