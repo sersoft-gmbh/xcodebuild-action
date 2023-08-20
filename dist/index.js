@@ -89,9 +89,9 @@ function argumentStrings(argument, useResolvedValue = true, escapeValue = false)
 function allArgumentStrings(args, useResolvedValue = true, escapeValue = false) {
     return args.flatMap(a => argumentStrings(a, useResolvedValue, escapeValue));
 }
-async function runXcodebuild(args, xcprettyInv) {
+async function runXcodebuild(args, outputFormatter) {
     var _a;
-    const xcodebuildOut = xcprettyInv ? 'pipe' : process.stdout;
+    const xcodebuildOut = outputFormatter ? 'pipe' : process.stdout;
     const xcodebuild = (0, child_process_1.spawn)('xcodebuild', allArgumentStrings(args), {
         stdio: ['inherit', xcodebuildOut, process.stderr],
     });
@@ -106,20 +106,20 @@ async function runXcodebuild(args, xcprettyInv) {
             }
         });
     });
-    if (xcprettyInv) {
-        const xcpretty = (0, child_process_1.spawn)('xcpretty', allArgumentStrings(xcprettyInv.args), {
+    if (outputFormatter) {
+        const formattedOutput = (0, child_process_1.spawn)(outputFormatter.tool, allArgumentStrings(outputFormatter.args), {
             stdio: ['pipe', process.stdout, process.stderr],
         });
-        (_a = xcodebuild.stdout) === null || _a === void 0 ? void 0 : _a.pipe(xcpretty.stdin);
+        (_a = xcodebuild.stdout) === null || _a === void 0 ? void 0 : _a.pipe(formattedOutput.stdin);
         finishedPromise = finishedPromise.then((xcodeCode) => new Promise((resolve, reject) => {
-            xcpretty.on('error', reject);
-            xcpretty.on('exit', (xcprettyCode, xcprettySignal) => {
+            formattedOutput.on('error', reject);
+            formattedOutput.on('exit', (formattedOutputCode, formattedOutputSignal) => {
                 if (xcodeCode == 0) {
-                    if (xcprettyCode) {
-                        resolve(xcprettyCode);
+                    if (formattedOutputCode) {
+                        resolve(formattedOutputCode);
                     }
-                    else if (xcprettySignal) {
-                        resolve(SIGNAL_NAME_TO_NUMBER_MAP[xcprettySignal]);
+                    else if (formattedOutputSignal) {
+                        resolve(SIGNAL_NAME_TO_NUMBER_MAP[formattedOutputSignal]);
                     }
                 }
                 else {
@@ -239,26 +239,31 @@ async function main() {
         xcodebuildArgs.push(...buildSettings.split(' ').map(v => { return { name: v }; }));
     const action = core.getInput('action', { required: true });
     xcodebuildArgs.push(...action.split(' ').map(v => { return { name: v }; }));
-    const useXcpretty = core.getBooleanInput('use-xcpretty', { required: true });
-    const useColoredXCPrettyOutput = core.getBooleanInput('xcpretty-colored-output', { required: useXcpretty });
+    let outputFormatter = core.getInput('output-formatter');
+    if (!outputFormatter && core.getBooleanInput('use-xcpretty')) {
+        outputFormatter = 'xcpretty';
+        if (core.getBooleanInput('xcpretty-colored-output'))
+            outputFormatter += ' --color';
+    }
     const dryRun = core.isDebug() && core.getInput('dry-run') == 'true';
     // We allow other platforms for dry-runs since this speeds up tests (more parallel builds).
     if (!dryRun && process.platform !== 'darwin')
         throw new Error('This action only supports macOS!');
-    let xcPrettyInv;
-    if (useXcpretty) {
-        xcPrettyInv = { args: useColoredXCPrettyOutput ? [{ name: '--color' }] : [] };
+    let outputFormatterInv;
+    if (outputFormatter) {
+        const [tool, ...args] = outputFormatter.split(' ');
+        outputFormatterInv = { tool, args: args.map(arg => ({ name: arg })) };
     }
     else {
-        xcPrettyInv = null;
+        outputFormatterInv = null;
     }
     core.endGroup();
     await core.group('Composing command', async () => {
         // We "abuse" ICommandArgument here a bit to make it easier to compose both output variants.
         let allCommands = [{ name: 'xcodebuild' }].concat(xcodebuildArgs);
-        if (xcPrettyInv) {
-            allCommands.push({ name: '|' }, { name: 'xcpretty' });
-            allCommands.push(...xcPrettyInv.args);
+        if (outputFormatterInv) {
+            allCommands.push({ name: '|' }, { name: outputFormatterInv.tool });
+            allCommands.push(...outputFormatterInv.args);
         }
         let unprocessedInvocation = allArgumentStrings(allCommands, false, true);
         let processedInvocation = allArgumentStrings(allCommands, true, true);
@@ -292,7 +297,7 @@ async function main() {
         if (spmPackage)
             process.chdir(spmPackage);
         try {
-            await runXcodebuild(xcodebuildArgs, xcPrettyInv);
+            await runXcodebuild(xcodebuildArgs, outputFormatterInv);
         }
         finally {
             if (spmPackage)
