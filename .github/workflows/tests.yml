@@ -13,7 +13,7 @@ on:
 jobs:
   test-project:
     name: Test Project Build
-    runs-on: macos-12
+    runs-on: macos-13
     strategy:
       matrix:
         destination:
@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: ^14.0
+          xcode-version: ^14.3
       - uses: actions/checkout@v3
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
@@ -68,7 +68,7 @@ jobs:
 
   test-workspace:
     name: Test Workspace Build
-    runs-on: macos-12
+    runs-on: macos-13
     strategy:
       matrix:
         destination:
@@ -95,7 +95,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: ^14.0
+          xcode-version: ^14.3
       - uses: actions/checkout@v3
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
@@ -123,7 +123,7 @@ jobs:
 
   test-package:
     name: Test SPM Package Build
-    runs-on: macos-12
+    runs-on: macos-13
     strategy:
       matrix:
         destination:
@@ -137,7 +137,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: ^14.0
+          xcode-version: ^14.3
       - uses: actions/checkout@v3
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
