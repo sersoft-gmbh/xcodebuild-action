@@ -65,7 +65,7 @@ jobs:
         with:
           project: ${{ env.INPUT_PROJECT }}
           scheme: ${{ env.INPUT_SCHEME }}
-          destination: ${{ steps.destination.otuputs.xcode }}
+          destination: ${{ steps.destination.outputs.xcode }}
           skip-testing: ${{ matrix.skip-testing }}
           action: ${{ matrix.action }}
           output-formatter: ${{ matrix.output-formatter }}
@@ -74,7 +74,7 @@ jobs:
         with:
           project: ${{ env.INPUT_PROJECT }}
           scheme: ${{ env.INPUT_SCHEME }}
-          destination: ${{ steps.destination.otuputs.xcode }}
+          destination: ${{ steps.destination.outputs.xcode }}
           skip-testing: ${{ matrix.skip-testing }}
           action: ${{ matrix.action }}
           output-formatter: ${{ matrix.output-formatter }}
@@ -135,7 +135,7 @@ jobs:
         with:
           workspace: ${{ env.INPUT_WORKSPACE }}
           scheme: ${{ env.INPUT_SCHEME }}
-          destination: ${{ steps.destination.otuputs.xcode }}
+          destination: ${{ steps.destination.outputs.xcode }}
           skip-testing: ${{ matrix.skip-testing }}
           action: ${{ matrix.action }}
           output-formatter: ${{ matrix.output-formatter }}
@@ -144,7 +144,7 @@ jobs:
         with:
           workspace: ${{ env.INPUT_WORKSPACE }}
           scheme: ${{ env.INPUT_SCHEME }}
-          destination: ${{ steps.destination.otuputs.xcode }}
+          destination: ${{ steps.destination.outputs.xcode }}
           skip-testing: ${{ matrix.skip-testing }}
           action: ${{ matrix.action }}
           output-formatter: ${{ matrix.output-formatter }}
@@ -192,7 +192,7 @@ jobs:
         with:
           spm-package: ${{ env.INPUT_SPM_PACKAGE }}
           scheme: ${{ env.INPUT_SCHEME }}
-          destination: ${{ steps.destination.otuputs.xcode }}
+          destination: ${{ steps.destination.outputs.xcode }}
           action: ${{ env.INPUT_ACTION }}
           output-formatter: ${{ matrix.output-formatter }}
       - uses: './'
@@ -200,7 +200,7 @@ jobs:
         with:
           spm-package: ${{ env.INPUT_SPM_PACKAGE }}
           scheme: ${{ env.INPUT_SCHEME }}
-          destination: ${{ steps.destination.otuputs.xcode }}
+          destination: ${{ steps.destination.outputs.xcode }}
           action: ${{ env.INPUT_ACTION }}
           output-formatter: ${{ matrix.output-formatter }}
       - name: Check for derived data
