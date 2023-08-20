@@ -778,7 +778,7 @@ jobs:
           UNPROCESSED_COMMAND: ${{ steps.xcodebuild.outputs.unprocessed-command }}
           EXECUTED_COMMAND: ${{ steps.xcodebuild.outputs.executed-command }}
         run: |
-          EXPECTED_COMMAND="xcodebuild -project ${INPUT_PROJECT} -scheme ${INPUT_SCHEME} | xcpretty --color"
+          EXPECTED_COMMAND="xcodebuild -project ${INPUT_PROJECT} -scheme ${INPUT_SCHEME} test | xcpretty --color"
           ACTUAL_COMMAND="${UNPROCESSED_COMMAND}"
           if [ "${EXPECTED_COMMAND}" != "${ACTUAL_COMMAND}" ]; then
             printf "::error::Executed command did not match expectations!\nExecuted: ${ACTUAL_COMMAND}\nExpected: ${EXPECTED_COMMAND}\n"
@@ -840,7 +840,7 @@ jobs:
           UNPROCESSED_COMMAND: ${{ steps.xcodebuild.outputs.unprocessed-command }}
           EXECUTED_COMMAND: ${{ steps.xcodebuild.outputs.executed-command }}
         run: |
-          EXPECTED_COMMAND="xcodebuild -project ${INPUT_PROJECT} -scheme ${INPUT_SCHEME} | xcpretty --color"
+          EXPECTED_COMMAND="xcodebuild -project ${INPUT_PROJECT} -scheme ${INPUT_SCHEME} test | xcpretty --color"
           ACTUAL_COMMAND="${UNPROCESSED_COMMAND}"
           if [ "${EXPECTED_COMMAND}" != "${ACTUAL_COMMAND}" ]; then
             printf "::error::Executed command did not match expectations!\nExecuted: ${ACTUAL_COMMAND}\nExpected: ${EXPECTED_COMMAND}\n"
