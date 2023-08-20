@@ -16,9 +16,9 @@ jobs:
     runs-on: macos-13
     strategy:
       matrix:
-        destination:
-          - platform=macOS
-          - platform=iOS Simulator,OS=latest,name=iPhone 14 Pro
+        platform:
+          - macOS
+          - iOS
         skip-testing:
             - |
                 TestProjectTests/FailingTests/testFailing1
@@ -26,11 +26,11 @@ jobs:
         action: [ test ]
         output-formatter: [ 'xcpretty --color', '' ]
         include:
-          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 8 (45mm)
+          - platform: watchOS
             skip-testing: ''
             action: build
             output-formatter: xcpretty --color
-          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 8 (45mm)
+          - platform: watchOS
             skip-testing: ''
             action: build
             output-formatter: ''
@@ -41,6 +41,21 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ^14.3
+      - name: Select destination
+        id: destination
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          DESTINATION=''
+          case "${PLATFORM}" in
+            'macOS')   DESTINATION='platform=macOS';;
+            'iOS')     DESTINATION='platform=iOS Simulator,OS=latest,name=iPhone 14 Pro';;
+            'iPadOS')  DESTINATION='platform=iOS Simulator,OS=latest,name=iPad Pro (11-inch) (4th generation)';;
+            'tvOS')    DESTINATION='platform=tvOS Simulator,OS=latest,name=Apple TV 4K (3rd generation)';;
+            'watchOS') DESTINATION='platform=watchOS Simulator,OS=latest,name=Apple Watch Series 8 (45mm)';;
+            *) echo "::error title=Unknown platform!::Unknown platform: ${PLATFORM}" && exit 1;;
+          esac
+          echo "xcode=${DESTINATION}" >> "${GITHUB_OUTPUT}"
       - uses: actions/checkout@v3
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
@@ -50,7 +65,7 @@ jobs:
         with:
           project: ${{ env.INPUT_PROJECT }}
           scheme: ${{ env.INPUT_SCHEME }}
-          destination: ${{ matrix.destination }}
+          destination: ${{ steps.destination.otuputs.xcode }}
           skip-testing: ${{ matrix.skip-testing }}
           action: ${{ matrix.action }}
           output-formatter: ${{ matrix.output-formatter }}
@@ -59,7 +74,7 @@ jobs:
         with:
           project: ${{ env.INPUT_PROJECT }}
           scheme: ${{ env.INPUT_SCHEME }}
-          destination: ${{ matrix.destination }}
+          destination: ${{ steps.destination.otuputs.xcode }}
           skip-testing: ${{ matrix.skip-testing }}
           action: ${{ matrix.action }}
           output-formatter: ${{ matrix.output-formatter }}
@@ -71,9 +86,9 @@ jobs:
     runs-on: macos-13
     strategy:
       matrix:
-        destination:
-          - platform=macOS
-          - platform=iOS Simulator,OS=latest,name=iPhone 14 Pro
+        platform:
+          - macOS
+          - iOS
         skip-testing:
             - |
               TestProjectTests/FailingTests/testFailing1
@@ -81,11 +96,11 @@ jobs:
         action: [ test ]
         output-formatter: [ 'xcpretty --color', '' ]
         include:
-          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 8 (45mm)
+          - platform: watchOS
             skip-testing: ''
             action: build
             output-formatter: xcpretty --color
-          - destination: platform=watchOS Simulator,OS=latest,name=Apple Watch Series 8 (45mm)
+          - platform: watchOS
             skip-testing: ''
             action: build
             output-formatter: ''
@@ -96,6 +111,21 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ^14.3
+      - name: Select destination
+        id: destination
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          DESTINATION=''
+          case "${PLATFORM}" in
+            'macOS')   DESTINATION='platform=macOS';;
+            'iOS')     DESTINATION='platform=iOS Simulator,OS=latest,name=iPhone 14 Pro';;
+            'iPadOS')  DESTINATION='platform=iOS Simulator,OS=latest,name=iPad Pro (11-inch) (4th generation)';;
+            'tvOS')    DESTINATION='platform=tvOS Simulator,OS=latest,name=Apple TV 4K (3rd generation)';;
+            'watchOS') DESTINATION='platform=watchOS Simulator,OS=latest,name=Apple Watch Series 8 (45mm)';;
+            *) echo "::error title=Unknown platform!::Unknown platform: ${PLATFORM}" && exit 1;;
+          esac
+          echo "xcode=${DESTINATION}" >> "${GITHUB_OUTPUT}"
       - uses: actions/checkout@v3
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
@@ -105,7 +135,7 @@ jobs:
         with:
           workspace: ${{ env.INPUT_WORKSPACE }}
           scheme: ${{ env.INPUT_SCHEME }}
-          destination: ${{ matrix.destination }}
+          destination: ${{ steps.destination.otuputs.xcode }}
           skip-testing: ${{ matrix.skip-testing }}
           action: ${{ matrix.action }}
           output-formatter: ${{ matrix.output-formatter }}
@@ -114,7 +144,7 @@ jobs:
         with:
           workspace: ${{ env.INPUT_WORKSPACE }}
           scheme: ${{ env.INPUT_SCHEME }}
-          destination: ${{ matrix.destination }}
+          destination: ${{ steps.destination.otuputs.xcode }}
           skip-testing: ${{ matrix.skip-testing }}
           action: ${{ matrix.action }}
           output-formatter: ${{ matrix.output-formatter }}
@@ -126,9 +156,9 @@ jobs:
     runs-on: macos-13
     strategy:
       matrix:
-        destination:
-          - platform=macOS
-          - platform=iOS Simulator,OS=latest,name=iPhone 14 Pro
+        platform:
+          - macOS
+          - iOS
         output-formatter: [ 'xcpretty --color', '' ]
     env:
       INPUT_SPM_PACKAGE: __test__/TestPackage
@@ -138,6 +168,21 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ^14.3
+      - name: Select destination
+        id: destination
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          DESTINATION=''
+          case "${PLATFORM}" in
+            'macOS')   DESTINATION='platform=macOS';;
+            'iOS')     DESTINATION='platform=iOS Simulator,OS=latest,name=iPhone 14 Pro';;
+            'iPadOS')  DESTINATION='platform=iOS Simulator,OS=latest,name=iPad Pro (11-inch) (4th generation)';;
+            'tvOS')    DESTINATION='platform=tvOS Simulator,OS=latest,name=Apple TV 4K (3rd generation)';;
+            'watchOS') DESTINATION='platform=watchOS Simulator,OS=latest,name=Apple Watch Series 8 (45mm)';;
+            *) echo "::error title=Unknown platform!::Unknown platform: ${PLATFORM}" && exit 1;;
+          esac
+          echo "xcode=${DESTINATION}" >> "${GITHUB_OUTPUT}"
       - uses: actions/checkout@v3
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
@@ -147,7 +192,7 @@ jobs:
         with:
           spm-package: ${{ env.INPUT_SPM_PACKAGE }}
           scheme: ${{ env.INPUT_SCHEME }}
-          destination: ${{ matrix.destination }}
+          destination: ${{ steps.destination.otuputs.xcode }}
           action: ${{ env.INPUT_ACTION }}
           output-formatter: ${{ matrix.output-formatter }}
       - uses: './'
@@ -155,7 +200,7 @@ jobs:
         with:
           spm-package: ${{ env.INPUT_SPM_PACKAGE }}
           scheme: ${{ env.INPUT_SCHEME }}
-          destination: ${{ matrix.destination }}
+          destination: ${{ steps.destination.otuputs.xcode }}
           action: ${{ env.INPUT_ACTION }}
           output-formatter: ${{ matrix.output-formatter }}
       - name: Check for derived data
