@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: sersoft-gmbh/running-release-tags-action@v2
+      - uses: sersoft-gmbh/running-release-tags-action@v3
         if: ${{ github.event.release.prerelease == false }}
         with:
           update-full-release: true
