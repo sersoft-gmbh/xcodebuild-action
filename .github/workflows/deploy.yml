@@ -2,7 +2,7 @@ name: Deploy Action Code
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths-ignore: [ 'dist/*.js' ]
 
 jobs:

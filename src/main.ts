@@ -120,9 +120,8 @@ async function runXcodebuild(args: ICommandArgument[], outputFormatter?: IOutput
         }));
     }
     const exitCode = await finishedPromise;
-    if (exitCode != 0) {
+    if (exitCode != 0)
         throw new Error(`Xcodebuild action failed (${exitCode})!`);
-    }
 }
 
 async function main() {

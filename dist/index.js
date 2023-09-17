@@ -90,7 +90,6 @@ function allArgumentStrings(args, useResolvedValue = true, escapeValue = false) 
     return args.flatMap(a => argumentStrings(a, useResolvedValue, escapeValue));
 }
 async function runXcodebuild(args, outputFormatter) {
-    var _a;
     const xcodebuildOut = outputFormatter ? 'pipe' : process.stdout;
     const xcodebuild = (0, child_process_1.spawn)('xcodebuild', allArgumentStrings(args), {
         stdio: ['inherit', xcodebuildOut, process.stderr],
@@ -110,7 +109,7 @@ async function runXcodebuild(args, outputFormatter) {
         const formattedOutput = (0, child_process_1.spawn)(outputFormatter.tool, allArgumentStrings(outputFormatter.args), {
             stdio: ['pipe', process.stdout, process.stderr],
         });
-        (_a = xcodebuild.stdout) === null || _a === void 0 ? void 0 : _a.pipe(formattedOutput.stdin);
+        xcodebuild.stdout?.pipe(formattedOutput.stdin);
         finishedPromise = finishedPromise.then((xcodeCode) => new Promise((resolve, reject) => {
             formattedOutput.on('error', reject);
             formattedOutput.on('exit', (formattedOutputCode, formattedOutputSignal) => {
@@ -129,9 +128,8 @@ async function runXcodebuild(args, outputFormatter) {
         }));
     }
     const exitCode = await finishedPromise;
-    if (exitCode != 0) {
+    if (exitCode != 0)
         throw new Error(`Xcodebuild action failed (${exitCode})!`);
-    }
 }
 async function main() {
     let xcodebuildArgs = [];
@@ -152,29 +150,29 @@ async function main() {
     }
     function _pushArgWithValue(name, value, opts) {
         let processedValue = value;
-        if (opts === null || opts === void 0 ? void 0 : opts.skipEmptyValues) {
+        if (opts?.skipEmptyValues) {
             processedValue = processedValue.trim();
             if (processedValue.length <= 0)
                 return;
         }
-        if (opts === null || opts === void 0 ? void 0 : opts.isPath)
+        if (opts?.isPath)
             processedValue = path.resolve(processedValue);
         _pushArg(name, { originalValue: value, resolvedValue: processedValue });
     }
     function _addInputArg(inputName, argName, opts) {
-        if (opts === null || opts === void 0 ? void 0 : opts.isList) {
+        if (opts?.isList) {
             let values = core.getMultilineInput(inputName);
             if (values)
-                values.forEach(value => _pushArgWithValue(argName !== null && argName !== void 0 ? argName : inputName, value, {
-                    isPath: opts === null || opts === void 0 ? void 0 : opts.isPath,
+                values.forEach(value => _pushArgWithValue(argName ?? inputName, value, {
+                    isPath: opts?.isPath,
                     skipEmptyValues: true,
                 }));
         }
         else {
             let value = core.getInput(inputName);
             if (value)
-                _pushArgWithValue(argName !== null && argName !== void 0 ? argName : inputName, value, {
-                    isPath: opts === null || opts === void 0 ? void 0 : opts.isPath,
+                _pushArgWithValue(argName ?? inputName, value, {
+                    isPath: opts?.isPath,
                     skipEmptyValues: false,
                 });
         }
@@ -190,12 +188,12 @@ async function main() {
     }
     function addBoolArg(inputName, argName) {
         const value = core.getInput(inputName);
-        if (value === null || value === void 0 ? void 0 : value.length)
-            _pushArgWithValue(argName !== null && argName !== void 0 ? argName : inputName, core.getBooleanInput(inputName) ? 'YES' : 'NO');
+        if (value?.length)
+            _pushArgWithValue(argName ?? inputName, core.getBooleanInput(inputName) ? 'YES' : 'NO');
     }
     function addFlagArg(inputName, argName) {
         if (core.getInput(inputName).length && core.getBooleanInput(inputName))
-            _pushArg(argName !== null && argName !== void 0 ? argName : inputName);
+            _pushArg(argName ?? inputName);
     }
     if (workspace) {
         _pushArgWithValue('workspace', workspace, { isPath: true });

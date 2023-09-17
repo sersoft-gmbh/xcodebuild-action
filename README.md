@@ -170,7 +170,7 @@ The command that was executed by this action. This will also be printed to the a
 
 Use the following snippet when you want to run tests configured with the `MyApp` scheme inside a `MyApp` Xcode project:
 ```yaml
-uses: sersoft-gmbh/xcodebuild-action@v2
+uses: sersoft-gmbh/xcodebuild-action@v3
 with:
   project: MyApp.xcodeproj
   scheme: MyApp

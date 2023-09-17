@@ -2,13 +2,13 @@ name: Tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths: 
       - 'dist/*.js'
       - 'action.yml'
       - '.github/workflows/tests.yml'
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   test-project:
@@ -60,7 +60,7 @@ jobs:
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
-      - uses: sersoft-gmbh/xcodebuild-action@master
+      - uses: sersoft-gmbh/xcodebuild-action@main
         if: ${{ github.event_name == 'push' }}
         with:
           project: ${{ env.INPUT_PROJECT }}
@@ -130,7 +130,7 @@ jobs:
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
-      - uses: sersoft-gmbh/xcodebuild-action@master
+      - uses: sersoft-gmbh/xcodebuild-action@main
         if: ${{ github.event_name == 'push' }}
         with:
           workspace: ${{ env.INPUT_WORKSPACE }}
@@ -187,7 +187,7 @@ jobs:
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
-      - uses: sersoft-gmbh/xcodebuild-action@master
+      - uses: sersoft-gmbh/xcodebuild-action@main
         if: ${{ github.event_name == 'push' }}
         with:
           spm-package: ${{ env.INPUT_SPM_PACKAGE }}
@@ -244,9 +244,9 @@ jobs:
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
-      - uses: sersoft-gmbh/xcodebuild-action@master
+      - uses: sersoft-gmbh/xcodebuild-action@main
         if: ${{ github.event_name == 'push' }}
-        id: xcodebuild-master
+        id: xcodebuild-main
         with:
           project: ${{ env.INPUT_PROJECT }}
           target: ${{ env.INPUT_TARGET }}
@@ -319,8 +319,8 @@ jobs:
       - id: xcodebuild
         env:
           EVENT_NAME: ${{ github.event_name }}
-          BRANCH_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-master.outputs.unprocessed-command }}
-          BRANCH_EXECUTED_COMMAND: ${{ steps.xcodebuild-master.outputs.executed-command }}
+          BRANCH_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-main.outputs.unprocessed-command }}
+          BRANCH_EXECUTED_COMMAND: ${{ steps.xcodebuild-main.outputs.executed-command }}
           LOCAL_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-local.outputs.unprocessed-command }}
           LOCAL_EXECUTED_COMMAND: ${{ steps.xcodebuild-local.outputs.executed-command }}
         run: |
@@ -415,9 +415,9 @@ jobs:
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
-      - uses: sersoft-gmbh/xcodebuild-action@master
+      - uses: sersoft-gmbh/xcodebuild-action@main
         if: ${{ github.event_name == 'push' }}
-        id: xcodebuild-master
+        id: xcodebuild-main
         with:
           workspace: ${{ env.INPUT_WORKSPACE }}
           scheme: ${{ env.INPUT_SCHEME }}
@@ -492,8 +492,8 @@ jobs:
       - id: xcodebuild
         env:
           EVENT_NAME: ${{ github.event_name }}
-          BRANCH_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-master.outputs.unprocessed-command }}
-          BRANCH_EXECUTED_COMMAND: ${{ steps.xcodebuild-master.outputs.executed-command }}
+          BRANCH_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-main.outputs.unprocessed-command }}
+          BRANCH_EXECUTED_COMMAND: ${{ steps.xcodebuild-main.outputs.executed-command }}
           LOCAL_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-local.outputs.unprocessed-command }}
           LOCAL_EXECUTED_COMMAND: ${{ steps.xcodebuild-local.outputs.executed-command }}
         run: |
@@ -589,9 +589,9 @@ jobs:
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
-      - uses: sersoft-gmbh/xcodebuild-action@master
+      - uses: sersoft-gmbh/xcodebuild-action@main
         if: ${{ github.event_name == 'push' }}
-        id: xcodebuild-master
+        id: xcodebuild-main
         with:
           spm-package: ${{ env.INPUT_SPM_PACKAGE }}
           scheme: ${{ env.INPUT_SCHEME }}
@@ -666,8 +666,8 @@ jobs:
       - id: xcodebuild
         env:
           EVENT_NAME: ${{ github.event_name }}
-          BRANCH_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-master.outputs.unprocessed-command }}
-          BRANCH_EXECUTED_COMMAND: ${{ steps.xcodebuild-master.outputs.executed-command }}
+          BRANCH_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-main.outputs.unprocessed-command }}
+          BRANCH_EXECUTED_COMMAND: ${{ steps.xcodebuild-main.outputs.executed-command }}
           LOCAL_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-local.outputs.unprocessed-command }}
           LOCAL_EXECUTED_COMMAND: ${{ steps.xcodebuild-local.outputs.executed-command }}
         run: |
@@ -744,9 +744,9 @@ jobs:
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
-      - uses: sersoft-gmbh/xcodebuild-action@master
+      - uses: sersoft-gmbh/xcodebuild-action@main
         if: ${{ github.event_name == 'push' }}
-        id: xcodebuild-master
+        id: xcodebuild-main
         with:
           project: ${{ env.INPUT_PROJECT }}
           scheme: ${{ env.INPUT_SCHEME }}
@@ -761,8 +761,8 @@ jobs:
       - id: xcodebuild
         env:
           EVENT_NAME: ${{ github.event_name }}
-          BRANCH_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-master.outputs.unprocessed-command }}
-          BRANCH_EXECUTED_COMMAND: ${{ steps.xcodebuild-master.outputs.executed-command }}
+          BRANCH_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-main.outputs.unprocessed-command }}
+          BRANCH_EXECUTED_COMMAND: ${{ steps.xcodebuild-main.outputs.executed-command }}
           LOCAL_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-local.outputs.unprocessed-command }}
           LOCAL_EXECUTED_COMMAND: ${{ steps.xcodebuild-local.outputs.executed-command }}
         run: |
@@ -804,9 +804,9 @@ jobs:
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
-      - uses: sersoft-gmbh/xcodebuild-action@master
+      - uses: sersoft-gmbh/xcodebuild-action@main
         if: ${{ github.event_name == 'push' }}
-        id: xcodebuild-master
+        id: xcodebuild-main
         with:
           project: ${{ env.INPUT_PROJECT }}
           scheme: ${{ env.INPUT_SCHEME }}
@@ -823,8 +823,8 @@ jobs:
       - id: xcodebuild
         env:
           EVENT_NAME: ${{ github.event_name }}
-          BRANCH_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-master.outputs.unprocessed-command }}
-          BRANCH_EXECUTED_COMMAND: ${{ steps.xcodebuild-master.outputs.executed-command }}
+          BRANCH_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-main.outputs.unprocessed-command }}
+          BRANCH_EXECUTED_COMMAND: ${{ steps.xcodebuild-main.outputs.executed-command }}
           LOCAL_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-local.outputs.unprocessed-command }}
           LOCAL_EXECUTED_COMMAND: ${{ steps.xcodebuild-local.outputs.executed-command }}
         run: |

@@ -8,10 +8,10 @@ jobs:
   update-tags:
     name: Update Running Releases
     runs-on: ubuntu-latest
+    if: ${{ github.event.release.prerelease == false }}
     steps:
       - uses: actions/checkout@v4
-      - uses: sersoft-gmbh/running-release-tags-action@v2
-        if: ${{ github.event.release.prerelease == false }}
+      - uses: sersoft-gmbh/running-release-tags-action@v3
         with:
           update-full-release: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
