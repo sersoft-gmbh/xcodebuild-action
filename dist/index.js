@@ -238,11 +238,6 @@ async function main() {
     const action = core.getInput('action', { required: true });
     xcodebuildArgs.push(...action.split(' ').map(v => { return { name: v }; }));
     let outputFormatter = core.getInput('output-formatter');
-    if (!outputFormatter && core.getBooleanInput('use-xcpretty')) {
-        outputFormatter = 'xcpretty';
-        if (core.getBooleanInput('xcpretty-colored-output'))
-            outputFormatter += ' --color';
-    }
     const dryRun = core.isDebug() && core.getInput('dry-run') == 'true';
     // We allow other platforms for dry-runs since this speeds up tests (more parallel builds).
     if (!dryRun && process.platform !== 'darwin')

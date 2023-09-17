@@ -242,11 +242,6 @@ async function main() {
     xcodebuildArgs.push(...action.split(' ').map(v => { return { name: v }; }));
 
     let outputFormatter = core.getInput('output-formatter');
-    if (!outputFormatter && core.getBooleanInput('use-xcpretty')) {
-        outputFormatter = 'xcpretty';
-        if (core.getBooleanInput('xcpretty-colored-output'))
-            outputFormatter += ' --color';
-    }
 
     const dryRun = core.isDebug() && core.getInput('dry-run') == 'true';
 
