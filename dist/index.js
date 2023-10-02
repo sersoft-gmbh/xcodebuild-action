@@ -223,7 +223,13 @@ async function main() {
     addPathArg('result-bundle-path', 'resultBundlePath');
     addInputArg('result-bundle-version', 'resultBundleVersion');
     addPathArg('cloned-source-packages-path', 'clonedSourcePackagesDirPath');
+    addPathArg('package-cache-path', 'packageCachePath');
     addPathArg('derived-data-path', 'derivedDataPath');
+    addFlagArg('disable-package-repository-cache', 'disablePackageRepositoryCache');
+    addFlagArg('disable-automatic-package-resolution', 'disableAutomaticPackageResolution');
+    addFlagArg('skip-package-updates', 'skipPackageUpdates');
+    addFlagArg('skip-package-plugin-validation', 'skipPackagePluginValidation');
+    addFlagArg('skip-macro-validation', 'skipMacroValidation');
     addPathArg('xcroot');
     addPathArg('xctestrun');
     addInputArg('test-plan', 'testPlan');
