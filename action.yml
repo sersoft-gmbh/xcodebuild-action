@@ -74,8 +74,26 @@ inputs:
   cloned-source-packages-path:
     description: The path that should be used for the cloning of remote packages. See also `xcodebuild`'s `-clonedSourcePackagesDirPath`.
     required: false
+  package-cache-path:
+    description: The path of caches used for package support. See also `xcodebuild`'s `-packageCachePath`.
+    required: false
   derived-data-path:
     description: The path that should be used for derived data. See also `xcodebuild`'s `-derivedDataPath`.
+    required: false
+  disable-package-repository-cache:
+    description: Whether the package repository cache should be disabled. See also `xcodebuild`'s `-disablePackageRepositoryCache`.
+    required: false
+  disable-automatic-package-resolution:
+    description: Whether automatic package resolution should be disabled. See also `xcodebuild`'s `-disableAutomaticPackageResolution`.
+    required: false
+  skip-package-updates:
+    description: Whether package updates should be skipped. See also `xcodebuild`'s `-skipPackageUpdates`.
+    required: false
+  skip-package-plugin-validation:
+    description: Whether package plugin validation should be skipped. See also `xcodebuild`'s `-skipPackagePluginValidation`.
+    required: false
+  skip-macro-validation:
+    description: Whether macro validation should be skipped. See also `xcodebuild`'s `-skipMacroValidation`.
     required: false
   xcroot:
     description: The path to a .xcroot to use for building and/or testing. See also `xcodebuild`'s `-xcroot`.
