@@ -60,7 +60,7 @@ function argumentValueString(value: ICommandArgumentValue,
     function _cmdEscape(str: string): string {
         return str.replace(/((?!\\).|^)( )/g, `$1\\ `);
     }
-    let strValue = useResolvedValue ? value.resolvedValue : value.originalValue
+    let strValue = useResolvedValue ? value.resolvedValue : value.originalValue;
     return escapeValue ? _cmdEscape(strValue) : strValue;
 }
 
@@ -140,6 +140,8 @@ async function main() {
     }
     const scheme = core.getInput('scheme', { required: !!workspace || !!spmPackage });
 
+    const disableEnumInputValidation = core.getBooleanInput('disable-enum-input-validation');
+
     function _pushArg(name: string, value?: ICommandArgumentValue) {
         xcodebuildArgs.push({ name: `-${name}`, value: value });
     }
@@ -156,45 +158,64 @@ async function main() {
         _pushArg(name, { originalValue: value, resolvedValue: processedValue });
     }
 
-    function _addInputArg(inputName: string, argName?: string, opts?: { isPath?: boolean, isList?: boolean }) {
-        if (opts?.isList) {
+    function _addInputArg(inputName: string,
+                          argName?: string,
+                          opts?: { isPath?: boolean, isList?: boolean, validValues?: string[] }): boolean {
+        if (opts?.isList) { // opts is guaranteed to be set in this branch.
             let values = core.getMultilineInput(inputName);
-            if (values)
-                values.forEach(value => _pushArgWithValue(argName ?? inputName, value, {
-                    isPath: opts?.isPath,
+            if (!values) return false;
+            for (const value of values) {
+                if (!disableEnumInputValidation && opts.validValues && !opts.validValues.includes(value))
+                    throw new Error(`Invalid value for ${inputName}: ${value}! Valid values: ${opts.validValues.join(', ')}`);
+                _pushArgWithValue(argName ?? inputName, value, {
+                    isPath: opts.isPath,
                     skipEmptyValues: true,
-                }));
+                });
+            }
+            return values.length > 0;
         } else {
             let value = core.getInput(inputName);
-            if (value)
-                _pushArgWithValue(argName ?? inputName, value, {
-                    isPath: opts?.isPath,
-                    skipEmptyValues: false,
-                })
+            if (!value) return false;
+            if (!disableEnumInputValidation && opts?.validValues && !opts.validValues.includes(value))
+                throw new Error(`Invalid value for ${inputName}: ${value}! Valid values: ${opts.validValues.join(', ')}`);
+            _pushArgWithValue(argName ?? inputName, value, {
+                isPath: opts?.isPath,
+                skipEmptyValues: false,
+            });
+            return true;
         }
     }
 
-    function addInputArg(inputName: string, argName?: string) {
-        _addInputArg(inputName, argName);
+    function addInputArg(inputName: string, argName?: string): boolean {
+        return _addInputArg(inputName, argName);
     }
 
-    function addPathArg(inputName: string, argName?: string) {
-        _addInputArg(inputName, argName, { isPath: true });
+    function addPathArg(inputName: string, argName?: string): boolean {
+        return _addInputArg(inputName, argName, { isPath: true });
     }
 
-    function addListArg(inputName: string, argName?: string) {
-        _addInputArg(inputName, argName, { isList: true });
+    function addListArg(inputName: string, argName?: string): boolean {
+        return _addInputArg(inputName, argName, { isList: true });
     }
 
-    function addBoolArg(inputName: string, argName?: string) {
+    function addEnumArg(inputName: string, validValues: string[], argName?: string): boolean {
+        return _addInputArg(inputName, argName, { validValues });
+    }
+
+    function addBoolArg(inputName: string, argName?: string): boolean {
         const value = core.getInput(inputName);
-        if (value?.length)
-            _pushArgWithValue(argName ?? inputName, core.getBooleanInput(inputName) ? 'YES' : 'NO')
+        const hasValue = !!value && value.length > 0;
+        if (hasValue)
+            _pushArgWithValue(argName ?? inputName, core.getBooleanInput(inputName) ? 'YES' : 'NO');
+        return hasValue;
     }
 
-    function addFlagArg(inputName: string, argName?: string) {
-        if (core.getInput(inputName).length && core.getBooleanInput(inputName))
+    function addFlagArg(inputName: string, argName?: string): boolean {
+        const value = core.getInput(inputName);
+        const hasValue = !!value && value.length > 0;
+        if (hasValue && core.getBooleanInput(inputName))
             _pushArg(argName ?? inputName);
+        return hasValue;
     }
 
     if (workspace) {
@@ -204,12 +225,14 @@ async function main() {
     }
     if (scheme) _pushArgWithValue('scheme', scheme);
 
-    addInputArg('target');
+    if (addInputArg('target') && addFlagArg('all-targets', 'alltargets'))
+        throw new Error('`target` and `all-targets` are mutually exclusive!');
     addInputArg('destination');
     addInputArg('configuration');
     addInputArg('sdk');
     addInputArg('arch');
     addPathArg('xcconfig');
+    addInputArg('toolchain');
     addInputArg('jobs');
     addFlagArg('parallelize-targets', 'parallelizeTargets');
     addBoolArg('enable-code-coverage', 'enableCodeCoverage');
@@ -226,19 +249,37 @@ async function main() {
     addPathArg('cloned-source-packages-path', 'clonedSourcePackagesDirPath');
     addPathArg('package-cache-path', 'packageCachePath');
     addPathArg('derived-data-path', 'derivedDataPath');
+    addInputArg('default-package-registry-url', 'defaultPackageRegistryURL');
+    addEnumArg('package-dependency-scm-to-registry-transformation',
+        ['none', 'useRegistryIdentity', 'useRegistryIdentityAndSources'],
+        'packageDependencySCMToRegistryTransformation');
     addFlagArg('disable-package-repository-cache', 'disablePackageRepositoryCache');
     addFlagArg('disable-automatic-package-resolution', 'disableAutomaticPackageResolution');
     addFlagArg('skip-package-updates', 'skipPackageUpdates');
     addFlagArg('skip-package-plugin-validation', 'skipPackagePluginValidation');
     addFlagArg('skip-macro-validation', 'skipMacroValidation');
+    addEnumArg('package-fingerprint-policy', ['warn', 'strict'], 'packageFingerprintPolicy');
+    addEnumArg('package-signing-entity-policy', ['warn', 'strict'], 'packageSigningEntityPolicy');
     addPathArg('xcroot');
     addPathArg('xctestrun');
+    addInputArg('test-language', 'testLanguage');
+    addInputArg('test-region', 'testRegion');
     addInputArg('test-plan', 'testPlan');
     addListArg('only-testing');
     addListArg('skip-testing');
+    addListArg('only-test-configuration');
+    addListArg('skip-test-configuration');
+    addInputArg('test-iterations');
+    addFlagArg('retry-tests-on-failure');
+    addFlagArg('run-tests-until-failure');
     addFlagArg('skip-unavailable-actions', 'skipUnavailableActions');
     addFlagArg('allow-provisioning-updates', 'allowProvisioningUpdates');
     addFlagArg('allow-provisioning-device-registration', 'allowProvisioningDeviceRegistration');
+    addFlagArg('export-notarized-app', 'exportNotarizedApp');
+    addPathArg('export-options-plist', 'exportOptionsPlist');
+    addFlagArg('export-archive', 'exportArchive');
+    addPathArg('archive-path', 'archivePath');
+    addFlagArg('create-xcframework');
 
     const buildSettings = core.getInput('build-settings');
     if (buildSettings)
@@ -285,7 +326,7 @@ async function main() {
                     ...inv,
                     ';',
                     'popd',
-                ]
+                ];
             }
             unprocessedInvocation = _combinedInv(unprocessedInvocation, false);
             processedInvocation = _combinedInv(processedInvocation, true);

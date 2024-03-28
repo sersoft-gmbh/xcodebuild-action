@@ -17,6 +17,9 @@ inputs:
   target:
     description: The target to build. See also `xcodebuild`'s `-target`.
     required: false
+  all-targets:
+    description: If `true`, all targets will be built. See also `xcodebuild`'s `-allTargets`.
+    required: false
   destination:
     description: The destination specifier to build. See also `xcodebuild`'s `-destination`.
     required: false
@@ -31,6 +34,9 @@ inputs:
     required: false
   xcconfig:
     description: The path to an xcconfig file with build settings overrides. See also `xcodebuild`'s `-xcconfig`.
+    required: false
+  toolchain:
+    description: The toolchain identifier or name to use for building. See also `xcodebuild`'s `-toolchain`.
     required: false
   jobs:
     description: The number of jobs to use for building. See also `xcodebuild`'s `-jobs`.
@@ -80,6 +86,12 @@ inputs:
   derived-data-path:
     description: The path that should be used for derived data. See also `xcodebuild`'s `-derivedDataPath`.
     required: false
+  default-package-registry-url:
+    description: The default package registry URL. See also `xcodebuild`'s `-defaultPackageRegistryURL`.
+    required: false
+  package-dependency-scm-to-registry-transformation:
+    description: The package dependency SCM to registry transformation. See also `xcodebuild`'s `-packageDependencySCMToRegistryTransformation`.
+    required: false
   disable-package-repository-cache:
     description: Whether the package repository cache should be disabled. See also `xcodebuild`'s `-disablePackageRepositoryCache`.
     required: false
@@ -95,11 +107,23 @@ inputs:
   skip-macro-validation:
     description: Whether macro validation should be skipped. See also `xcodebuild`'s `-skipMacroValidation`.
     required: false
+  package-fingerprint-policy:
+    description: The package fingerprint checking policy. See also `xcodebuild`'s `-packageFingerprintPolicy`.
+    required: false
+  package-signing-entity-policy:
+    description: The package signing entity policy. See also `xcodebuild`'s `-packageSigningEntityPolicy`.
+    required: false
   xcroot:
     description: The path to a .xcroot to use for building and/or testing. See also `xcodebuild`'s `-xcroot`.
     required: false
   xctestrun:
     description: The path to a test run specification. See also `xcodebuild`'s `-xctestrun`.
+    required: false
+  test-language:
+    description: The language to use for testing. See also `xcodebuild`'s `-testLanguage`.
+    required: false
+  test-region:
+    description: The region to use for testing. See also `xcodebuild`'s `-testRegion`.
     required: false
   test-plan:
     description: The name of the test plan associated with the scheme to use for testing. See also `xcodebuild`'s `-testPlan`.
@@ -110,6 +134,21 @@ inputs:
   skip-testing:
     description: A (line-separated) list of tests to skip. See also `xcodebuild`'s `-skip-testing`.
     required: false
+  only-test-configuration:
+    description: A (line-separated) list of test configurations to run. See also `xcodebuild`'s `-only-test-configuration`.
+    required: false
+  skip-test-configuration:
+    description: A (line-separated) list of test configurations to skip. See also `xcodebuild`'s `-skip-test-configuration`.
+    required: false
+  test-iterations:
+    description: The number of iterations to run the tests. See also `xcodebuild`'s `-test-iterations`.
+    required: false
+  retry-tests-on-failure:
+    description: Whether tests should be retried on failure. See also `xcodebuild`'s `-retry-tests-on-failure`.
+    required: false
+  run-tests-until-failure:
+    description: Whether tests should be run until failure. See also `xcodebuild`'s `-run-tests-until-failure`.
+    required: false
   skip-unavailable-actions:
     description: Whether unavailable actions should be skipped instead of failing the execution. See also `xcodebuild`'s `-skipUnavailableActions`.
     required: false
@@ -118,6 +157,21 @@ inputs:
     required: false
   allow-provisioning-device-registration:
     description: Whether provisioning device registrations are allowed. See also `xcodebuild`'s `-allowProvisioningDeviceRegistration`.
+    required: false
+  export-notarized-app:
+    description: Whether the app should be exported notarized. See also `xcodebuild`'s `-exportNotarizedApp`.
+    required: false
+  export-options-plist:
+    description: The path to an export options plist. See also `xcodebuild`'s `-exportOptionsPlist`.
+    required: false
+  export-archive:
+    description: Whether an archive should be exported. See also `xcodebuild`'s `-exportArchive`.
+    required: false
+  archive-path:
+    description: The path to where archives are created. See also `xcodebuild`'s `-archivePath`.
+    required: false
+  create-xcframework:
+    description: Whether an xcframework should be created. See also `xcodebuild`'s `-create-xcframework`.
     required: false
   build-settings:
     description: Arbitrary, space separated build settings (e.g. PLATFORM_NAME=iphonesimulator).
@@ -130,6 +184,10 @@ inputs:
     description: The output formatter to use (e.g. xcpretty, xcbeautify, ...). The xcodebuild output will be piped into this formatter.
     required: false
     default: 'xcpretty --color'
+  disable-enum-input-validation:
+    description: Whether the input validation for enums should be disabled. Usually only needed if new values are added to the enums in the future.
+    required: false
+    default: 'false'
   dry-run:
     description: '<TEST ONLY> Whether the commands should only be composed and not actually run. Only used in test.'
     required: false
