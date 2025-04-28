@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.5",
-    "@types/node": "^20.17.30",
+    "@types/node": "^20.17.31",
     "@vercel/ncc": "^0.38.3",
     "typescript": "^5.8.3"
   }
