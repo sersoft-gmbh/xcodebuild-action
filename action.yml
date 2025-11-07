@@ -183,7 +183,6 @@ inputs:
   output-formatter:
     description: The output formatter to use (e.g. xcpretty, xcbeautify, ...). The xcodebuild output will be piped into this formatter.
     required: false
-    default: 'xcpretty --color'
   disable-enum-input-validation:
     description: Whether the input validation for enums should be disabled. Usually only needed if new values are added to the enums in the future.
     required: false
