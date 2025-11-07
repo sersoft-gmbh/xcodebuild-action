@@ -33,7 +33,7 @@ The command that was executed by this action. This will also be printed to the a
 **Note:** If you have multiple products in your package, Xcode will auto-generate a `my-tool-Package` scheme, where `my-tool` is the name of your package. If you only have one product, or wish to only build a specific product, you can use the product name as scheme directly.
 
 ```yaml
-uses: sersoft-gmbh/xcodebuild-action@v3
+uses: sersoft-gmbh/xcodebuild-action@v4
 with:
   spm-package: './'
   scheme: my-tool-Package
@@ -48,7 +48,7 @@ with:
 This will run tests configured with the `MyApp` scheme inside a `MyApp` Xcode project.
 
 ```yaml
-uses: sersoft-gmbh/xcodebuild-action@v3
+uses: sersoft-gmbh/xcodebuild-action@v4
 with:
   project: MyApp.xcodeproj
   scheme: MyApp
@@ -65,7 +65,7 @@ This will run tests configured with the `MyApp` scheme inside a `MyApp` Xcode wo
 **Note for CocoaPods:** Restoring the CocoaPods dependencies has to be done before running this action.
 
 ```yaml
-uses: sersoft-gmbh/xcodebuild-action@v3
+uses: sersoft-gmbh/xcodebuild-action@v4
 with:
   workspace: MyApp.xcworkspace
   scheme: MyApp

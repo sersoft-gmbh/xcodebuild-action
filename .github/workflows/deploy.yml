@@ -5,6 +5,9 @@ on:
     branches: [ main ]
     paths-ignore: [ 'dist/*.js' ]
 
+permissions:
+  contents: write
+
 jobs:
   deploy-action-code:
     name: Deploy Action Code

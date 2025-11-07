@@ -1,16 +1,20 @@
-import XCTest
+import Testing
 @testable import TestProject
 
-final class GreeterTests: XCTestCase {
-    func testSimpleGreeting() throws {
-        XCTAssertEqual(Greeter().greeting(forName: "Simple"), "Hello Simple")
+@Suite
+struct GreeterTests {
+    @Test
+    func simpleGreeting() throws {
+        #expect(Greeter().greeting(forName: "Simple") == "Hello Simple")
     }
 
-    func testWorldGreeting() throws {
-        XCTAssertEqual(Greeter().greeting(forName: "World"), "Hello World")
+    @Test
+    func worldGreeting() throws {
+        #expect(Greeter().greeting(forName: "World") == "Hello World")
     }
 
-    func testGreetingWithSpace() throws {
-        XCTAssertEqual(Greeter().greeting(forName: "With Space"), "Hello With Space")
+    @Test
+    func greetingWithSpace() throws {
+        #expect(Greeter().greeting(forName: "With Space") == "Hello With Space")
     }
 }

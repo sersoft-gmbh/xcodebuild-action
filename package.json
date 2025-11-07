@@ -1,9 +1,9 @@
 {
   "name": "xcodebuild-action",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "A GitHub action that runs xcodebuild.",
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "exports": {
     ".": "./dist/index.js"
@@ -11,7 +11,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "pack": "rm -rf dist && ncc build lib/main.js -o dist --license license.txt --target es2022"
+    "pack": "rm -rf dist && ncc build lib/main.js -o dist --license license.txt --target es2024"
   },
   "repository": {
     "type": "git",
@@ -31,8 +31,8 @@
     "@actions/core": "^1.11.1"
   },
   "devDependencies": {
-    "@tsconfig/node20": "^20.1.6",
-    "@types/node": "^20.19.24",
+    "@tsconfig/node24": "^24.0.1",
+    "@types/node": "^24.10.0",
     "@vercel/ncc": "^0.38.4",
     "typescript": "^5.9.3"
   }

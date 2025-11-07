@@ -3,7 +3,7 @@ import * as path from 'path';
 import {spawn, StdioNull, StdioPipe} from 'child_process';
 import Signals = NodeJS.Signals;
 
-const SIGNAL_NAME_TO_NUMBER_MAP: Record<Signals, number> = {
+const SIGNAL_NAME_TO_NUMBER_MAP: Readonly<Record<Signals, number>> = {
     'SIGHUP':           1,
     'SIGINT':           2,
     'SIGQUIT':          3,
@@ -38,20 +38,20 @@ const SIGNAL_NAME_TO_NUMBER_MAP: Record<Signals, number> = {
     'SIGPWR':          30,
     'SIGSYS':          31,
     'SIGUNUSED':       31,
-    // there isn't actually a number here.
+    // actually, there isn't a number for these...
     'SIGBREAK':         97,
     'SIGINFO':          98,
     'SIGLOST':          99,
 };
 
 interface ICommandArgumentValue {
-    originalValue: string;
-    resolvedValue: string;
+    readonly originalValue: string;
+    readonly resolvedValue: string;
 }
 
 interface ICommandArgument {
-    name: string;
-    value?: ICommandArgumentValue;
+    readonly name: string;
+    readonly value?: ICommandArgumentValue;
 }
 
 function argumentValueString(value: ICommandArgumentValue,
@@ -66,25 +66,25 @@ function argumentValueString(value: ICommandArgumentValue,
 
 function argumentStrings(argument: ICommandArgument,
                          useResolvedValue: boolean = true,
-                         escapeValue: boolean = false): string[] {
+                         escapeValue: boolean = false): readonly string[] {
     let plain = [argument.name];
     if (argument.value)
         plain.push(argumentValueString(argument.value, useResolvedValue, escapeValue));
     return plain;
 }
 
-function allArgumentStrings(args: ICommandArgument[],
+function allArgumentStrings(args: readonly ICommandArgument[],
                             useResolvedValue: boolean = true,
-                            escapeValue: boolean = false): string[] {
+                            escapeValue: boolean = false): readonly string[] {
     return args.flatMap(a => argumentStrings(a, useResolvedValue, escapeValue));
 }
 
 interface IOutputFormatterInvocation {
-    tool: string;
-    args: ICommandArgument[];
+    readonly tool: string;
+    readonly args: readonly ICommandArgument[];
 }
 
-async function runXcodebuild(args: ICommandArgument[], outputFormatter?: IOutputFormatterInvocation | null) {
+async function runXcodebuild(args: readonly ICommandArgument[], outputFormatter?: IOutputFormatterInvocation | null) {
     const xcodebuildOut: StdioNull | StdioPipe = outputFormatter ? 'pipe' : process.stdout;
     const xcodebuild = spawn('xcodebuild', allArgumentStrings(args), {
         stdio: ['inherit', xcodebuildOut, process.stderr],
@@ -104,7 +104,7 @@ async function runXcodebuild(args: ICommandArgument[], outputFormatter?: IOutput
             stdio: ['pipe', process.stdout, process.stderr],
         });
         xcodebuild.stdout?.pipe(formattedOutput.stdin);
-        finishedPromise = finishedPromise.then((xcodeCode) => new Promise<number>((resolve, reject) => {
+        finishedPromise = finishedPromise.then(xcodeCode => new Promise<number>((resolve, reject) => {
             formattedOutput.on('error', reject);
             formattedOutput.on('exit', (formattedOutputCode, formattedOutputSignal) => {
                 if (xcodeCode == 0) {
@@ -124,7 +124,7 @@ async function runXcodebuild(args: ICommandArgument[], outputFormatter?: IOutput
         throw new Error(`Xcodebuild action failed (${exitCode})!`);
 }
 
-async function main() {
+async function main(): Promise<void> {
     let xcodebuildArgs: ICommandArgument[] = [];
     core.startGroup('Validating input');
     const workspace = core.getInput('workspace');
@@ -148,7 +148,7 @@ async function main() {
 
     function _pushArgWithValue(name: string,
                                value: string,
-                               opts?: { isPath?: boolean, skipEmptyValues?: boolean }) {
+                               opts?: { readonly isPath?: boolean, readonly skipEmptyValues?: boolean }) {
         let processedValue = value;
         if (opts?.skipEmptyValues) {
             processedValue = processedValue.trim();
@@ -160,7 +160,7 @@ async function main() {
 
     function _addInputArg(inputName: string,
                           argName?: string,
-                          opts?: { isPath?: boolean, isList?: boolean, validValues?: string[] }): boolean {
+                          opts?: { readonly isPath?: boolean, readonly isList?: boolean, readonly validValues?: readonly string[] }): boolean {
         if (opts?.isList) { // opts is guaranteed to be set in this branch.
             let values = core.getMultilineInput(inputName);
             if (!values) return false;
@@ -283,10 +283,10 @@ async function main() {
 
     const buildSettings = core.getInput('build-settings');
     if (buildSettings)
-        xcodebuildArgs.push(...buildSettings.split(' ').map(v => { return { name: v }; }));
+        xcodebuildArgs.push(...buildSettings.split(' ').map(v => ({name: v})));
 
     const action = core.getInput('action', { required: true });
-    xcodebuildArgs.push(...action.split(' ').map(v => { return { name: v }; }));
+    xcodebuildArgs.push(...action.split(' ').map(v => ({name: v})));
 
     let outputFormatter = core.getInput('output-formatter');
 
@@ -319,7 +319,7 @@ async function main() {
                 originalValue: spmPackage,
                 resolvedValue: path.resolve(spmPackage),
             };
-            function _combinedInv(inv: string[], useResolved: boolean): string[] {
+            function _combinedInv(inv: readonly string[], useResolved: boolean): readonly string[] {
                 return [
                     'pushd', argumentValueString(spmPackageValue, useResolved, true),
                     '&&',

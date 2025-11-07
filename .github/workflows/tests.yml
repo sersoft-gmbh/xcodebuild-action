@@ -3,17 +3,21 @@ name: Tests
 on:
   push:
     branches: [ main ]
-    paths: 
+    paths:
       - 'dist/*.js'
       - 'action.yml'
       - '.github/workflows/tests.yml'
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   test-project:
     name: Test Project Build
-    runs-on: macos-13
+    runs-on: macos-26
     strategy:
       matrix:
         platform:
@@ -40,7 +44,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: ^14.3
+          xcode-version: ^26.0
       - name: Select destination
         id: destination
         env:
@@ -49,10 +53,10 @@ jobs:
           DESTINATION=''
           case "${PLATFORM}" in
             'macOS')   DESTINATION='platform=macOS';;
-            'iOS')     DESTINATION='platform=iOS Simulator,OS=latest,name=iPhone 14 Pro';;
-            'iPadOS')  DESTINATION='platform=iOS Simulator,OS=latest,name=iPad Pro (11-inch) (4th generation)';;
+            'iOS')     DESTINATION='platform=iOS Simulator,OS=latest,name=iPhone 17 Pro';;
+            'iPadOS')  DESTINATION='platform=iOS Simulator,OS=latest,name=iPad 11-inch (M4)';;
             'tvOS')    DESTINATION='platform=tvOS Simulator,OS=latest,name=Apple TV 4K (3rd generation)';;
-            'watchOS') DESTINATION='platform=watchOS Simulator,OS=latest,name=Apple Watch Series 8 (45mm)';;
+            'watchOS') DESTINATION='platform=watchOS Simulator,OS=latest,name=Apple Watch Ultra 3 (49mm)';;
             *) echo "::error title=Unknown platform!::Unknown platform: ${PLATFORM}" && exit 1;;
           esac
           echo "xcode=${DESTINATION}" >> "${GITHUB_OUTPUT}"
@@ -83,7 +87,7 @@ jobs:
 
   test-workspace:
     name: Test Workspace Build
-    runs-on: macos-13
+    runs-on: macos-26
     strategy:
       matrix:
         platform:
@@ -110,7 +114,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: ^14.3
+          xcode-version: ^26.0
       - name: Select destination
         id: destination
         env:
@@ -119,10 +123,10 @@ jobs:
           DESTINATION=''
           case "${PLATFORM}" in
             'macOS')   DESTINATION='platform=macOS';;
-            'iOS')     DESTINATION='platform=iOS Simulator,OS=latest,name=iPhone 14 Pro';;
-            'iPadOS')  DESTINATION='platform=iOS Simulator,OS=latest,name=iPad Pro (11-inch) (4th generation)';;
+            'iOS')     DESTINATION='platform=iOS Simulator,OS=latest,name=iPhone 17 Pro';;
+            'iPadOS')  DESTINATION='platform=iOS Simulator,OS=latest,name=iPad 11-inch (M4)';;
             'tvOS')    DESTINATION='platform=tvOS Simulator,OS=latest,name=Apple TV 4K (3rd generation)';;
-            'watchOS') DESTINATION='platform=watchOS Simulator,OS=latest,name=Apple Watch Series 8 (45mm)';;
+            'watchOS') DESTINATION='platform=watchOS Simulator,OS=latest,name=Apple Watch Ultra 3 (49mm)';;
             *) echo "::error title=Unknown platform!::Unknown platform: ${PLATFORM}" && exit 1;;
           esac
           echo "xcode=${DESTINATION}" >> "${GITHUB_OUTPUT}"
@@ -153,7 +157,7 @@ jobs:
 
   test-package:
     name: Test SPM Package Build
-    runs-on: macos-13
+    runs-on: macos-26
     strategy:
       matrix:
         platform:
@@ -167,7 +171,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: ^14.3
+          xcode-version: ^26.0
       - name: Select destination
         id: destination
         env:
@@ -176,10 +180,10 @@ jobs:
           DESTINATION=''
           case "${PLATFORM}" in
             'macOS')   DESTINATION='platform=macOS';;
-            'iOS')     DESTINATION='platform=iOS Simulator,OS=latest,name=iPhone 14 Pro';;
-            'iPadOS')  DESTINATION='platform=iOS Simulator,OS=latest,name=iPad Pro (11-inch) (4th generation)';;
+            'iOS')     DESTINATION='platform=iOS Simulator,OS=latest,name=iPhone 17 Pro';;
+            'iPadOS')  DESTINATION='platform=iOS Simulator,OS=latest,name=iPad 11-inch (M4)';;
             'tvOS')    DESTINATION='platform=tvOS Simulator,OS=latest,name=Apple TV 4K (3rd generation)';;
-            'watchOS') DESTINATION='platform=watchOS Simulator,OS=latest,name=Apple Watch Series 8 (45mm)';;
+            'watchOS') DESTINATION='platform=watchOS Simulator,OS=latest,name=Apple Watch Ultra 3 (49mm)';;
             *) echo "::error title=Unknown platform!::Unknown platform: ${PLATFORM}" && exit 1;;
           esac
           echo "xcode=${DESTINATION}" >> "${GITHUB_OUTPUT}"
@@ -235,11 +239,11 @@ jobs:
       - if: ${{ github.event_name == 'pull_request' && env.RUNNER_DEBUG != 1 }}
         run: echo 'RUNNER_DEBUG=1' >> "${GITHUB_ENV}"
       - if: ${{ github.event_name == 'pull_request' }}
-        run: test "${RUNNER_DEBUG}" == "1"
+        run: test "${RUNNER_DEBUG}" = "1"
       - if: ${{ github.event_name == 'push' }}
         env:
           DEBUG_ENABLED: ${{ secrets.ACTIONS_STEP_DEBUG }}
-        run: test "${DEBUG_ENABLED}" == 'true'
+        run: test "${DEBUG_ENABLED}" = 'true'
       - uses: actions/checkout@v5
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
@@ -324,7 +328,7 @@ jobs:
           LOCAL_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-local.outputs.unprocessed-command }}
           LOCAL_EXECUTED_COMMAND: ${{ steps.xcodebuild-local.outputs.executed-command }}
         run: |
-          if [ "${EVENT_NAME}" == 'push' ]; then
+          if [ "${EVENT_NAME}" = 'push' ]; then
             echo "unprocessed-command=${BRANCH_UNPROCESSED_COMMAND}" >> "${GITHUB_OUTPUT}"
             echo "executed-command=${BRANCH_EXECUTED_COMMAND}" >> "${GITHUB_OUTPUT}"
           else
@@ -406,11 +410,11 @@ jobs:
       - if: ${{ github.event_name == 'pull_request' && env.RUNNER_DEBUG != 1 }}
         run: echo 'RUNNER_DEBUG=1' >> "${GITHUB_ENV}"
       - if: ${{ github.event_name == 'pull_request' }}
-        run: test "${RUNNER_DEBUG}" == "1"
+        run: test "${RUNNER_DEBUG}" = "1"
       - if: ${{ github.event_name == 'push' }}
         env:
           DEBUG_ENABLED: ${{ secrets.ACTIONS_STEP_DEBUG }}
-        run: test "${DEBUG_ENABLED}" == 'true'
+        run: test "${DEBUG_ENABLED}" = 'true'
       - uses: actions/checkout@v5
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
@@ -580,11 +584,11 @@ jobs:
       - if: ${{ github.event_name == 'pull_request' && env.RUNNER_DEBUG != 1 }}
         run: echo 'RUNNER_DEBUG=1' >> "${GITHUB_ENV}"
       - if: ${{ github.event_name == 'pull_request' }}
-        run: test "${RUNNER_DEBUG}" == "1"
+        run: test "${RUNNER_DEBUG}" = "1"
       - if: ${{ github.event_name == 'push' }}
         env:
           DEBUG_ENABLED: ${{ secrets.ACTIONS_STEP_DEBUG }}
-        run: test "${DEBUG_ENABLED}" == 'true'
+        run: test "${DEBUG_ENABLED}" = 'true'
       - uses: actions/checkout@v5
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
@@ -671,7 +675,7 @@ jobs:
           LOCAL_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-local.outputs.unprocessed-command }}
           LOCAL_EXECUTED_COMMAND: ${{ steps.xcodebuild-local.outputs.executed-command }}
         run: |
-          if [ "${EVENT_NAME}" == 'push' ]; then
+          if [ "${EVENT_NAME}" = 'push' ]; then
             echo "unprocessed-command=${BRANCH_UNPROCESSED_COMMAND}" >> "${GITHUB_OUTPUT}"
             echo "executed-command=${BRANCH_EXECUTED_COMMAND}" >> "${GITHUB_OUTPUT}"
           else
@@ -735,11 +739,11 @@ jobs:
       - if: ${{ github.event_name == 'pull_request' && env.RUNNER_DEBUG != 1 }}
         run: echo 'RUNNER_DEBUG=1' >> "${GITHUB_ENV}"
       - if: ${{ github.event_name == 'pull_request' }}
-        run: test "${RUNNER_DEBUG}" == "1"
+        run: test "${RUNNER_DEBUG}" = "1"
       - if: ${{ github.event_name == 'push' }}
         env:
           DEBUG_ENABLED: ${{ secrets.ACTIONS_STEP_DEBUG }}
-        run: test "${DEBUG_ENABLED}" == 'true'
+        run: test "${DEBUG_ENABLED}" = 'true'
       - uses: actions/checkout@v5
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
@@ -766,7 +770,7 @@ jobs:
           LOCAL_UNPROCESSED_COMMAND: ${{ steps.xcodebuild-local.outputs.unprocessed-command }}
           LOCAL_EXECUTED_COMMAND: ${{ steps.xcodebuild-local.outputs.executed-command }}
         run: |
-          if [ "${EVENT_NAME}" == 'push' ]; then
+          if [ "${EVENT_NAME}" = 'push' ]; then
             echo "unprocessed-command=${BRANCH_UNPROCESSED_COMMAND}" >> "${GITHUB_OUTPUT}"
             echo "executed-command=${BRANCH_EXECUTED_COMMAND}" >> "${GITHUB_OUTPUT}"
           else

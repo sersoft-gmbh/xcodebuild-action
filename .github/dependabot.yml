@@ -8,10 +8,6 @@ updates:
       interval: daily
       time: '07:00'
       timezone: Europe/Berlin
-    assignees:
-      - ffried
-    reviewers:
-      - ffried
 
   - package-ecosystem: github-actions
     directory: .github/actions/generate-action-code
@@ -20,10 +16,6 @@ updates:
       interval: daily
       time: '07:00'
       timezone: Europe/Berlin
-    assignees:
-      - ffried
-    reviewers:
-      - ffried
 
   - package-ecosystem: npm
     directory: /
@@ -32,7 +24,3 @@ updates:
       interval: daily
       time: '07:00'
       timezone: Europe/Berlin
-    assignees:
-      - ffried
-    reviewers:
-      - ffried
