@@ -25,8 +25,8 @@ jobs:
           - iOS
         skip-testing:
             - |
-                TestProjectTests/FailingTests/testFailing1
-                TestProjectTests/FailingTests/testFailing2
+                TestProjectTests/FailingTests/failing1
+                TestProjectTests/FailingTests/failing2
         action: [ test ]
         output-formatter: [ 'xcpretty --color', '' ]
         include:
@@ -95,8 +95,8 @@ jobs:
           - iOS
         skip-testing:
             - |
-              TestProjectTests/FailingTests/testFailing1
-              TestProjectTests/FailingTests/testFailing2
+              TestProjectTests/FailingTests/failing1
+              TestProjectTests/FailingTests/failing2
         action: [ test ]
         output-formatter: [ 'xcpretty --color', '' ]
         include:
