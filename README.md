@@ -13,7 +13,7 @@ For more information about the various inputs, also see `man xcodebuild`.
 
 **Notes:**
 -  If you are missing an input, you can pass them in the `build-settings` input. These will be passed along to `xcodebuild` as is.
--  If an enum input validation fails because you use a value that isn't yet known to this action, set `disable-enum-validation` to `true`.
+-  If an enum input validation fails because you use a value not yet known to this action, set `disable-enum-validation` to `true`.
 
 ## Outputs
 
