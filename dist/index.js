@@ -78,7 +78,7 @@ const SIGNAL_NAME_TO_NUMBER_MAP = {
     'SIGPWR': 30,
     'SIGSYS': 31,
     'SIGUNUSED': 31,
-    // there isn't actually a number here.
+    // actually, there isn't a number for these...
     'SIGBREAK': 97,
     'SIGINFO': 98,
     'SIGLOST': 99,
@@ -120,7 +120,7 @@ async function runXcodebuild(args, outputFormatter) {
             stdio: ['pipe', process.stdout, process.stderr],
         });
         xcodebuild.stdout?.pipe(formattedOutput.stdin);
-        finishedPromise = finishedPromise.then((xcodeCode) => new Promise((resolve, reject) => {
+        finishedPromise = finishedPromise.then(xcodeCode => new Promise((resolve, reject) => {
             formattedOutput.on('error', reject);
             formattedOutput.on('exit', (formattedOutputCode, formattedOutputSignal) => {
                 if (xcodeCode == 0) {
@@ -287,9 +287,9 @@ async function main() {
     addFlagArg('create-xcframework');
     const buildSettings = core.getInput('build-settings');
     if (buildSettings)
-        xcodebuildArgs.push(...buildSettings.split(' ').map(v => { return { name: v }; }));
+        xcodebuildArgs.push(...buildSettings.split(' ').map(v => ({ name: v })));
     const action = core.getInput('action', { required: true });
-    xcodebuildArgs.push(...action.split(' ').map(v => { return { name: v }; }));
+    xcodebuildArgs.push(...action.split(' ').map(v => ({ name: v })));
     let outputFormatter = core.getInput('output-formatter');
     const dryRun = core.isDebug() && core.getInput('dry-run') == 'true';
     // We allow other platforms for dry-runs since this speeds up tests (more parallel builds).
