@@ -60,7 +60,7 @@ jobs:
             *) echo "::error title=Unknown platform!::Unknown platform: ${PLATFORM}" && exit 1;;
           esac
           echo "xcode=${DESTINATION}" >> "${GITHUB_OUTPUT}"
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
@@ -130,7 +130,7 @@ jobs:
             *) echo "::error title=Unknown platform!::Unknown platform: ${PLATFORM}" && exit 1;;
           esac
           echo "xcode=${DESTINATION}" >> "${GITHUB_OUTPUT}"
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
@@ -187,7 +187,7 @@ jobs:
             *) echo "::error title=Unknown platform!::Unknown platform: ${PLATFORM}" && exit 1;;
           esac
           echo "xcode=${DESTINATION}" >> "${GITHUB_OUTPUT}"
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
@@ -244,7 +244,7 @@ jobs:
         env:
           DEBUG_ENABLED: ${{ secrets.ACTIONS_STEP_DEBUG }}
         run: test "${DEBUG_ENABLED}" = 'true'
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
@@ -415,7 +415,7 @@ jobs:
         env:
           DEBUG_ENABLED: ${{ secrets.ACTIONS_STEP_DEBUG }}
         run: test "${DEBUG_ENABLED}" = 'true'
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
@@ -589,7 +589,7 @@ jobs:
         env:
           DEBUG_ENABLED: ${{ secrets.ACTIONS_STEP_DEBUG }}
         run: test "${DEBUG_ENABLED}" = 'true'
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
@@ -744,7 +744,7 @@ jobs:
         env:
           DEBUG_ENABLED: ${{ secrets.ACTIONS_STEP_DEBUG }}
         run: test "${DEBUG_ENABLED}" = 'true'
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Generate action code
         if: ${{ github.event_name == 'pull_request' }}
         uses: ./.github/actions/generate-action-code
