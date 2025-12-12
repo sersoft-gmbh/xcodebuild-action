@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/sersoft-gmbh/xcodebuild-action#readme",
   "dependencies": {
-    "@actions/core": "^2.0.0"
+    "@actions/core": "^2.0.1"
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.3",
