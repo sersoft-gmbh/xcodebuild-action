@@ -31,7 +31,7 @@
     "@actions/core": "^2.0.2"
   },
   "devDependencies": {
-    "@tsconfig/node24": "^24.0.3",
+    "@tsconfig/node24": "^24.0.4",
     "@types/node": "^24.10.8",
     "@vercel/ncc": "^0.38.4",
     "typescript": "^5.9.3"
