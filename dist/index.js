@@ -1,371 +1,9 @@
-/******/ (() => { // webpackBootstrap
-/******/ 	var __webpack_modules__ = ({
-
-/***/ 5915:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(7484));
-const path = __importStar(__nccwpck_require__(6928));
-const child_process_1 = __nccwpck_require__(5317);
-const SIGNAL_NAME_TO_NUMBER_MAP = {
-    'SIGHUP': 1,
-    'SIGINT': 2,
-    'SIGQUIT': 3,
-    'SIGILL': 4,
-    'SIGTRAP': 5,
-    'SIGABRT': 6,
-    'SIGIOT': 6,
-    'SIGBUS': 7,
-    'SIGFPE': 8,
-    'SIGKILL': 9,
-    'SIGUSR1': 10,
-    'SIGSEGV': 11,
-    'SIGUSR2': 12,
-    'SIGPIPE': 13,
-    'SIGALRM': 14,
-    'SIGTERM': 15,
-    'SIGSTKFLT': 16,
-    'SIGCHLD': 17,
-    'SIGCONT': 18,
-    'SIGSTOP': 19,
-    'SIGTSTP': 20,
-    'SIGTTIN': 21,
-    'SIGTTOU': 22,
-    'SIGURG': 23,
-    'SIGXCPU': 24,
-    'SIGXFSZ': 25,
-    'SIGVTALRM': 26,
-    'SIGPROF': 27,
-    'SIGWINCH': 28,
-    'SIGIO': 29,
-    'SIGPOLL': 29,
-    'SIGPWR': 30,
-    'SIGSYS': 31,
-    'SIGUNUSED': 31,
-    // actually, there isn't a number for these...
-    'SIGBREAK': 97,
-    'SIGINFO': 98,
-    'SIGLOST': 99,
-};
-function argumentValueString(value, useResolvedValue = true, escapeValue = false) {
-    function _cmdEscape(str) {
-        return str.replace(/((?!\\).|^)( )/g, `$1\\ `);
-    }
-    let strValue = useResolvedValue ? value.resolvedValue : value.originalValue;
-    return escapeValue ? _cmdEscape(strValue) : strValue;
-}
-function argumentStrings(argument, useResolvedValue = true, escapeValue = false) {
-    let plain = [argument.name];
-    if (argument.value)
-        plain.push(argumentValueString(argument.value, useResolvedValue, escapeValue));
-    return plain;
-}
-function allArgumentStrings(args, useResolvedValue = true, escapeValue = false) {
-    return args.flatMap(a => argumentStrings(a, useResolvedValue, escapeValue));
-}
-async function runXcodebuild(args, outputFormatter) {
-    const xcodebuildOut = outputFormatter ? 'pipe' : process.stdout;
-    const xcodebuild = (0, child_process_1.spawn)('xcodebuild', allArgumentStrings(args), {
-        stdio: ['inherit', xcodebuildOut, process.stderr],
-    });
-    let finishedPromise = new Promise((resolve, reject) => {
-        xcodebuild.on('error', reject);
-        xcodebuild.on('exit', (exitCode, signal) => {
-            if (exitCode) {
-                resolve(exitCode);
-            }
-            else if (signal) {
-                resolve(SIGNAL_NAME_TO_NUMBER_MAP[signal]);
-            }
-        });
-    });
-    if (outputFormatter) {
-        const formattedOutput = (0, child_process_1.spawn)(outputFormatter.tool, allArgumentStrings(outputFormatter.args), {
-            stdio: ['pipe', process.stdout, process.stderr],
-        });
-        xcodebuild.stdout?.pipe(formattedOutput.stdin);
-        finishedPromise = finishedPromise.then(xcodeCode => new Promise((resolve, reject) => {
-            formattedOutput.on('error', reject);
-            formattedOutput.on('exit', (formattedOutputCode, formattedOutputSignal) => {
-                if (xcodeCode == 0) {
-                    if (formattedOutputCode) {
-                        resolve(formattedOutputCode);
-                    }
-                    else if (formattedOutputSignal) {
-                        resolve(SIGNAL_NAME_TO_NUMBER_MAP[formattedOutputSignal]);
-                    }
-                }
-                else {
-                    resolve(xcodeCode);
-                }
-            });
-        }));
-    }
-    const exitCode = await finishedPromise;
-    if (exitCode != 0)
-        throw new Error(`Xcodebuild action failed (${exitCode})!`);
-}
-async function main() {
-    let xcodebuildArgs = [];
-    core.startGroup('Validating input');
-    const workspace = core.getInput('workspace');
-    const project = core.getInput('project');
-    const spmPackage = core.getInput('spm-package');
-    if ((!workspace && !project && !spmPackage)
-        || (workspace && project && spmPackage)
-        || (workspace && project)
-        || (workspace && spmPackage)
-        || (project && spmPackage)) {
-        throw new Error('Either `project`, `workspace` or `spm-package-path` must be set, but they are mutually exclusive!');
-    }
-    const scheme = core.getInput('scheme', { required: !!workspace || !!spmPackage });
-    const disableEnumInputValidation = core.getBooleanInput('disable-enum-input-validation');
-    function _pushArg(name, value) {
-        xcodebuildArgs.push({ name: `-${name}`, value: value });
-    }
-    function _pushArgWithValue(name, value, opts) {
-        let processedValue = value;
-        if (opts?.skipEmptyValues) {
-            processedValue = processedValue.trim();
-            if (processedValue.length <= 0)
-                return;
-        }
-        if (opts?.isPath)
-            processedValue = path.resolve(processedValue);
-        _pushArg(name, { originalValue: value, resolvedValue: processedValue });
-    }
-    function _addInputArg(inputName, argName, opts) {
-        if (opts?.isList) { // opts is guaranteed to be set in this branch.
-            let values = core.getMultilineInput(inputName);
-            if (!values)
-                return false;
-            for (const value of values) {
-                if (!disableEnumInputValidation && opts.validValues && !opts.validValues.includes(value))
-                    throw new Error(`Invalid value for ${inputName}: ${value}! Valid values: ${opts.validValues.join(', ')}`);
-                _pushArgWithValue(argName ?? inputName, value, {
-                    isPath: opts.isPath,
-                    skipEmptyValues: true,
-                });
-            }
-            return values.length > 0;
-        }
-        else {
-            let value = core.getInput(inputName);
-            if (!value)
-                return false;
-            if (!disableEnumInputValidation && opts?.validValues && !opts.validValues.includes(value))
-                throw new Error(`Invalid value for ${inputName}: ${value}! Valid values: ${opts.validValues.join(', ')}`);
-            _pushArgWithValue(argName ?? inputName, value, {
-                isPath: opts?.isPath,
-                skipEmptyValues: false,
-            });
-            return true;
-        }
-    }
-    function addInputArg(inputName, argName) {
-        return _addInputArg(inputName, argName);
-    }
-    function addPathArg(inputName, argName) {
-        return _addInputArg(inputName, argName, { isPath: true });
-    }
-    function addListArg(inputName, argName) {
-        return _addInputArg(inputName, argName, { isList: true });
-    }
-    function addEnumArg(inputName, validValues, argName) {
-        return _addInputArg(inputName, argName, { validValues });
-    }
-    function addBoolArg(inputName, argName) {
-        const value = core.getInput(inputName);
-        const hasValue = !!value && value.length > 0;
-        if (hasValue)
-            _pushArgWithValue(argName ?? inputName, core.getBooleanInput(inputName) ? 'YES' : 'NO');
-        return hasValue;
-    }
-    function addFlagArg(inputName, argName) {
-        const value = core.getInput(inputName);
-        const hasValue = !!value && value.length > 0;
-        if (hasValue && core.getBooleanInput(inputName))
-            _pushArg(argName ?? inputName);
-        return hasValue;
-    }
-    if (workspace) {
-        _pushArgWithValue('workspace', workspace, { isPath: true });
-    }
-    else if (project) {
-        _pushArgWithValue('project', project, { isPath: true });
-    }
-    if (scheme)
-        _pushArgWithValue('scheme', scheme);
-    if (addInputArg('target') && addFlagArg('all-targets', 'alltargets'))
-        throw new Error('`target` and `all-targets` are mutually exclusive!');
-    addInputArg('destination');
-    addInputArg('configuration');
-    addInputArg('sdk');
-    addInputArg('arch');
-    addPathArg('xcconfig');
-    addInputArg('toolchain');
-    addInputArg('jobs');
-    addFlagArg('parallelize-targets', 'parallelizeTargets');
-    addBoolArg('enable-code-coverage', 'enableCodeCoverage');
-    addBoolArg('parallel-testing-enabled');
-    addInputArg('maximum-concurrent-test-device-destinations');
-    addInputArg('maximum-concurrent-test-simulator-destinations');
-    addFlagArg('quiet');
-    addFlagArg('hide-shell-script-environment', 'hideShellScriptEnvironment');
-    addBoolArg('enable-address-sanitizer', 'enableAddressSanitizer');
-    addBoolArg('enable-thread-sanitizer', 'enableThreadSanitizer');
-    addBoolArg('enable-undefined-behavior-sanitizer', 'enableUndefinedBehaviorSanitizer');
-    addPathArg('result-bundle-path', 'resultBundlePath');
-    addInputArg('result-bundle-version', 'resultBundleVersion');
-    addPathArg('cloned-source-packages-path', 'clonedSourcePackagesDirPath');
-    addPathArg('package-cache-path', 'packageCachePath');
-    addPathArg('derived-data-path', 'derivedDataPath');
-    addInputArg('default-package-registry-url', 'defaultPackageRegistryURL');
-    addEnumArg('package-dependency-scm-to-registry-transformation', ['none', 'useRegistryIdentity', 'useRegistryIdentityAndSources'], 'packageDependencySCMToRegistryTransformation');
-    addFlagArg('disable-package-repository-cache', 'disablePackageRepositoryCache');
-    addFlagArg('disable-automatic-package-resolution', 'disableAutomaticPackageResolution');
-    addFlagArg('skip-package-updates', 'skipPackageUpdates');
-    addFlagArg('skip-package-plugin-validation', 'skipPackagePluginValidation');
-    addFlagArg('skip-macro-validation', 'skipMacroValidation');
-    addEnumArg('package-fingerprint-policy', ['warn', 'strict'], 'packageFingerprintPolicy');
-    addEnumArg('package-signing-entity-policy', ['warn', 'strict'], 'packageSigningEntityPolicy');
-    addPathArg('xcroot');
-    addPathArg('xctestrun');
-    addInputArg('test-language', 'testLanguage');
-    addInputArg('test-region', 'testRegion');
-    addInputArg('test-plan', 'testPlan');
-    addListArg('only-testing');
-    addListArg('skip-testing');
-    addListArg('only-test-configuration');
-    addListArg('skip-test-configuration');
-    addInputArg('test-iterations');
-    addFlagArg('retry-tests-on-failure');
-    addFlagArg('run-tests-until-failure');
-    addFlagArg('skip-unavailable-actions', 'skipUnavailableActions');
-    addFlagArg('allow-provisioning-updates', 'allowProvisioningUpdates');
-    addFlagArg('allow-provisioning-device-registration', 'allowProvisioningDeviceRegistration');
-    addFlagArg('export-notarized-app', 'exportNotarizedApp');
-    addPathArg('export-options-plist', 'exportOptionsPlist');
-    addFlagArg('export-archive', 'exportArchive');
-    addPathArg('archive-path', 'archivePath');
-    addFlagArg('create-xcframework');
-    const buildSettings = core.getInput('build-settings');
-    if (buildSettings)
-        xcodebuildArgs.push(...buildSettings.split(' ').map(v => ({ name: v })));
-    const action = core.getInput('action', { required: true });
-    xcodebuildArgs.push(...action.split(' ').map(v => ({ name: v })));
-    let outputFormatter = core.getInput('output-formatter');
-    const dryRun = core.isDebug() && core.getInput('dry-run') == 'true';
-    // We allow other platforms for dry-runs since this speeds up tests (more parallel builds).
-    if (!dryRun && process.platform !== 'darwin')
-        throw new Error('This action only supports macOS!');
-    let outputFormatterInv;
-    if (outputFormatter) {
-        const [tool, ...args] = outputFormatter.split(' ');
-        outputFormatterInv = { tool, args: args.map(arg => ({ name: arg })) };
-    }
-    else {
-        outputFormatterInv = null;
-    }
-    core.endGroup();
-    await core.group('Composing command', async () => {
-        // We "abuse" ICommandArgument here a bit to make it easier to compose both output variants.
-        let allCommands = [{ name: 'xcodebuild' }].concat(xcodebuildArgs);
-        if (outputFormatterInv) {
-            allCommands.push({ name: '|' }, { name: outputFormatterInv.tool });
-            allCommands.push(...outputFormatterInv.args);
-        }
-        let unprocessedInvocation = allArgumentStrings(allCommands, false, true);
-        let processedInvocation = allArgumentStrings(allCommands, true, true);
-        if (spmPackage) {
-            const spmPackageValue = {
-                originalValue: spmPackage,
-                resolvedValue: path.resolve(spmPackage),
-            };
-            function _combinedInv(inv, useResolved) {
-                return [
-                    'pushd', argumentValueString(spmPackageValue, useResolved, true),
-                    '&&',
-                    ...inv,
-                    ';',
-                    'popd',
-                ];
-            }
-            unprocessedInvocation = _combinedInv(unprocessedInvocation, false);
-            processedInvocation = _combinedInv(processedInvocation, true);
-        }
-        const unprocessedCommand = unprocessedInvocation.join(' ');
-        const executedCommand = processedInvocation.join(' ');
-        core.setOutput('unprocessed-command', unprocessedCommand);
-        core.setOutput('executed-command', executedCommand);
-        core.info(`Resolving paths for execution in: \`${unprocessedCommand}\``);
-        core.info(`Executing: \`${executedCommand}\``);
-    });
-    if (!dryRun) {
-        core.startGroup('Running xcodebuild');
-        const cwd = process.cwd();
-        if (spmPackage)
-            process.chdir(spmPackage);
-        try {
-            await runXcodebuild(xcodebuildArgs, outputFormatterInv);
-        }
-        finally {
-            if (spmPackage)
-                process.chdir(cwd);
-        }
-        core.endGroup();
-    }
-}
-try {
-    main().catch(error => core.setFailed(error.message));
-}
-catch (error) {
-    core.setFailed(error.message);
-}
-
-
-/***/ }),
+import { createRequire as __WEBPACK_EXTERNAL_createRequire } from "module";
+/******/ var __webpack_modules__ = ({
 
 /***/ 4914:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -500,7 +138,6 @@ function escapeProperty(s) {
 /***/ 7484:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -886,7 +523,6 @@ exports.platform = __importStar(__nccwpck_require__(8968));
 /***/ 4753:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 // For internal use, subject to change.
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -964,7 +600,6 @@ function prepareKeyValueMessage(key, value) {
 /***/ 5306:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1048,7 +683,6 @@ exports.OidcClient = OidcClient;
 /***/ 1976:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -1126,7 +760,6 @@ function toPlatformPath(pth) {
 /***/ 8968:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -1237,7 +870,6 @@ function getDetails() {
 /***/ 1847:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1527,7 +1159,6 @@ exports.summary = _summary;
 /***/ 302:
 /***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
 
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -1573,7 +1204,6 @@ function toCommandProperties(annotationProperties) {
 /***/ 5236:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -1696,7 +1326,6 @@ function getExecOutput(commandLine, args, options) {
 /***/ 6665:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -2328,7 +1957,6 @@ class ExecState extends events.EventEmitter {
 /***/ 4552:
 /***/ (function(__unused_webpack_module, exports) {
 
-"use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -2416,7 +2044,6 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 /***/ 4844:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -3160,7 +2787,6 @@ const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => ((c[k.toLowerCa
 /***/ 4988:
 /***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getProxyUrl = getProxyUrl;
@@ -3261,7 +2887,6 @@ class DecodedURL extends URL {
 /***/ 5207:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -3492,7 +3117,6 @@ function getCmdPath() {
 /***/ 4994:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -3819,7 +3443,6 @@ module.exports = __nccwpck_require__(218);
 /***/ 218:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 var net = __nccwpck_require__(9278);
@@ -4091,7 +3714,6 @@ exports.debug = debug; // for test
 /***/ 6752:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const Client = __nccwpck_require__(3701)
@@ -4332,7 +3954,6 @@ module.exports = {
 /***/ 2279:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(4589)
@@ -4448,7 +4069,6 @@ module.exports = connect
 /***/ 6862:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -4707,7 +4327,6 @@ module.exports = pipeline
 /***/ 4043:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(4589)
@@ -4929,7 +4548,6 @@ module.exports.RequestHandler = RequestHandler
 /***/ 3560:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(4589)
@@ -5157,7 +4775,6 @@ module.exports = stream
 /***/ 1882:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { InvalidArgumentError, SocketError } = __nccwpck_require__(8707)
@@ -5273,7 +4890,6 @@ module.exports = upgrade
 /***/ 6615:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 module.exports.request = __nccwpck_require__(4043)
@@ -5288,7 +4904,6 @@ module.exports.connect = __nccwpck_require__(2279)
 /***/ 9927:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 // Ported from https://github.com/nodejs/undici/pull/907
 
 
@@ -5781,7 +5396,6 @@ module.exports = {
 /***/ 9136:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const net = __nccwpck_require__(7030)
@@ -6029,7 +5643,6 @@ module.exports = buildConnector
 /***/ 735:
 /***/ ((module) => {
 
-"use strict";
 
 
 /** @type {Record<string, string | undefined>} */
@@ -6155,7 +5768,6 @@ module.exports = {
 /***/ 2414:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 const diagnosticsChannel = __nccwpck_require__(3053)
 const util = __nccwpck_require__(7975)
@@ -6365,7 +5977,6 @@ module.exports = {
 /***/ 8707:
 /***/ ((module) => {
 
-"use strict";
 
 
 const kUndiciError = Symbol.for('undici.error.UND_ERR')
@@ -6779,7 +6390,6 @@ module.exports = {
 /***/ 4655:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -7256,7 +6866,6 @@ module.exports = {
 /***/ 7752:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -7416,7 +7025,6 @@ module.exports = {
 /***/ 3440:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(4589)
@@ -8143,7 +7751,6 @@ module.exports = {
 /***/ 7405:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { InvalidArgumentError } = __nccwpck_require__(8707)
@@ -8280,7 +7887,6 @@ module.exports = Agent
 /***/ 837:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -8497,7 +8103,6 @@ module.exports = BalancedPool
 /***/ 637:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 /* global WebAssembly */
@@ -9875,7 +9480,6 @@ module.exports = connectH1
 /***/ 8788:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(4589)
@@ -10627,7 +10231,6 @@ module.exports = connectH2
 /***/ 3701:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 // @ts-check
 
 
@@ -11257,7 +10860,6 @@ module.exports = Client
 /***/ 1841:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const Dispatcher = __nccwpck_require__(883)
@@ -11455,7 +11057,6 @@ module.exports = DispatcherBase
 /***/ 883:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 const EventEmitter = __nccwpck_require__(8474)
 
@@ -11528,7 +11129,6 @@ module.exports = Dispatcher
 /***/ 3137:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const DispatcherBase = __nccwpck_require__(1841)
@@ -11696,7 +11296,6 @@ module.exports = EnvHttpProxyAgent
 /***/ 4660:
 /***/ ((module) => {
 
-"use strict";
 /* eslint-disable */
 
 
@@ -11821,7 +11420,6 @@ module.exports = class FixedQueue {
 /***/ 2128:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const DispatcherBase = __nccwpck_require__(1841)
@@ -12064,7 +11662,6 @@ module.exports = PoolStats
 /***/ 628:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -12179,7 +11776,6 @@ module.exports = Pool
 /***/ 6672:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { kProxy, kClose, kDestroy, kDispatch, kInterceptors } = __nccwpck_require__(6443)
@@ -12461,7 +12057,6 @@ module.exports = ProxyAgent
 /***/ 50:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const Dispatcher = __nccwpck_require__(883)
@@ -12504,7 +12099,6 @@ module.exports = RetryAgent
 /***/ 2581:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 // We include a version number for the Dispatcher API. In case of breaking changes,
@@ -12544,7 +12138,6 @@ module.exports = {
 /***/ 8155:
 /***/ ((module) => {
 
-"use strict";
 
 
 module.exports = class DecoratorHandler {
@@ -12596,7 +12189,6 @@ module.exports = class DecoratorHandler {
 /***/ 8754:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const util = __nccwpck_require__(3440)
@@ -12836,7 +12428,6 @@ module.exports = RedirectHandler
 /***/ 7816:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 const assert = __nccwpck_require__(4589)
 
@@ -13218,7 +12809,6 @@ module.exports = RetryHandler
 /***/ 379:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 const { isIP } = __nccwpck_require__(7030)
 const { lookup } = __nccwpck_require__(610)
@@ -13601,7 +13191,6 @@ module.exports = interceptorOpts => {
 /***/ 8060:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const util = __nccwpck_require__(3440)
@@ -13732,7 +13321,6 @@ module.exports = createDumpInterceptor
 /***/ 5092:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const RedirectHandler = __nccwpck_require__(8754)
@@ -13761,7 +13349,6 @@ module.exports = createRedirectInterceptor
 /***/ 1514:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 const RedirectHandler = __nccwpck_require__(8754)
 
@@ -13793,7 +13380,6 @@ module.exports = opts => {
 /***/ 2026:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 const RetryHandler = __nccwpck_require__(7816)
 
@@ -13820,7 +13406,6 @@ module.exports = globalOpts => {
 /***/ 2824:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SPECIAL_HEADERS = exports.HEADER_STATE = exports.MINOR = exports.MAJOR = exports.CONNECTION_TOKEN_CHARS = exports.HEADER_CHARS = exports.TOKEN = exports.STRICT_TOKEN = exports.HEX = exports.URL_CHAR = exports.STRICT_URL_CHAR = exports.USERINFO_CHARS = exports.MARK = exports.ALPHANUM = exports.NUM = exports.HEX_MAP = exports.NUM_MAP = exports.ALPHA = exports.FINISH = exports.H_METHOD_MAP = exports.METHOD_MAP = exports.METHODS_RTSP = exports.METHODS_ICE = exports.METHODS_HTTP = exports.METHODS = exports.LENIENT_FLAGS = exports.FLAGS = exports.TYPE = exports.ERROR = void 0;
@@ -14105,7 +13690,6 @@ exports.SPECIAL_HEADERS = {
 /***/ 3870:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Buffer } = __nccwpck_require__(4573)
@@ -14118,7 +13702,6 @@ module.exports = Buffer.from('AGFzbQEAAAABJwdgAX8Bf2ADf39/AX9gAX8AYAJ/fwBgBH9/f3
 /***/ 3434:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Buffer } = __nccwpck_require__(4573)
@@ -14131,7 +13714,6 @@ module.exports = Buffer.from('AGFzbQEAAAABJwdgAX8Bf2ADf39/AX9gAX8AYAJ/fwBgBH9/f3
 /***/ 172:
 /***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enumToMap = void 0;
@@ -14153,7 +13735,6 @@ exports.enumToMap = enumToMap;
 /***/ 7501:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { kClients } = __nccwpck_require__(6443)
@@ -14321,7 +13902,6 @@ module.exports = MockAgent
 /***/ 7365:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { promisify } = __nccwpck_require__(7975)
@@ -14388,7 +13968,6 @@ module.exports = MockClient
 /***/ 2429:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { UndiciError } = __nccwpck_require__(8707)
@@ -14424,7 +14003,6 @@ module.exports = {
 /***/ 1511:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { getResponseData, buildKey, addMockDispatch } = __nccwpck_require__(3397)
@@ -14639,7 +14217,6 @@ module.exports.MockScope = MockScope
 /***/ 4004:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { promisify } = __nccwpck_require__(7975)
@@ -14706,7 +14283,6 @@ module.exports = MockPool
 /***/ 1117:
 /***/ ((module) => {
 
-"use strict";
 
 
 module.exports = {
@@ -14737,7 +14313,6 @@ module.exports = {
 /***/ 3397:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { MockNotMatchedError } = __nccwpck_require__(2429)
@@ -15112,7 +14687,6 @@ module.exports = {
 /***/ 6142:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Transform } = __nccwpck_require__(7075)
@@ -15163,7 +14737,6 @@ module.exports = class PendingInterceptorsFormatter {
 /***/ 1529:
 /***/ ((module) => {
 
-"use strict";
 
 
 const singulars = {
@@ -15200,7 +14773,6 @@ module.exports = class Pluralizer {
 /***/ 6603:
 /***/ ((module) => {
 
-"use strict";
 
 
 /**
@@ -15631,7 +15203,6 @@ module.exports = {
 /***/ 9634:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { kConstruct } = __nccwpck_require__(109)
@@ -16498,7 +16069,6 @@ module.exports = {
 /***/ 3245:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { kConstruct } = __nccwpck_require__(109)
@@ -16658,7 +16228,6 @@ module.exports = {
 /***/ 109:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 module.exports = {
@@ -16671,7 +16240,6 @@ module.exports = {
 /***/ 6798:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(4589)
@@ -16724,7 +16292,6 @@ module.exports = {
 /***/ 1276:
 /***/ ((module) => {
 
-"use strict";
 
 
 // https://wicg.github.io/cookie-store/#cookie-maximum-attribute-value-size
@@ -16744,7 +16311,6 @@ module.exports = {
 /***/ 9061:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { parseSetCookie } = __nccwpck_require__(1978)
@@ -16936,7 +16502,6 @@ module.exports = {
 /***/ 1978:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { maxNameValuePairSize, maxAttributeValueSize } = __nccwpck_require__(1276)
@@ -17261,7 +16826,6 @@ module.exports = {
 /***/ 7797:
 /***/ ((module) => {
 
-"use strict";
 
 
 /**
@@ -17551,7 +17115,6 @@ module.exports = {
 /***/ 4031:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 const { Transform } = __nccwpck_require__(7075)
 const { isASCIINumber, isValidLastEventId } = __nccwpck_require__(4811)
@@ -17957,7 +17520,6 @@ module.exports = {
 /***/ 1238:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { pipeline } = __nccwpck_require__(7075)
@@ -18445,7 +18007,6 @@ module.exports = {
 /***/ 4811:
 /***/ ((module) => {
 
-"use strict";
 
 
 /**
@@ -18490,7 +18051,6 @@ module.exports = {
 /***/ 4492:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const util = __nccwpck_require__(3440)
@@ -19027,7 +18587,6 @@ module.exports = {
 /***/ 4495:
 /***/ ((module) => {
 
-"use strict";
 
 
 const corsSafeListedMethods = /** @type {const} */ (['GET', 'HEAD', 'POST'])
@@ -19159,7 +18718,6 @@ module.exports = {
 /***/ 1900:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(4589)
@@ -19911,7 +19469,6 @@ module.exports = {
 /***/ 6653:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { kConnected, kSize } = __nccwpck_require__(6443)
@@ -19965,7 +19522,6 @@ module.exports = function () {
 /***/ 7114:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Blob, File } = __nccwpck_require__(4573)
@@ -20099,7 +19655,6 @@ module.exports = { FileLike, isFileLike }
 /***/ 116:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { isUSVString, bufferToLowerCasedHeaderName } = __nccwpck_require__(3440)
@@ -20581,7 +20136,6 @@ module.exports = {
 /***/ 5910:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { isBlobLike, iteratorMixin } = __nccwpck_require__(3168)
@@ -20841,7 +20395,6 @@ module.exports = { FormData, makeEntry }
 /***/ 1059:
 /***/ ((module) => {
 
-"use strict";
 
 
 // In case of breaking changes, increase the version
@@ -20889,7 +20442,6 @@ module.exports = {
 /***/ 660:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 // https://github.com/Ethan-Arrowood/undici-fetch
 
 
@@ -21584,7 +21136,6 @@ module.exports = {
 /***/ 4398:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 // https://github.com/Ethan-Arrowood/undici-fetch
 
 
@@ -23864,7 +23415,6 @@ module.exports = {
 /***/ 9967:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 /* globals AbortController */
 
 
@@ -24909,7 +24459,6 @@ module.exports = { Request, makeRequest, fromInnerRequest, cloneRequest }
 /***/ 9051:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Headers, HeadersList, fill, getHeadersGuard, setHeadersGuard, setHeadersList } = __nccwpck_require__(660)
@@ -25527,7 +25076,6 @@ module.exports = {
 /***/ 3627:
 /***/ ((module) => {
 
-"use strict";
 
 
 module.exports = {
@@ -25544,7 +25092,6 @@ module.exports = {
 /***/ 3168:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Transform } = __nccwpck_require__(7075)
@@ -27184,7 +26731,6 @@ module.exports = {
 /***/ 5893:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { types, inspect } = __nccwpck_require__(7975)
@@ -27887,7 +27433,6 @@ module.exports = {
 /***/ 2607:
 /***/ ((module) => {
 
-"use strict";
 
 
 /**
@@ -28185,7 +27730,6 @@ module.exports = {
 /***/ 8355:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -28537,7 +28081,6 @@ module.exports = {
 /***/ 8573:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { webidl } = __nccwpck_require__(5893)
@@ -28623,7 +28166,6 @@ module.exports = {
 /***/ 961:
 /***/ ((module) => {
 
-"use strict";
 
 
 module.exports = {
@@ -28641,7 +28183,6 @@ module.exports = {
 /***/ 3610:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -29040,7 +28581,6 @@ module.exports = {
 /***/ 6897:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { uid, states, sentCloseFrameState, emptyBuffer, opcodes } = __nccwpck_require__(736)
@@ -29419,7 +28959,6 @@ module.exports = {
 /***/ 736:
 /***/ ((module) => {
 
-"use strict";
 
 
 // This is a Globally Unique Identifier unique used
@@ -29493,7 +29032,6 @@ module.exports = {
 /***/ 5188:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { webidl } = __nccwpck_require__(5893)
@@ -29830,7 +29368,6 @@ module.exports = {
 /***/ 3264:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { maxUnsigned16Bit } = __nccwpck_require__(736)
@@ -29934,7 +29471,6 @@ module.exports = {
 /***/ 9469:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { createInflateRaw, Z_DEFAULT_WINDOWBITS } = __nccwpck_require__(8522)
@@ -30012,7 +29548,6 @@ module.exports = { PerMessageDeflate }
 /***/ 1652:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Writable } = __nccwpck_require__(7075)
@@ -30444,7 +29979,6 @@ module.exports = {
 /***/ 3900:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { WebsocketFrameSend } = __nccwpck_require__(3264)
@@ -30556,7 +30090,6 @@ module.exports = { SendQueue }
 /***/ 1216:
 /***/ ((module) => {
 
-"use strict";
 
 
 module.exports = {
@@ -30576,7 +30109,6 @@ module.exports = {
 /***/ 8625:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { kReadyState, kController, kResponse, kBinaryType, kWebSocketURL } = __nccwpck_require__(1216)
@@ -30898,7 +30430,6 @@ module.exports = {
 /***/ 3726:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { webidl } = __nccwpck_require__(5893)
@@ -31494,319 +31025,599 @@ module.exports = {
 /***/ 2613:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("assert");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("assert");
 
 /***/ }),
 
 /***/ 5317:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("child_process");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("child_process");
 
 /***/ }),
 
 /***/ 6982:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("crypto");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("crypto");
 
 /***/ }),
 
 /***/ 4434:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("events");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("events");
 
 /***/ }),
 
 /***/ 9896:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("fs");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs");
 
 /***/ }),
 
 /***/ 8611:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("http");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("http");
 
 /***/ }),
 
 /***/ 5692:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("https");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("https");
 
 /***/ }),
 
 /***/ 9278:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("net");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("net");
 
 /***/ }),
 
 /***/ 4589:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:assert");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:assert");
 
 /***/ }),
 
 /***/ 6698:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:async_hooks");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:async_hooks");
 
 /***/ }),
 
 /***/ 4573:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:buffer");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:buffer");
 
 /***/ }),
 
 /***/ 7540:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:console");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:console");
 
 /***/ }),
 
 /***/ 7598:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:crypto");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:crypto");
 
 /***/ }),
 
 /***/ 3053:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:diagnostics_channel");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:diagnostics_channel");
 
 /***/ }),
 
 /***/ 610:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:dns");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:dns");
 
 /***/ }),
 
 /***/ 8474:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:events");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:events");
 
 /***/ }),
 
 /***/ 7067:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:http");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:http");
 
 /***/ }),
 
 /***/ 2467:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:http2");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:http2");
 
 /***/ }),
 
 /***/ 7030:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:net");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:net");
 
 /***/ }),
 
 /***/ 643:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:perf_hooks");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:perf_hooks");
 
 /***/ }),
 
 /***/ 1792:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:querystring");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:querystring");
 
 /***/ }),
 
 /***/ 7075:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:stream");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:stream");
 
 /***/ }),
 
 /***/ 1692:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:tls");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:tls");
 
 /***/ }),
 
 /***/ 3136:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:url");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:url");
 
 /***/ }),
 
 /***/ 7975:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:util");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:util");
 
 /***/ }),
 
 /***/ 3429:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:util/types");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:util/types");
 
 /***/ }),
 
 /***/ 5919:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:worker_threads");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:worker_threads");
 
 /***/ }),
 
 /***/ 8522:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:zlib");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:zlib");
 
 /***/ }),
 
 /***/ 857:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("os");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("os");
 
 /***/ }),
 
 /***/ 6928:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("path");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("path");
 
 /***/ }),
 
 /***/ 3193:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("string_decoder");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("string_decoder");
 
 /***/ }),
 
 /***/ 3557:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("timers");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("timers");
 
 /***/ }),
 
 /***/ 4756:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("tls");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("tls");
 
 /***/ }),
 
 /***/ 9023:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("util");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("util");
 
 /***/ })
 
-/******/ 	});
+/******/ });
 /************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __nccwpck_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		var threw = true;
-/******/ 		try {
-/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
-/******/ 			threw = false;
-/******/ 		} finally {
-/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
-/******/ 		}
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
+/******/ // The module cache
+/******/ var __webpack_module_cache__ = {};
+/******/ 
+/******/ // The require function
+/******/ function __nccwpck_require__(moduleId) {
+/******/ 	// Check if module is in cache
+/******/ 	var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 	if (cachedModule !== undefined) {
+/******/ 		return cachedModule.exports;
 /******/ 	}
-/******/ 	
+/******/ 	// Create a new module (and put it into the cache)
+/******/ 	var module = __webpack_module_cache__[moduleId] = {
+/******/ 		// no module.id needed
+/******/ 		// no module.loaded needed
+/******/ 		exports: {}
+/******/ 	};
+/******/ 
+/******/ 	// Execute the module function
+/******/ 	var threw = true;
+/******/ 	try {
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
+/******/ 		threw = false;
+/******/ 	} finally {
+/******/ 		if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 	}
+/******/ 
+/******/ 	// Return the exports of the module
+/******/ 	return module.exports;
+/******/ }
+/******/ 
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat */
-/******/ 	
-/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
-/******/ 	
+/******/ /* webpack/runtime/compat */
+/******/ 
+/******/ if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = new URL('.', import.meta.url).pathname.slice(import.meta.url.match(/^file:\/\/\/\w:/) ? 1 : 0, -1) + "/";
+/******/ 
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(5915);
-/******/ 	module.exports = __webpack_exports__;
-/******/ 	
-/******/ })()
-;
+var __webpack_exports__ = {};
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(7484);
+/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(6928);
+/* harmony import */ var child_process__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(5317);
+
+
+
+const SIGNAL_NAME_TO_NUMBER_MAP = {
+    'SIGHUP': 1,
+    'SIGINT': 2,
+    'SIGQUIT': 3,
+    'SIGILL': 4,
+    'SIGTRAP': 5,
+    'SIGABRT': 6,
+    'SIGIOT': 6,
+    'SIGBUS': 7,
+    'SIGFPE': 8,
+    'SIGKILL': 9,
+    'SIGUSR1': 10,
+    'SIGSEGV': 11,
+    'SIGUSR2': 12,
+    'SIGPIPE': 13,
+    'SIGALRM': 14,
+    'SIGTERM': 15,
+    'SIGSTKFLT': 16,
+    'SIGCHLD': 17,
+    'SIGCONT': 18,
+    'SIGSTOP': 19,
+    'SIGTSTP': 20,
+    'SIGTTIN': 21,
+    'SIGTTOU': 22,
+    'SIGURG': 23,
+    'SIGXCPU': 24,
+    'SIGXFSZ': 25,
+    'SIGVTALRM': 26,
+    'SIGPROF': 27,
+    'SIGWINCH': 28,
+    'SIGIO': 29,
+    'SIGPOLL': 29,
+    'SIGPWR': 30,
+    'SIGSYS': 31,
+    'SIGUNUSED': 31,
+    // actually, there isn't a number for these...
+    'SIGBREAK': 97,
+    'SIGINFO': 98,
+    'SIGLOST': 99,
+};
+function argumentValueString(value, useResolvedValue = true, escapeValue = false) {
+    function _cmdEscape(str) {
+        return str.replace(/((?!\\).|^)( )/g, `$1\\ `);
+    }
+    let strValue = useResolvedValue ? value.resolvedValue : value.originalValue;
+    return escapeValue ? _cmdEscape(strValue) : strValue;
+}
+function argumentStrings(argument, useResolvedValue = true, escapeValue = false) {
+    let plain = [argument.name];
+    if (argument.value)
+        plain.push(argumentValueString(argument.value, useResolvedValue, escapeValue));
+    return plain;
+}
+function allArgumentStrings(args, useResolvedValue = true, escapeValue = false) {
+    return args.flatMap(a => argumentStrings(a, useResolvedValue, escapeValue));
+}
+async function runXcodebuild(args, outputFormatter) {
+    const xcodebuildOut = outputFormatter ? 'pipe' : process.stdout;
+    const xcodebuild = (0,child_process__WEBPACK_IMPORTED_MODULE_2__.spawn)('xcodebuild', allArgumentStrings(args), {
+        stdio: ['inherit', xcodebuildOut, process.stderr],
+    });
+    let finishedPromise = new Promise((resolve, reject) => {
+        xcodebuild.on('error', reject);
+        xcodebuild.on('exit', (exitCode, signal) => {
+            if (exitCode) {
+                resolve(exitCode);
+            }
+            else if (signal) {
+                resolve(SIGNAL_NAME_TO_NUMBER_MAP[signal]);
+            }
+        });
+    });
+    if (outputFormatter) {
+        const formattedOutput = (0,child_process__WEBPACK_IMPORTED_MODULE_2__.spawn)(outputFormatter.tool, allArgumentStrings(outputFormatter.args), {
+            stdio: ['pipe', process.stdout, process.stderr],
+        });
+        xcodebuild.stdout?.pipe(formattedOutput.stdin);
+        finishedPromise = finishedPromise.then(xcodeCode => new Promise((resolve, reject) => {
+            formattedOutput.on('error', reject);
+            formattedOutput.on('exit', (formattedOutputCode, formattedOutputSignal) => {
+                if (xcodeCode == 0) {
+                    if (formattedOutputCode) {
+                        resolve(formattedOutputCode);
+                    }
+                    else if (formattedOutputSignal) {
+                        resolve(SIGNAL_NAME_TO_NUMBER_MAP[formattedOutputSignal]);
+                    }
+                }
+                else {
+                    resolve(xcodeCode);
+                }
+            });
+        }));
+    }
+    const exitCode = await finishedPromise;
+    if (exitCode != 0)
+        throw new Error(`Xcodebuild action failed (${exitCode})!`);
+}
+async function main() {
+    let xcodebuildArgs = [];
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.startGroup('Validating input');
+    const workspace = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('workspace');
+    const project = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('project');
+    const spmPackage = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('spm-package');
+    if ((!workspace && !project && !spmPackage)
+        || (workspace && project && spmPackage)
+        || (workspace && project)
+        || (workspace && spmPackage)
+        || (project && spmPackage)) {
+        throw new Error('Either `project`, `workspace` or `spm-package-path` must be set, but they are mutually exclusive!');
+    }
+    const scheme = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('scheme', { required: !!workspace || !!spmPackage });
+    const disableEnumInputValidation = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getBooleanInput('disable-enum-input-validation');
+    function _pushArg(name, value) {
+        xcodebuildArgs.push({ name: `-${name}`, value: value });
+    }
+    function _pushArgWithValue(name, value, opts) {
+        let processedValue = value;
+        if (opts?.skipEmptyValues) {
+            processedValue = processedValue.trim();
+            if (processedValue.length <= 0)
+                return;
+        }
+        if (opts?.isPath)
+            processedValue = path__WEBPACK_IMPORTED_MODULE_1__.resolve(processedValue);
+        _pushArg(name, { originalValue: value, resolvedValue: processedValue });
+    }
+    function _addInputArg(inputName, argName, opts) {
+        if (opts?.isList) { // opts is guaranteed to be set in this branch.
+            let values = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getMultilineInput(inputName);
+            if (!values)
+                return false;
+            for (const value of values) {
+                if (!disableEnumInputValidation && opts.validValues && !opts.validValues.includes(value))
+                    throw new Error(`Invalid value for ${inputName}: ${value}! Valid values: ${opts.validValues.join(', ')}`);
+                _pushArgWithValue(argName ?? inputName, value, {
+                    isPath: opts.isPath,
+                    skipEmptyValues: true,
+                });
+            }
+            return values.length > 0;
+        }
+        else {
+            let value = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput(inputName);
+            if (!value)
+                return false;
+            if (!disableEnumInputValidation && opts?.validValues && !opts.validValues.includes(value))
+                throw new Error(`Invalid value for ${inputName}: ${value}! Valid values: ${opts.validValues.join(', ')}`);
+            _pushArgWithValue(argName ?? inputName, value, {
+                isPath: opts?.isPath,
+                skipEmptyValues: false,
+            });
+            return true;
+        }
+    }
+    function addInputArg(inputName, argName) {
+        return _addInputArg(inputName, argName);
+    }
+    function addPathArg(inputName, argName) {
+        return _addInputArg(inputName, argName, { isPath: true });
+    }
+    function addListArg(inputName, argName) {
+        return _addInputArg(inputName, argName, { isList: true });
+    }
+    function addEnumArg(inputName, validValues, argName) {
+        return _addInputArg(inputName, argName, { validValues });
+    }
+    function addBoolArg(inputName, argName) {
+        const value = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput(inputName);
+        const hasValue = !!value && value.length > 0;
+        if (hasValue)
+            _pushArgWithValue(argName ?? inputName, _actions_core__WEBPACK_IMPORTED_MODULE_0__.getBooleanInput(inputName) ? 'YES' : 'NO');
+        return hasValue;
+    }
+    function addFlagArg(inputName, argName) {
+        const value = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput(inputName);
+        const hasValue = !!value && value.length > 0;
+        if (hasValue && _actions_core__WEBPACK_IMPORTED_MODULE_0__.getBooleanInput(inputName))
+            _pushArg(argName ?? inputName);
+        return hasValue;
+    }
+    if (workspace) {
+        _pushArgWithValue('workspace', workspace, { isPath: true });
+    }
+    else if (project) {
+        _pushArgWithValue('project', project, { isPath: true });
+    }
+    if (scheme)
+        _pushArgWithValue('scheme', scheme);
+    if (addInputArg('target') && addFlagArg('all-targets', 'alltargets'))
+        throw new Error('`target` and `all-targets` are mutually exclusive!');
+    addInputArg('destination');
+    addInputArg('configuration');
+    addInputArg('sdk');
+    addInputArg('arch');
+    addPathArg('xcconfig');
+    addInputArg('toolchain');
+    addInputArg('jobs');
+    addFlagArg('parallelize-targets', 'parallelizeTargets');
+    addBoolArg('enable-code-coverage', 'enableCodeCoverage');
+    addBoolArg('parallel-testing-enabled');
+    addInputArg('maximum-concurrent-test-device-destinations');
+    addInputArg('maximum-concurrent-test-simulator-destinations');
+    addFlagArg('quiet');
+    addFlagArg('hide-shell-script-environment', 'hideShellScriptEnvironment');
+    addBoolArg('enable-address-sanitizer', 'enableAddressSanitizer');
+    addBoolArg('enable-thread-sanitizer', 'enableThreadSanitizer');
+    addBoolArg('enable-undefined-behavior-sanitizer', 'enableUndefinedBehaviorSanitizer');
+    addPathArg('result-bundle-path', 'resultBundlePath');
+    addInputArg('result-bundle-version', 'resultBundleVersion');
+    addPathArg('cloned-source-packages-path', 'clonedSourcePackagesDirPath');
+    addPathArg('package-cache-path', 'packageCachePath');
+    addPathArg('derived-data-path', 'derivedDataPath');
+    addInputArg('default-package-registry-url', 'defaultPackageRegistryURL');
+    addEnumArg('package-dependency-scm-to-registry-transformation', ['none', 'useRegistryIdentity', 'useRegistryIdentityAndSources'], 'packageDependencySCMToRegistryTransformation');
+    addFlagArg('disable-package-repository-cache', 'disablePackageRepositoryCache');
+    addFlagArg('disable-automatic-package-resolution', 'disableAutomaticPackageResolution');
+    addFlagArg('skip-package-updates', 'skipPackageUpdates');
+    addFlagArg('skip-package-plugin-validation', 'skipPackagePluginValidation');
+    addFlagArg('skip-macro-validation', 'skipMacroValidation');
+    addEnumArg('package-fingerprint-policy', ['warn', 'strict'], 'packageFingerprintPolicy');
+    addEnumArg('package-signing-entity-policy', ['warn', 'strict'], 'packageSigningEntityPolicy');
+    addPathArg('xcroot');
+    addPathArg('xctestrun');
+    addInputArg('test-language', 'testLanguage');
+    addInputArg('test-region', 'testRegion');
+    addInputArg('test-plan', 'testPlan');
+    addListArg('only-testing');
+    addListArg('skip-testing');
+    addListArg('only-test-configuration');
+    addListArg('skip-test-configuration');
+    addInputArg('test-iterations');
+    addFlagArg('retry-tests-on-failure');
+    addFlagArg('run-tests-until-failure');
+    addFlagArg('skip-unavailable-actions', 'skipUnavailableActions');
+    addFlagArg('allow-provisioning-updates', 'allowProvisioningUpdates');
+    addFlagArg('allow-provisioning-device-registration', 'allowProvisioningDeviceRegistration');
+    addFlagArg('export-notarized-app', 'exportNotarizedApp');
+    addPathArg('export-options-plist', 'exportOptionsPlist');
+    addFlagArg('export-archive', 'exportArchive');
+    addPathArg('archive-path', 'archivePath');
+    addFlagArg('create-xcframework');
+    const buildSettings = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('build-settings');
+    if (buildSettings)
+        xcodebuildArgs.push(...buildSettings.split(' ').map(v => ({ name: v })));
+    const action = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('action', { required: true });
+    xcodebuildArgs.push(...action.split(' ').map(v => ({ name: v })));
+    let outputFormatter = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('output-formatter');
+    const dryRun = _actions_core__WEBPACK_IMPORTED_MODULE_0__.isDebug() && _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('dry-run') == 'true';
+    // We allow other platforms for dry-runs since this speeds up tests (more parallel builds).
+    if (!dryRun && process.platform !== 'darwin')
+        throw new Error('This action only supports macOS!');
+    let outputFormatterInv;
+    if (outputFormatter) {
+        const [tool, ...args] = outputFormatter.split(' ');
+        outputFormatterInv = { tool, args: args.map(arg => ({ name: arg })) };
+    }
+    else {
+        outputFormatterInv = null;
+    }
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.endGroup();
+    await _actions_core__WEBPACK_IMPORTED_MODULE_0__.group('Composing command', async () => {
+        // We "abuse" ICommandArgument here a bit to make it easier to compose both output variants.
+        let allCommands = [{ name: 'xcodebuild' }].concat(xcodebuildArgs);
+        if (outputFormatterInv) {
+            allCommands.push({ name: '|' }, { name: outputFormatterInv.tool });
+            allCommands.push(...outputFormatterInv.args);
+        }
+        let unprocessedInvocation = allArgumentStrings(allCommands, false, true);
+        let processedInvocation = allArgumentStrings(allCommands, true, true);
+        if (spmPackage) {
+            const spmPackageValue = {
+                originalValue: spmPackage,
+                resolvedValue: path__WEBPACK_IMPORTED_MODULE_1__.resolve(spmPackage),
+            };
+            function _combinedInv(inv, useResolved) {
+                return [
+                    'pushd', argumentValueString(spmPackageValue, useResolved, true),
+                    '&&',
+                    ...inv,
+                    ';',
+                    'popd',
+                ];
+            }
+            unprocessedInvocation = _combinedInv(unprocessedInvocation, false);
+            processedInvocation = _combinedInv(processedInvocation, true);
+        }
+        const unprocessedCommand = unprocessedInvocation.join(' ');
+        const executedCommand = processedInvocation.join(' ');
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput('unprocessed-command', unprocessedCommand);
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput('executed-command', executedCommand);
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Resolving paths for execution in: \`${unprocessedCommand}\``);
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Executing: \`${executedCommand}\``);
+    });
+    if (!dryRun) {
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.startGroup('Running xcodebuild');
+        const cwd = process.cwd();
+        if (spmPackage)
+            process.chdir(spmPackage);
+        try {
+            await runXcodebuild(xcodebuildArgs, outputFormatterInv);
+        }
+        finally {
+            if (spmPackage)
+                process.chdir(cwd);
+        }
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.endGroup();
+    }
+}
+try {
+    main().catch(error => _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(error.message));
+}
+catch (error) {
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(error.message);
+}
+
